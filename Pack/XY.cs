@@ -20,7 +20,7 @@ using Make.MODEL.TCP_Async_Event;
 
 namespace Pack
 {
-    //主流工作区，逻辑处理区
+    //主流工作区
     public static class XY
     {
         public static void TCP_Event_Receive(Token token, Msg_Client msg_Client)
