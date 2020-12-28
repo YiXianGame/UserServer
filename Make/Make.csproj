@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{00A3BD39-02AC-4CB2-8603-87D4A9AE8672}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Make</RootNamespace>
+    <AssemblyName>Make</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BLL\Author_Helper.cs" />
+    <Compile Include="BLL\BinarySerialize.cs" />
+    <Compile Include="BLL\Initialization.cs" />
+    <Compile Include="BLL\JSON_Helper.cs" />
+    <Compile Include="BLL\NPC_Helper.cs" />
+    <Compile Include="BLL\Player_Helper.cs" />
+    <Compile Include="BLL\SkillCard_Helper.cs" />
+    <Compile Include="BLL\State_Helper.cs" />
+    <Compile Include="BLL\UserHelper.cs" />
+    <Compile Include="MODEL\Adventure.cs" />
+    <Compile Include="MODEL\EnumJsonConvert.cs" />
+    <Compile Include="MODEL\EventArgsModel\DeathEventArgs.cs" />
+    <Compile Include="MODEL\MsgToken.cs" />
+    <Compile Include="MODEL\Room.cs" />
+    <Compile Include="MODEL\TCP_Async_Event\TCP_Event.cs" />
+    <Compile Include="MODEL\TCP_Async_Event\SocketAsyncEventArgsPool.cs" />
+    <Compile Include="MODEL\TCP_Async_Event\SocketListener.cs" />
+    <Compile Include="MODEL\TCP_Async_Event\TCP_Server.cs" />
+    <Compile Include="MODEL\TCP_Async_Event\Token.cs" />
+    <Compile Include="MODEL\User.cs" />
+    <Compile Include="MODEL\Enums.cs" />
+    <Compile Include="MODEL\Filter.cs" />
+    <Compile Include="MODEL\GeneralControl.cs" />
+    <Compile Include="MODEL\Map.cs" />
+    <Compile Include="MODEL\Monster.cs" />
+    <Compile Include="MODEL\Msg_Client.cs" />
+    <Compile Include="MODEL\Msg_Server.cs" />
+    <Compile Include="MODEL\Player.cs" />
+    <Compile Include="MODEL\Pos.cs" />
+    <Compile Include="MODEL\Room_Round.cs" />
+    <Compile Include="MODEL\Team_Room.cs" />
+    <Compile Include="MODEL\Solo_Room.cs" />
+    <Compile Include="MODEL\Simple_SkillCard.cs" />
+    <Compile Include="MODEL\SkillCard.cs" />
+    <Compile Include="MODEL\SkillCardsModel.cs" />
+    <Compile Include="MODEL\State.cs" />
+    <Compile Include="MODEL\XianYu_Map.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Material\Material.csproj">
+      <Project>{23cbb4ce-2661-4ff3-b0c6-5b100edb1b50}</Project>
+      <Name>Material</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BLL\json1.json" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

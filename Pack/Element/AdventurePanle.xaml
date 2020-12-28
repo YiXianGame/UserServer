@@ -1,0 +1,99 @@
+﻿<UserControl x:Class="Pack.Element.AdventurePanle"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Pack.Element"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" RenderTransformOrigin="0,0" d:DesignWidth="965" d:DesignHeight="460"
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
+                <!-- Material Design -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Teal.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource Primary700}"/>
+            <SolidColorBrush x:Key="AccentBaseColorBrush" Color="{DynamicResource Primary600}" />
+            <SolidColorBrush x:Key="AccentColorBrush" Color="{DynamicResource Primary500}"/>
+            <SolidColorBrush x:Key="AccentColorBrush2" Color="{DynamicResource Primary400}"/>
+            <SolidColorBrush x:Key="AccentColorBrush3" Color="{DynamicResource Primary300}"/>
+            <SolidColorBrush x:Key="AccentColorBrush4" Color="{DynamicResource Primary200}"/>
+            <SolidColorBrush x:Key="WindowTitleColorBrush" Color="{DynamicResource Primary700}"/>
+            <SolidColorBrush x:Key="AccentSelectedColorBrush" Color="{DynamicResource Primary500Foreground}"/>
+            <LinearGradientBrush x:Key="ProgressBrush" EndPoint="0.001,0.5" StartPoint="1.002,0.5">
+                <GradientStop Color="{DynamicResource Primary700}" Offset="0"/>
+                <GradientStop Color="{DynamicResource Primary300}" Offset="1"/>
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="CheckmarkFill" Color="{DynamicResource Primary500}"/>
+            <SolidColorBrush x:Key="RightArrowFill" Color="{DynamicResource Primary500}"/>
+            <SolidColorBrush x:Key="IdealForegroundColorBrush" Color="{DynamicResource Primary500Foreground}"/>
+            <SolidColorBrush x:Key="IdealForegroundDisabledBrush" Color="{DynamicResource Primary500}" Opacity="0.4"/>
+            <SolidColorBrush x:Key="MahApps.Metro.Brushes.ToggleSwitchButton.OnSwitchBrush.Win10" Color="{DynamicResource Primary500}" />
+            <SolidColorBrush x:Key="MahApps.Metro.Brushes.ToggleSwitchButton.OnSwitchMouseOverBrush.Win10" Color="{DynamicResource Primary400}" />
+            <SolidColorBrush x:Key="MahApps.Metro.Brushes.ToggleSwitchButton.ThumbIndicatorCheckedBrush.Win10" Color="{DynamicResource Primary500Foreground}" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <local:Edit_Card_Adventure x:Name="EditCard" Margin="0" Panel.ZIndex="1" Visibility="Hidden"/>
+        <ScrollViewer Margin="0,65,0,0">
+            <WrapPanel x:Name="AdventurePanel" Margin="0" Panel.ZIndex="0"/>
+        </ScrollViewer>
+        <materialDesign:ColorZone x:Name="Filter_Bar"
+  Mode="Custom"
+  Padding="16" Margin="0,-5,0,0">
+            <DockPanel>
+                <StackPanel
+      Orientation="Horizontal"
+      materialDesign:RippleAssist.IsCentered="True">
+                    <ListBox Style="{StaticResource  MaterialDesignToolToggleListBox}" Height="37" SelectedIndex="{Binding Mode=TwoWay, Path=State}" Margin="0,1,0,0" SelectionChanged="ListBox_SelectionChanged">
+                        <ListBoxItem>
+                            <TextBlock Style="{StaticResource MaterialDesignSubtitle2TextBlock}">
+                                     禁用
+                            </TextBlock>
+                        </ListBoxItem>
+
+                        <ListBoxItem>
+                            <TextBlock Style="{StaticResource MaterialDesignSubtitle2TextBlock }" >
+                                     开启
+                            </TextBlock>
+                        </ListBoxItem>
+                    </ListBox>
+                    <materialDesign:ColorZone
+        Mode="Standard"
+        Padding="8 4 8 4"
+        CornerRadius="2"
+        Panel.ZIndex="1"
+        Margin="16 0 0 0"
+        materialDesign:ShadowAssist.ShadowDepth="Depth1" Height="39" Width="250">
+                        <Grid>
+                            <TextBox
+            x:Name="Template_Adventure_Name"
+            Grid.Column="1"
+            Margin="8 0 0 0"
+            Text="{Binding Path=Name}"
+            materialDesign:HintAssist.Hint="请输入技能名称"
+            materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
+            BorderThickness="0"
+            MinWidth="200"
+            MaxWidth="200"
+            VerticalAlignment="Center" TextChanged="TextBox_TextChanged" />
+                            <Button
+            Style="{DynamicResource MaterialDesignToolButton}" Height="Auto" Margin="207,0,0,0" Click="Button_Click">
+                                <materialDesign:PackIcon
+              Kind="Magnify"
+              Opacity=".56" RenderTransformOrigin="-0.188,0.438" Height="20" Width="25" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Button>
+                        </Grid>
+                    </materialDesign:ColorZone>
+                    <Button Width="60"  Margin="10,0,0,0" materialDesign:ButtonAssist.CornerRadius="15" Style="{StaticResource   MaterialDesignFlatDarkBgButton}" FontFamily="楷体" Background="CornflowerBlue" BorderBrush="{x:Null}" Content="新增" Click="Button_Click_1" />
+                </StackPanel>
+            </DockPanel>
+        </materialDesign:ColorZone>
+        <local:Author x:Name="Author" Margin="90" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Visibility="Hidden"/>
+    </Grid>
+</UserControl>

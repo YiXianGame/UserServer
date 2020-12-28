@@ -1,0 +1,242 @@
+﻿<UserControl x:Class="Pack.Element.Edit_Card_Adventure"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Pack.Element"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
+                <!-- Material Design -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Teal.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource Primary700}"/>
+            <SolidColorBrush x:Key="AccentBaseColorBrush" Color="{DynamicResource Primary600}" />
+            <SolidColorBrush x:Key="AccentColorBrush" Color="{DynamicResource Primary500}"/>
+            <SolidColorBrush x:Key="AccentColorBrush2" Color="{DynamicResource Primary400}"/>
+            <SolidColorBrush x:Key="AccentColorBrush3" Color="{DynamicResource Primary300}"/>
+            <SolidColorBrush x:Key="AccentColorBrush4" Color="{DynamicResource Primary200}"/>
+            <SolidColorBrush x:Key="WindowTitleColorBrush" Color="{DynamicResource Primary700}"/>
+            <SolidColorBrush x:Key="AccentSelectedColorBrush" Color="{DynamicResource Primary500Foreground}"/>
+            <LinearGradientBrush x:Key="ProgressBrush" EndPoint="0.001,0.5" StartPoint="1.002,0.5">
+                <GradientStop Color="{DynamicResource Primary700}" Offset="0"/>
+                <GradientStop Color="{DynamicResource Primary300}" Offset="1"/>
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="CheckmarkFill" Color="{DynamicResource Primary500}"/>
+            <SolidColorBrush x:Key="RightArrowFill" Color="{DynamicResource Primary500}"/>
+            <SolidColorBrush x:Key="IdealForegroundColorBrush" Color="{DynamicResource Primary500Foreground}"/>
+            <SolidColorBrush x:Key="IdealForegroundDisabledBrush" Color="{DynamicResource Primary500}" Opacity="0.4"/>
+            <SolidColorBrush x:Key="MahApps.Metro.Brushes.ToggleSwitchButton.OnSwitchBrush.Win10" Color="{DynamicResource Primary500}" />
+            <SolidColorBrush x:Key="MahApps.Metro.Brushes.ToggleSwitchButton.OnSwitchMouseOverBrush.Win10" Color="{DynamicResource Primary400}" />
+            <SolidColorBrush x:Key="MahApps.Metro.Brushes.ToggleSwitchButton.ThumbIndicatorCheckedBrush.Win10" Color="{DynamicResource Primary500Foreground}" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Viewbox>
+        <Grid  Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding ElementName=Custom_Card_Adventure, Path=DataContext,UpdateSourceTrigger=PropertyChanged}"  Opacity="0.97">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="3*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="311*"/>
+                <ColumnDefinition Width="687*"/>
+            </Grid.ColumnDefinitions>
+            <Border Margin="0,0,0,-1" BorderThickness="0.1"  Grid.ColumnSpan="2" Grid.RowSpan="2" Background="{StaticResource ResourceKey=MaterialDesignPaper}" CornerRadius="10" BorderBrush="{StaticResource AccentBaseColorBrush}" >
+                <Border.Effect>
+                    <DropShadowEffect Color="Blue" BlurRadius="10" ShadowDepth="0" Opacity="1" />
+                </Border.Effect>
+            </Border>
+            <Grid Margin="5" x:Name="States_Select" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Panel.ZIndex="2"  Visibility="Hidden" Background="{StaticResource MaterialDesignPaper}" Opacity="0.8">
+                <WrapPanel HorizontalAlignment="Center" Margin="-125,100,714,160" VerticalAlignment="Center" Width="388" RenderTransformOrigin="0.1,0.1">
+                    <WrapPanel.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform AngleX="35.055"/>
+                            <RotateTransform/>
+                            <TranslateTransform X="124.427"/>
+                        </TransformGroup>
+                    </WrapPanel.RenderTransform>
+                    <Button Content="冻结" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="Blue" Margin="20" Click="Button_Click_4" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}"/>
+                    <Button Content="缴械" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="OrangeRed" Margin="20" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Click="Button_Click_4"/>
+                    <Button Content="破甲" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="DarkGreen" Margin="20" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Click="Button_Click_4"/>
+                    <Button Content="无敌" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="Orange" Margin="20" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Click="Button_Click_4"/>
+                    <Button Content="穿甲" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="Purple" Margin="20" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Click="Button_Click_4"/>
+                    <Button Content="召唤" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="DarkCyan" Margin="20" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Click="Button_Click_4"/>
+                    <Button Content="恒血" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="Red" Margin="20" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Click="Button_Click_4"/>
+                </WrapPanel>
+                <WrapPanel HorizontalAlignment="Center" Width="388" Margin="555,100,6,160" VerticalAlignment="Center" RenderTransformOrigin="0.8,0.8">
+                    <WrapPanel.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform AngleX="-35.055"/>
+                            <RotateTransform/>
+                            <TranslateTransform X="-124.427"/>
+                        </TransformGroup>
+                    </WrapPanel.RenderTransform>
+                    <Button Content="恒气" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="CornflowerBlue" Margin="20" Click="Button_Click_4"/>
+                    <Button Content="封穴" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="DarkBlue" Margin="20" Click="Button_Click_4"/>
+                    <Button Content="霸体" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="Gold" Margin="20" Click="Button_Click_4"/>
+                    <Button Content="沉默" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="DimGray" Margin="20" Click="Button_Click_4"/>
+                    <Button Content="反弹" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="Coral" Margin="20" Click="Button_Click_4"/>
+                    <Button Content="格挡" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="Crimson" Margin="20" Click="Button_Click_4"/>
+                    <Button Content="反制" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" FontFamily="楷体" FontSize="20" Width="140" Background="LightSeaGreen" Margin="200,20,20,20" Click="Button_Click_4"/>
+                </WrapPanel>
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="0">
+                <local:Custom_Card_Adventure x:Name="Custom_Card_Adventure" Margin="0   ,10,9,4" />
+            </Grid>
+            <Grid Grid.Column="1" Grid.Row="0" >
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="40,60,0,0">
+                    <TextBox Style="{StaticResource  MaterialDesignTextBox}"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="240" Text="{Binding Name}" FontFamily="楷体" FontWeight="Bold" FontSize="30"/>
+                    <Button Margin="10,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <materialDesign:PackIcon  Kind="Check" Width="30" Height="30"  HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="GreenYellow"/>
+                    </Button>
+                </StackPanel>
+                <TextBox Width="550" Height="100"  Style="{StaticResource  MaterialDesignOutlinedTextFieldTextBox}" materialDesign:HintAssist.Hint="奇遇介绍"   Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" FontSize="20" VerticalAlignment="Stretch" Margin="100,130,83,29"  HorizontalAlignment="Stretch" FontFamily="楷体"  TextWrapping="Wrap" FontWeight="Bold" />
+
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="1"  Margin="0,0,0,-1">
+                <Grid Margin="124,66,124,159" x:Name="G1" VerticalAlignment="Center" Height="160">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="45*"/>
+                        <RowDefinition Height="45*"/>
+                        <RowDefinition Height="43*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="Mp"
+                    materialDesign:HintAssist.Hint="损魔量" 
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="27,1" Foreground="blue" FontFamily="楷体" HorizontalContentAlignment="Center" Grid.Row="2" FontSize="20" Text="{Binding Direct_Mp, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2"/>
+                    <TextBox x:Name="Hp"
+                    materialDesign:HintAssist.Hint="攻击力"
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="27,1" Foreground="Salmon" FontFamily="楷体" HorizontalContentAlignment="Center" Grid.Column="2" Grid.Row="1" FontSize="20"  Text="{Binding Attack, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox x:Name="Probability_Copy"
+                        materialDesign:HintAssist.Hint="随机率" 
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="27,1" Foreground="DarkTurquoise" FontFamily="楷体" HorizontalContentAlignment="Center" Grid.Column="1" FontSize="20"  Text="{Binding Probability, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1"/>
+                    <TextBox x:Name="Mp_Copy"
+                        materialDesign:HintAssist.Hint="治疗量" 
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="27,1" Foreground="blue" FontFamily="楷体" HorizontalContentAlignment="Center" FontSize="20" Text="{Binding Cure, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1"/>
+                    <TextBox x:Name="Mp_Copy1"
+                        materialDesign:HintAssist.Hint="回魔量" 
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="27,1" Foreground="blue" FontFamily="楷体" HorizontalContentAlignment="Center" FontSize="20" Text="{Binding Self_Mp, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2"/>
+                </Grid>
+                <Button x:Name ="Close"
+    Style="{StaticResource MaterialDesignOutlinedButton}" Margin="402,304,116,20" FontSize="18" FontWeight="Bold" FontFamily="楷体" Click="Button_Click_2" Content="关闭"/>
+                <Button  x:Name="Delete"
+                Style="{StaticResource MaterialDesignOutlinedButton}"  Margin="120,304,398,20" FontSize="18" Content="删除" FontWeight="Bold" FontFamily="楷体" Click="Button_Click_3"/>
+            </Grid>
+            <Grid Grid.Column="0" Grid.Row="1">
+                <ScrollViewer  Margin="0,1,0,68" VerticalScrollBarVisibility="Hidden">
+                    <ItemsControl  x:Name="States_List"
+  ItemsSource="{Binding Effect_States}"
+  Grid.IsSharedSizeScope="True" Width="350" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="
+                               0,0,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+        x:Name="Border"
+        Padding="8"
+        Margin="13,0,0,0"
+        BorderThickness="0 0 0 1"
+        BorderBrush="{DynamicResource MaterialDesignDivider}">
+                                    <WrapPanel  Margin="0,0,0,0">
+                                        <TextBlock Text="{Binding Name}" FontFamily="楷体" FontSize="25" Margin="45,0,5,0">
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="Text" Value="冻结">
+                                                            <Setter Property="Foreground" Value="Blue" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="缴械">
+                                                            <Setter Property="Foreground" Value="OrangeRed" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="破甲">
+                                                            <Setter Property="Foreground" Value="DarkGreen" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="无敌">
+                                                            <Setter Property="Foreground" Value="Orange" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="穿甲">
+                                                            <Setter Property="Foreground" Value="Purple" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="召唤">
+                                                            <Setter Property="Foreground" Value="DarkCyan" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="恒血">
+                                                            <Setter Property="Foreground" Value="Red" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="恒气">
+                                                            <Setter Property="Foreground" Value="CornflowerBlue" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="封穴">
+                                                            <Setter Property="Foreground" Value="DarkBlue" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="霸体">
+                                                            <Setter Property="Foreground" Value="Gold" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="沉默">
+                                                            <Setter Property="Foreground" Value="DimGray" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="反弹">
+                                                            <Setter Property="Foreground" Value="Coral" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="格挡">
+                                                            <Setter Property="Foreground" Value="Crimson" />
+                                                        </Trigger>
+                                                        <Trigger Property="Text" Value="反制">
+                                                            <Setter Property="Foreground" Value="LightSeaGreen" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock  Text="是否自身"  Margin="50,8,0,0" Style="{StaticResource MaterialDesignBody2TextBlock}"/>
+                                        <ToggleButton x:Uid="是否自身" Margin="10,3,0,0" IsChecked="{Binding Is_Self}"/>
+                                        <Button Width="20" Height="20" Margin="20,0,0,0" Click="Button_Click">
+                                            <TextBlock Text="X" Margin="-11,-3,0,0"/>
+                                        </Button>
+                                        <TextBox x:Name="state_seconds" 
+                    materialDesign:HintAssist.Hint="持续时间" 
+                                              Text="{Binding Duration_Immediate, Mode=TwoWay}"
+                        InputMethod.IsInputMethodEnabled="False"          
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="10,1" Foreground="blue" FontFamily="楷体"  Grid.Row="1" FontSize="14" Width="50" PreviewTextInput="TextBox_PreviewTextInput" TextAlignment="Center"/>
+                                        <TextBox 
+                    materialDesign:HintAssist.Hint="作用力度"
+                                              Text="{Binding Effect_mp, Mode=TwoWay}"
+                        InputMethod.IsInputMethodEnabled="False"          
+                                             ToolTip="{Binding Effect_Information}"
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="10,1" Foreground="blue" FontFamily="楷体"  Grid.Row="1" FontSize="14" Width="50" PreviewTextInput="TextBox_PreviewTextInput" TextAlignment="Center"/>
+                                        <TextBox
+    ToolTip="{Binding Message_Information}"
+    Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+    Text="{Binding Message}"
+    VerticalAlignment="Top"
+    Margin="10,10,0,0"
+    Height="40"
+    Width="140"                       
+    AcceptsReturn="True"
+    TextWrapping="Wrap"
+    VerticalScrollBarVisibility="Auto"
+    materialDesign:HintAssist.Hint="反馈信息"
+     />
+                                    </WrapPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,30,20"  Content="添加" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="Button_Click_1"/>
+            </Grid>
+        </Grid>
+    </Viewbox>
+</UserControl>
