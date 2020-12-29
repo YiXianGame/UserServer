@@ -10,7 +10,6 @@ namespace Make.MODEL
         #region --方法--
         public XianYu_Map(int H,int W) : base(H, W)
         {
-
             Height = H;
             Width = W;
             Pos_Map = new Pos[Height, Width];
