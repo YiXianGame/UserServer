@@ -126,7 +126,7 @@ namespace Make.MODEL
         public void Save()
         {
             string json = JsonConvert.SerializeObject(this);
-            string filepath = GeneralControl.directory + "\\用户\\" + UserName + ".json";
+            string filepath = GeneralControl.Directory + "\\用户\\" + UserName + ".json";
             File.WriteAllText(filepath, json);
         }
         public static User Load(string iD)
@@ -138,7 +138,7 @@ namespace Make.MODEL
         }
         public void Delete()
         {
-            string filepath = GeneralControl.directory + "\\用户\\" + UserName + ".json";
+            string filepath = GeneralControl.Directory + "\\用户\\" + UserName + ".json";
             File.Delete(filepath);
         }
         /// <summary>

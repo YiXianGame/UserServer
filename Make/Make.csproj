@@ -71,7 +71,7 @@
     <Compile Include="MODEL\User.cs" />
     <Compile Include="MODEL\Enums.cs" />
     <Compile Include="MODEL\Filter.cs" />
-    <Compile Include="MODEL\GeneralControl.cs" />
+    <Compile Include="GeneralControl.cs" />
     <Compile Include="MODEL\Map.cs" />
     <Compile Include="MODEL\Monster.cs" />
     <Compile Include="MODEL\Msg_Client.cs" />

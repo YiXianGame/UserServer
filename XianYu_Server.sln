@@ -7,7 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Make", "Make\Make.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Material", "Material\Material.csproj", "{23CBB4CE-2661-4FF3-B0C6-5B100EDB1B50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pack", "Pack\Pack.csproj", "{DC6423D6-2CEA-4E1B-8259-0BFD10292A0C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pack", "Pack\Pack.csproj", "{CC2276AC-98C1-49EF-9F23-9F80C6559411}"
+	ProjectSection(ProjectDependencies) = postProject
+		{00A3BD39-02AC-4CB2-8603-87D4A9AE8672} = {00A3BD39-02AC-4CB2-8603-87D4A9AE8672}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,14 +36,14 @@ Global
 		{23CBB4CE-2661-4FF3-B0C6-5B100EDB1B50}.Release|Any CPU.Build.0 = Release|Any CPU
 		{23CBB4CE-2661-4FF3-B0C6-5B100EDB1B50}.Release|x86.ActiveCfg = Release|Any CPU
 		{23CBB4CE-2661-4FF3-B0C6-5B100EDB1B50}.Release|x86.Build.0 = Release|Any CPU
-		{DC6423D6-2CEA-4E1B-8259-0BFD10292A0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC6423D6-2CEA-4E1B-8259-0BFD10292A0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC6423D6-2CEA-4E1B-8259-0BFD10292A0C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DC6423D6-2CEA-4E1B-8259-0BFD10292A0C}.Debug|x86.Build.0 = Debug|Any CPU
-		{DC6423D6-2CEA-4E1B-8259-0BFD10292A0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC6423D6-2CEA-4E1B-8259-0BFD10292A0C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC6423D6-2CEA-4E1B-8259-0BFD10292A0C}.Release|x86.ActiveCfg = Release|Any CPU
-		{DC6423D6-2CEA-4E1B-8259-0BFD10292A0C}.Release|x86.Build.0 = Release|Any CPU
+		{CC2276AC-98C1-49EF-9F23-9F80C6559411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC2276AC-98C1-49EF-9F23-9F80C6559411}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC2276AC-98C1-49EF-9F23-9F80C6559411}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CC2276AC-98C1-49EF-9F23-9F80C6559411}.Debug|x86.Build.0 = Debug|Any CPU
+		{CC2276AC-98C1-49EF-9F23-9F80C6559411}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC2276AC-98C1-49EF-9F23-9F80C6559411}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC2276AC-98C1-49EF-9F23-9F80C6559411}.Release|x86.ActiveCfg = Release|Any CPU
+		{CC2276AC-98C1-49EF-9F23-9F80C6559411}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

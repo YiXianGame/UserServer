@@ -1,22 +1,13 @@
-﻿using Make.MODEL;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using Make.BLL;
-using Pack.MODEL;
 using System.IO;
-using Newtonsoft.Json;
-using Pack.Element;
-using System.Threading;
-using System.Runtime.InteropServices;
+using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
+using Make.MODEL;
+using Make;
 using Make.MODEL.TCP_Async_Event;
+using Newtonsoft.Json;
+using Make.BLL;
 
 namespace Pack
 {
@@ -30,14 +21,7 @@ namespace Pack
         }
         public static void Console_Write(object msg)
         {
-            Pack_General.MainWindow.Dispatcher.Invoke((Action)delegate ()
-            {
-                if (Pack_General.MainWindow.Menu_Data.Data_Console.Text.Length >= 10000)
-                {
-                    Pack_General.MainWindow.Menu_Data.Data_Console.Text = "";
-                }
-                Pack_General.MainWindow.Menu_Data.Data_Console.Text += DateTime.Now + "=>" + msg.ToString() + "\n";
-            });
+            Debug.WriteLine(DateTime.Now + "=>" + msg.ToString() + "\n");
         }
         public static void Receive_Information(Token token, Msg_Client msg_Client)
         {
@@ -51,7 +35,7 @@ namespace Pack
                 if (data.Length == 1 && data[0] == "用户登录" && msg_Client.Bound != null)
                 {
                     User login_user = JsonConvert.DeserializeObject<User>(msg_Client.Bound);
-                    string filepath = Material.App.directory + "\\用户\\" + login_user.UserName + ".json";
+                    string filepath = GeneralControl.Directory + "\\用户\\" + login_user.UserName + ".json";
 
                     if (!File.Exists(filepath))
                     {
@@ -72,7 +56,7 @@ namespace Pack
                 else if (data.Length == 1 && data[0] == "用户注册" && msg_Client.Bound != null)
                 {
                     User new_user = JsonConvert.DeserializeObject<User>(msg_Client.Bound);
-                    string filepath = Material.App.directory + "\\用户\\" + new_user.UserName + ".json";
+                    string filepath = GeneralControl.Directory + "\\用户\\" + new_user.UserName + ".json";
                     if (!File.Exists(filepath))
                     {
                         string json = JsonConvert.SerializeObject(new_user);
@@ -88,7 +72,7 @@ namespace Pack
                 else if (data.Length == 2 && data[0] == "修改密码" && msg_Client.Bound != null)
                 {
                     User change_user = JsonConvert.DeserializeObject<User>(msg_Client.Bound);
-                    string filepath = Material.App.directory + "\\用户\\" + change_user.UserName + ".json";
+                    string filepath = GeneralControl.Directory + "\\用户\\" + change_user.UserName + ".json";
                     if (!File.Exists(filepath))
                     {
                         change_user.SendMessages("修改密码#尚未注册");
@@ -127,11 +111,6 @@ namespace Pack
                         SkillCardsModel skillCardsModel = JsonConvert.DeserializeObject<SkillCardsModel>(data[1]);
                         skillCardsModel.Cloud = "云端";
                         GeneralControl.Menu_Data_Monitor_Class.Instance.Pubmit_SkillCardsModel.Add(skillCardsModel);
-                        Pack_General.MainWindow.Dispatcher.Invoke((Action)delegate ()
-                        {
-                            Pack_General.MainWindow.Menu_Data.Pubmit_Skill.ItemsSource = null;
-                            Pack_General.MainWindow.Menu_Data.Pubmit_Skill.ItemsSource = GeneralControl.Menu_Data_Monitor_Class.Instance.Pubmit_SkillCardsModel;
-                        });
                     }
                     else user.SendMessages("申请已满");
                 }
@@ -142,18 +121,12 @@ namespace Pack
                         Adventure adventure = JsonConvert.DeserializeObject<Adventure>(data[1]);
                         adventure.Cloud = "云端";
                         GeneralControl.Menu_Data_Monitor_Class.Instance.Pubmit_Adventures.Add(adventure);
-
-                        Pack_General.MainWindow.Dispatcher.Invoke((Action)delegate ()
-                        {
-                            Pack_General.MainWindow.Menu_Data.Pubmit_Adventures.ItemsSource = null;
-                            Pack_General.MainWindow.Menu_Data.Pubmit_Adventures.ItemsSource = GeneralControl.Menu_Data_Monitor_Class.Instance.Pubmit_Adventures;
-                        });
                     }
                     else user.SendMessages("申请已满");
                 }
                 else if (data.Length == 2 && data[0] == "用户查询" && long.TryParse(data[1], out long_num))
                 {
-                    string filepath = Material.App.directory + "\\用户\\" + long_num.ToString() + ".json";
+                    string filepath = GeneralControl.Directory + "\\用户\\" + long_num.ToString() + ".json";
                     if (!File.Exists(filepath))
                     {
                         Make.MODEL.User author = new Make.MODEL.User();

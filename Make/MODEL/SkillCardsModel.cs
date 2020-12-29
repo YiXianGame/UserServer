@@ -31,7 +31,7 @@ namespace Make.MODEL
             {
                 temp_id = Guid.NewGuid().ToString();
             }
-            while (File.Exists(GeneralControl.directory + "\\技能卡\\" + temp_id + ".json"));
+            while (File.Exists(GeneralControl.Directory + "\\技能卡\\" + temp_id + ".json"));
             ID = temp_id;
         }
         public SkillCardsModel(SkillCard[] Bind)
@@ -42,7 +42,7 @@ namespace Make.MODEL
             {
                 temp_id = Guid.NewGuid().ToString();
             }
-            while (File.Exists(GeneralControl.directory + "\\技能卡\\" + temp_id + ".json"));
+            while (File.Exists(GeneralControl.Directory + "\\技能卡\\" + temp_id + ".json"));
             ID = temp_id;
             foreach (SkillCard item in Bind) item.Father_ID = ID;
         }

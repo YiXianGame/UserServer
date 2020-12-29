@@ -107,7 +107,7 @@ namespace Make.MODEL
             {
                 temp_id = Guid.NewGuid().ToString();
             }
-            while (File.Exists(GeneralControl.directory + "\\技能卡\\" + temp_id + ".json"));
+            while (File.Exists(GeneralControl.Directory + "\\技能卡\\" + temp_id + ".json"));
             ID = temp_id;
         }
         public void Assign(SkillCard skillCard)

@@ -20,6 +20,7 @@ namespace Make.BLL
         public Initialization()
         {
             string path = System.IO.Directory.GetCurrentDirectory() + "\\仙战";//游戏数据文档路径
+            GeneralControl.Directory = path;
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -39,7 +40,7 @@ namespace Make.BLL
         }
         public void Skill_Cards_Load()
         {
-            string filepath = GeneralControl.directory + "\\技能卡";
+            string filepath = GeneralControl.Directory + "\\技能卡";
             DirectoryInfo root = new DirectoryInfo(filepath);
             foreach (FileInfo file in root.GetFiles())
             {
@@ -50,7 +51,7 @@ namespace Make.BLL
         }
         public void Adventures_Load()
         {
-            string filepath = GeneralControl.directory + "\\奇遇";
+            string filepath = GeneralControl.Directory + "\\奇遇";
             DirectoryInfo root = new DirectoryInfo(filepath);
             foreach (FileInfo file in root.GetFiles())
             {
