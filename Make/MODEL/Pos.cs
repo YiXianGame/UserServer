@@ -1,25 +1,27 @@
-﻿using Material;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Make.MODEL
 {
     public class Pos
     {
+        #region --字段--
         private string name = "🌾";
         private int x;
         private int y;
         private object item;
         private string informations;
+        #endregion
 
+        #region --属性--
         public string Informations { get => informations; set => informations = value; }
         public int X { get => x; set => x = value; }
         public int Y { get => y; set => y = value; }
         public string Name { get => name; set => name = value; }
         public object Item { get => item; set => item = value; }
+        #endregion
+
+        #region --方法--
         public int Distance(Pos pos)
         {
             return Math.Abs(pos.X - X) + Math.Abs(pos.Y - Y);
@@ -161,5 +163,6 @@ namespace Make.MODEL
             item = null;
             Name = "🌾";
         }
+        #endregion
     }
 }

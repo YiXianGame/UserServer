@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Make.MODEL
+﻿namespace Make.MODEL
 {
     /// <summary>
     /// 这里根据enum的特性，虽然类无加载，但其实enum这个枚举表已经存在。

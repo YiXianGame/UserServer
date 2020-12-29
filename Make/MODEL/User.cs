@@ -105,7 +105,7 @@ namespace Make.MODEL
         public int Balances { get => balances; set => balances = value; }
         public int Lv { get => lv; set => lv = value; }
         public string Title { get => title; set => title = value; }
-        [JsonConverter(typeof(EnumJsonConvert<Enums.User_Active>))]
+        [JsonConverter(typeof(StringEnumConverter))]
         public Enums.User_Active Active { get => active; set => active = value; }
         public int Kills { get => kills; set => kills = value; }
         public int Deaths { get => deaths; set => deaths = value; }

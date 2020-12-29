@@ -1,13 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Make.MODEL
 {
@@ -16,6 +11,7 @@ namespace Make.MODEL
     /// </summary>
     public class Adventure
     {
+        #region --字段--
         private string name = "";//奇遇名
         private int attack;//攻击力
         private int cure;//治疗量
@@ -28,6 +24,9 @@ namespace Make.MODEL
         private string description="";//奇遇的描述（介绍）
         private string iD;
         private string cloud = "云端";
+        #endregion
+
+        #region --属性--
         public string ID { get => iD; set => iD = value; }
         public string Name
         { 
@@ -57,7 +56,9 @@ namespace Make.MODEL
         public int Cure { get => cure; set => cure = value; }
         public int Self_Mp { get => self_Mp; set => self_Mp = value; }
         public int Direct_Mp { get => direct_Mp; set => direct_Mp = value; }
+        #endregion
 
+        #region --方法--
         public void SetName(string adventure_Name)
         {
             name = adventure_Name;
@@ -95,6 +96,6 @@ namespace Make.MODEL
             GeneralControl.Adventures.Add(this);
             GeneralControl.Adventures_ID.Add(ID, this);
         }
-
+        #endregion
     }
 }

@@ -1,18 +1,17 @@
-﻿using Make.BLL;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Make.MODEL
 {
     public abstract class  Map
     {
+        #region --字段--
         private Pos[,] pos_Map;
+        #endregion
+
+        #region --属性--
         public Pos[,] Pos_Map { get => pos_Map; set => pos_Map = value; }
         public int Height { get; set; }
         public int Width { get; set; }
@@ -26,6 +25,9 @@ namespace Make.MODEL
         public AutoResetEvent State_Mp_Manager = new AutoResetEvent(false);
         public AutoResetEvent Map_Mp_Manager = new AutoResetEvent(false);
         public Dictionary<string,Player> Players = new Dictionary<string, Player>();
+        #endregion
+
+        #region --方法--
         public abstract void Action_Stage(Player player, string[] messages);
         public abstract void Resource_Init();
 
@@ -213,5 +215,6 @@ namespace Make.MODEL
                 Thread.Sleep(10000);
             }
         }
+        #endregion
     }
 }

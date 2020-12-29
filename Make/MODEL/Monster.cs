@@ -3,16 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Make.MODEL
 {
     public class Monster:Player
     {
+        #region --属性--
         Task AI_Analysis_Task;
+        #endregion
+
+        #region --方法--
         public void Attack(Player player)
         {
             Add_Enemy(player);
@@ -188,5 +189,6 @@ namespace Make.MODEL
                 Console.WriteLine(e.Message);
             }
         }
+        #endregion
     }
 }

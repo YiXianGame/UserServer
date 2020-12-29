@@ -2,15 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Make.MODEL
 {
     public class XianYu_Map : Map
     {
+        #region --方法--
         public XianYu_Map(int H,int W) : base(H, W)
         {
 
@@ -186,5 +183,6 @@ namespace Make.MODEL
             }
 
         }
+        #endregion
     }
 }

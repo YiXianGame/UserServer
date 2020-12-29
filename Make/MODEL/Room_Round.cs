@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Make.MODEL
 {
     public abstract class Room_Round:Room
     {
+        #region --方法--
         public Room_Round(int max,int min)
         {
             Max_Personals = max;
@@ -249,5 +246,6 @@ namespace Make.MODEL
             GeneralControl.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
             player.Init();
         }
+        #endregion
     }
 }

@@ -1,17 +1,12 @@
 ﻿using Make.BLL;
-using Material;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Make.MODEL
 {
     public class Solo_Room : Room_Round
     {
+        #region --方法--
         public Solo_Room(int max, int min) : base(max,min)
         { 
             Max_Personals = max;
@@ -268,5 +263,6 @@ namespace Make.MODEL
             }
             Raise_Stage();
         }
+        #endregion
     }
 }

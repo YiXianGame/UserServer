@@ -59,9 +59,8 @@
     <Compile Include="BLL\State_Helper.cs" />
     <Compile Include="BLL\UserHelper.cs" />
     <Compile Include="MODEL\Adventure.cs" />
-    <Compile Include="MODEL\EnumJsonConvert.cs" />
     <Compile Include="MODEL\EventArgsModel\DeathEventArgs.cs" />
-    <Compile Include="MODEL\MsgToken.cs" />
+    <Compile Include="MODEL\TCP_Async_Event\MsgToken.cs" />
     <Compile Include="MODEL\Room.cs" />
     <Compile Include="MODEL\TCP_Async_Event\TCP_Event.cs" />
     <Compile Include="MODEL\TCP_Async_Event\SocketAsyncEventArgsPool.cs" />
@@ -74,8 +73,8 @@
     <Compile Include="GeneralControl.cs" />
     <Compile Include="MODEL\Map.cs" />
     <Compile Include="MODEL\Monster.cs" />
-    <Compile Include="MODEL\Msg_Client.cs" />
-    <Compile Include="MODEL\Msg_Server.cs" />
+    <Compile Include="MODEL\TCP_Async_Event\Msg_Client.cs" />
+    <Compile Include="MODEL\TCP_Async_Event\Msg_Server.cs" />
     <Compile Include="MODEL\Player.cs" />
     <Compile Include="MODEL\Pos.cs" />
     <Compile Include="MODEL\Room_Round.cs" />
