@@ -8,6 +8,7 @@ using Make;
 using Make.MODEL.TCP_Async_Event;
 using Newtonsoft.Json;
 using Make.BLL;
+using System.Collections.Generic;
 
 namespace Pack
 {
@@ -45,7 +46,7 @@ namespace Pack
                     token.User = JsonConvert.DeserializeObject<User>(File.ReadAllText(filepath));
                     if (token.User.UserName.Equals(login_user.UserName) && token.User.Passwords.Equals(login_user.Passwords))
                     {
-                        token.Send(Enums.Msg_Server_Type.Information, "用户登录#登录成功", File.ReadAllText(filepath));
+                        token.Send(Enums.Msg_Server_Type.Information, "用户登录#登录成功", token.User);
                     }
                     else
                     {
@@ -61,11 +62,28 @@ namespace Pack
                     {
                         string json = JsonConvert.SerializeObject(new_user);
                         File.WriteAllText(filepath, json);
-                        token.Send(Enums.Msg_Server_Type.Information,"注册用户#注册成功",json);
+                        token.Send(Enums.Msg_Server_Type.Information,"注册用户#注册成功", new_user);
                     }   
                     else
                     {
                         token.Send(Enums.Msg_Server_Type.Information,"注册用户#用户已存在");
+                    }
+                    return;
+                }
+                else if (data.Length == 1 && data[0] == "用户更新" && msg_Client.Bound != null)
+                {
+                    User update_user = JsonConvert.DeserializeObject<User>(msg_Client.Bound);
+                    string filepath = GeneralControl.Directory + "\\用户\\" + update_user.UserName + ".json";
+                    if (!File.Exists(filepath))
+                    {
+                        token.Send(Enums.Msg_Server_Type.Information, "用户更新#用户不存在");
+                        return;
+                    }
+                    else
+                    {
+                        string json = JsonConvert.SerializeObject(update_user);
+                        File.WriteAllText(filepath, json);
+                        token.Send(Enums.Msg_Server_Type.Information, "用户更新#更新成功", update_user);
                     }
                     return;
                 }
@@ -97,7 +115,22 @@ namespace Pack
                 if (data.Length == 2 && data[0] == "获取技能卡" && DateTime.Parse(data[1]) != GeneralControl.Skill_Card_Date)
                 {
                     user.SendMessages("开始更新卡牌版本" + GeneralControl.Skill_Card_Date);
-                    user.SendMessages("获取技能卡", JsonConvert.SerializeObject(GeneralControl.Skill_Cards));
+                    List<SkillCardsModel> list = new List<SkillCardsModel>();
+                    //这里测试一下小组包粘包
+                    foreach (SkillCardsModel item in GeneralControl.Skill_Cards)
+                    {
+                        if(list.Count <= 1)
+                        {
+                            list.Add(item);
+                        }
+                        else
+                        {
+                            user.SendMessages("获取技能卡", JsonConvert.SerializeObject(list));
+                            list.Clear();
+                        }
+                    }
+                    //这条是测试大包数据发送
+                    //user.SendMessages("获取技能卡", JsonConvert.SerializeObject(GeneralControl.Skill_Cards));
                 }
                 else if (data.Length == 2 && data[0] == "获取奇遇" && DateTime.Parse(data[1]) != GeneralControl.Adventure_Date)
                 {

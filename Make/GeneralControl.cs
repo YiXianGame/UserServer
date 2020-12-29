@@ -23,7 +23,6 @@ namespace Make
         public static List<User> Queue_Solo = new List<User>();//单挑匹配队列
         public static List<User> Queue_Team = new List<User>();//团战匹配队列
         public static List<User> Queue_Battle_Royale = new List<User>();//大逃杀匹配队列
-        public static Socket Socket_Server;//TCP服务器
         /// <summary>
         /// 仙域地图
         /// </summary>

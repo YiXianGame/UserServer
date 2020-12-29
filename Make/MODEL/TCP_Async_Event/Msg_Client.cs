@@ -10,7 +10,7 @@ namespace Make.MODEL.TCP_Async_Event
         public Enums.Msg_Client_Type Type;
         public string Bound;
         public MsgToken Token;
-        public Msg_Client(MsgToken token,Enums.Msg_Client_Type type, string head, string bound = null)
+        public void Assign(MsgToken token,Enums.Msg_Client_Type type, string head, string bound = null)
         {
             this.Type = type;
             this.Head = head;

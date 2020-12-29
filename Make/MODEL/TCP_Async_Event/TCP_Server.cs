@@ -1,9 +1,4 @@
-using Make.MODEL;
-using Newtonsoft.Json;
 using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
 
 namespace Make.MODEL.TCP_Async_Event
 {
@@ -15,12 +10,13 @@ namespace Make.MODEL.TCP_Async_Event
         {
             try
             {
-                Int32 port = GetValue(args, 0, DEFAULT_PORT);
-                Int32 numConnections = GetValue(args, 1, DEFAULT_NUM_CONNECTIONS);
-                Int32 bufferSize = GetValue(args, 2, DEFAULT_BUFFER_SIZE);
+                string hostname = args[0];
+                Int32 port = GetValue(args, 1, DEFAULT_PORT);
+                Int32 numConnections = GetValue(args, 2, DEFAULT_NUM_CONNECTIONS);
+                Int32 bufferSize = GetValue(args, 3, DEFAULT_BUFFER_SIZE);
 
                 SocketListener sl = new SocketListener(numConnections, bufferSize);
-                sl.Start(port);
+                sl.Start(hostname,port);
 
                 Console.WriteLine("Server listening on port {0}. Press any key to terminate the server process...", port);
                 Console.Read();

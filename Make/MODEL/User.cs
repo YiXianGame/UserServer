@@ -120,7 +120,7 @@ namespace Make.MODEL
         #region --方法--
         public void SendMessages(String message, string bound = null)
         {
-            token.Send(Enums.Msg_Server_Type.Information, message, bound);
+            token.Send( Enums.Msg_Server_Type.Information,message, bound);
         }
 
         public void Save()

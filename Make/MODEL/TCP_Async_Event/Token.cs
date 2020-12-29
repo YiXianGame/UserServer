@@ -27,7 +27,12 @@ namespace Make.MODEL.TCP_Async_Event
 
         private MsgToken msgToken;
 
+        private SocketAsyncEventArgs sendEventArgs;
+
         private User user;
+
+        private Msg_Server msg_Server = new Msg_Server();
+
         /// <summary>
         /// Class constructor.
         /// </summary>
@@ -37,6 +42,9 @@ namespace Make.MODEL.TCP_Async_Event
         {
             this.connection = connection;
             this.sb = new StringBuilder(bufferSize);
+            this.sendEventArgs = new SocketAsyncEventArgs();
+            sendEventArgs.UserToken = this;
+            sendEventArgs.RemoteEndPoint = this.Connection.RemoteEndPoint;
         }
 
         /// <summary>
@@ -155,24 +163,20 @@ namespace Make.MODEL.TCP_Async_Event
         {
             if (this.Connection.Connected)
             {
-                // Create a buffer to send.
-                Msg_Server msg_Server = new Msg_Server(MsgToken, type, message, JsonConvert.SerializeObject(bound));
+                if (bound == null) msg_Server.Assign(MsgToken, type, message);
+                else if (bound.GetType() == typeof(string)) msg_Server.Assign(MsgToken, type, message,(string)bound);
+                else msg_Server.Assign(MsgToken, type, message, JsonConvert.SerializeObject(bound));
                 Byte[] sendBuffer = Convert_SendMsg(JsonConvert.SerializeObject(msg_Server));
                 // Prepare arguments for send/receive operation.
-                SocketAsyncEventArgs completeArgs = new SocketAsyncEventArgs();
-                completeArgs.SetBuffer(sendBuffer, 0, sendBuffer.Length);
-                completeArgs.UserToken = this.Connection;
-                completeArgs.RemoteEndPoint = this.Connection.RemoteEndPoint;
+                sendEventArgs.SetBuffer(sendBuffer, 0, sendBuffer.Length);
                 // Start sending asyncronally.
-                this.Connection.SendAsync(completeArgs);
+                this.Connection.SendAsync(sendEventArgs);
             }
             else
             {
                 throw new SocketException((Int32)SocketError.NotConnected);
             }
         }
-
-
         #region IDisposable Members
 
         /// <summary>

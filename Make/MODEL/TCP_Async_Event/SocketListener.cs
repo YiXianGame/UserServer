@@ -74,7 +74,6 @@ namespace Make.MODEL.TCP_Async_Event
                 SocketAsyncEventArgs readWriteEventArg = new SocketAsyncEventArgs();
                 readWriteEventArg.Completed += new EventHandler<SocketAsyncEventArgs>(OnIOCompleted);
                 readWriteEventArg.SetBuffer(new Byte[this.bufferSize], 0, this.bufferSize);
-
                 // Add SocketAsyncEventArg to the pool.
                 this.readWritePool.Push(readWriteEventArg);
             }
@@ -245,10 +244,10 @@ namespace Make.MODEL.TCP_Async_Event
         /// Starts the server listening for incoming connection requests.
         /// </summary>
         /// <param name="port">Port where the server will listen for connection requests.</param>
-        internal void Start(Int32 port) 
+        internal void Start(string hostname,Int32 port) 
         {
             // Get host related information.
-            IPAddress[] addressList = Dns.GetHostEntry(Environment.MachineName).AddressList;
+            IPAddress[] addressList = Dns.GetHostEntry(hostname).AddressList;
 
             // Get endpoint for the listener.
             IPEndPoint localEndPoint = new IPEndPoint(addressList[addressList.Length - 1], port);
