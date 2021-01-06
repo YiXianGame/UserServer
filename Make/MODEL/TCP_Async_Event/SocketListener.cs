@@ -6,47 +6,21 @@ using System.Threading;
 
 namespace Make.MODEL.TCP_Async_Event
 {
-    /// <summary>
-    /// Based on example from http://msdn2.microsoft.com/en-us/library/system.net.sockets.socketasynceventargs.aspx
-    /// Implements the connection logic for the socket server.  
-    /// After accepting a connection, all data read from the client is sent back. 
-    /// The read and echo back to the client pattern is continued until the client disconnects.
-    /// </summary>
+
     public sealed class SocketListener : IDisposable
     {
-        /// <summary>
-        /// The socket used to listen for incoming connection requests.
-        /// </summary>
         private Socket listenSocket;
 
-        /// <summary>
-        /// Mutex to synchronize server execution.
-        /// </summary>
         private static Mutex mutex = new Mutex(false);
 
-        /// <summary>
-        /// Buffer size to use for each socket I/O operation.
-        /// </summary>
         private int bufferSize;
 
-        /// <summary>
-        /// The total number of clients connected to the server.
-        /// </summary>
         private int numConnectedSockets;
 
-        /// <summary>
-        /// the maximum number of connections the sample is designed to handle simultaneously.
-        /// </summary>
         private int numConnections;
 
-        /// <summary>
-        /// Pool of reusable SocketAsyncEventArgs objects for write, read and accept socket operations.
-        /// </summary>
         private SocketAsyncEventArgsPool readWritePool;
 
-        /// <summary>
-        /// Controls the total number of clients connected to the server.
-        /// </summary>
         private Semaphore semaphoreAcceptedClients;
 
         AutoResetEvent keepalive = new AutoResetEvent(false);
@@ -54,13 +28,6 @@ namespace Make.MODEL.TCP_Async_Event
         string hostname;
 
         int port;
-        /// <summary>
-        /// Create an uninitialized server instance.  
-        /// To start the server listening for connection requests
-        /// call the Init method followed by Start method.
-        /// </summary>
-        /// <param name="numConnections">Maximum number of connections to be handled simultaneously.</param>
-        /// <param name="bufferSize">Buffer size to use for each socket I/O operation.</param>
         public SocketListener(string hostname,string port,int numConnections, int bufferSize)
         {
             this.numConnectedSockets = 0;
@@ -71,7 +38,7 @@ namespace Make.MODEL.TCP_Async_Event
             this.readWritePool = new SocketAsyncEventArgsPool(numConnections);
             this.semaphoreAcceptedClients = new Semaphore(numConnections, numConnections);
 
-            // Preallocate pool of SocketAsyncEventArgs objects.
+
             for (int i = 0; i < this.numConnections; i++)
             {
                 SocketAsyncEventArgs readWriteEventArg = new SocketAsyncEventArgs();
@@ -81,31 +48,28 @@ namespace Make.MODEL.TCP_Async_Event
                 this.readWritePool.Push(readWriteEventArg);
             }
 
-            // Get host related information.
+
             IPAddress[] addressList = Dns.GetHostEntry(hostname).AddressList;
 
-            // Get endpoint for the listener.
+
             IPEndPoint localEndPoint = new IPEndPoint(addressList[addressList.Length - 1],int.Parse(port));
 
-            // Create the socket which listens for incoming connections.
+
             this.listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             this.listenSocket.ReceiveBufferSize = this.bufferSize;
             this.listenSocket.SendBufferSize = this.bufferSize;
             if (localEndPoint.AddressFamily == AddressFamily.InterNetworkV6)
             {
-                // Set dual-mode (IPv4 & IPv6) for the socket listener.
-                // 27 is equivalent to IPV6_V6ONLY socket option in the winsock snippet below,
-                // based on http://blogs.msdn.com/wndp/archive/2006/10/24/creating-ip-agnostic-applications-part-2-dual-mode-sockets.aspx
                 this.listenSocket.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)27, false);
                 this.listenSocket.Bind(new IPEndPoint(IPAddress.IPv6Any, localEndPoint.Port));
             }
             else
             {
-                // Associate the socket with the local endpoint.
+
                 this.listenSocket.Bind(localEndPoint);
             }
 
-            // Start the server.
+
             this.listenSocket.Listen(this.numConnections);
 
 
@@ -120,35 +84,23 @@ namespace Make.MODEL.TCP_Async_Event
             }
             catch
             {
-                // Throw if client has closed, so it is not necessary to catch.
+                
             }
             e.AcceptSocket.Close();
             e.AcceptSocket.Dispose();
             e.AcceptSocket = null;
-            // Decrement the counter keeping track of the total number of clients connected to the server.
+
             this.semaphoreAcceptedClients.Release();
             Interlocked.Decrement(ref this.numConnectedSockets);
-            // Free the SocketAsyncEventArg so they can be reused by another client.
+
             this.readWritePool.Push(e);
             Console.WriteLine("A client has been disconnected from the server. There are {0} clients connected to the server", this.numConnectedSockets);
         }
-
-        /// <summary>
-        /// Callback method associated with Socket.AcceptAsync 
-        /// operations and is invoked when an accept operation is complete.
-        /// </summary>
-        /// <param name="sender">Object who raised the event.</param>
-        /// <param name="e">SocketAsyncEventArg associated with the completed accept operation.</param>
         private void OnAcceptCompleted(object sender, SocketAsyncEventArgs e)
         {
             this.ProcessAccept(e);
         }
 
-
-        /// <summary>
-        /// Process the accept for the socket listener.
-        /// </summary>
-        /// <param name="e">SocketAsyncEventArg associated with the completed accept operation.</param>
         private void ProcessAccept(SocketAsyncEventArgs e)
         {
             Socket s = e.AcceptSocket;
@@ -194,12 +146,6 @@ namespace Make.MODEL.TCP_Async_Event
             }
         }
 
-
-        /// <summary>
-        /// Begins an operation to accept a connection request from the client.
-        /// </summary>
-        /// <param name="acceptEventArg">The context object to use when issuing 
-        /// the accept operation on the server's listening socket.</param>
         public void StartAccept(SocketAsyncEventArgs acceptEventArg)
         {
             Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:{hostname}:{port}线程任务已经开始运行");
@@ -233,13 +179,6 @@ namespace Make.MODEL.TCP_Async_Event
             }
         }
 
-
-        /// <summary>
-        /// This method is invoked when an asynchronous receive operation completes. 
-        /// If the remote host closed the connection, then the socket is closed.  
-        /// If data was received then the data is echoed back to the client.
-        /// </summary>
-        /// <param name="e">SocketAsyncEventArg associated with the completed receive operation.</param>
         private void ProcessReceive(SocketAsyncEventArgs e)
         {
             // Check if the remote host closed the connection.
@@ -269,9 +208,6 @@ namespace Make.MODEL.TCP_Async_Event
         {
             this.ProcessReceive(e);
         }
-        /// <summary>
-        /// Stop the server.
-        /// </summary>
         public void Stop()
         {
             this.listenSocket.Close();

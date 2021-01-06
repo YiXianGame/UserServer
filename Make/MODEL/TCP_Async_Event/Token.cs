@@ -12,9 +12,6 @@ using System.Reflection;
 
 namespace Make.MODEL.TCP_Async_Event
 {
-    /// <summary>
-    /// Token for use with SocketAsyncEventArgs.
-    /// </summary>
     public sealed class Token
     {
 
@@ -37,11 +34,6 @@ namespace Make.MODEL.TCP_Async_Event
         private byte[] head = new byte[headsize + 1];//留一个字节表示头包数据已接收大小
         private byte[] pattern = new byte[patternsize];
         private byte[] future = new byte[futuresize];
-        /// <summary>
-        /// Class constructor.
-        /// </summary>
-        /// <param name="connection">Socket to accept incoming data.</param>
-        /// <param name="bufferSize">Buffer size for accepted data.</param>
         public Token(int bufferSize,string hostname,string port)
         {
             this.sb = new StringBuilder(bufferSize);
@@ -54,9 +46,6 @@ namespace Make.MODEL.TCP_Async_Event
             sb.Length = 0;
             head[0] = 0;
         }
-        /// <summary>
-        /// Accept socket.
-        /// </summary>
         public Socket Connection
         {
             get { return this.connection; }
@@ -65,27 +54,14 @@ namespace Make.MODEL.TCP_Async_Event
 
         public User User { get => user; set => user = value; }
 
-        /// <summary>
-        /// Process data received from the client.
-        /// </summary>
-        /// <param name="args">SocketAsyncEventArgs used in the operation.</param>
         public string ProcessData(SocketAsyncEventArgs args)
         {
-            // Get the message received from the client.
             String received = this.sb.ToString();
-
-            //TODO Use message received to perform a specific operation.
-
-            // Clear StringBuffer, so it can receive more data from a keep-alive connection client.
             sb.Length = 0;
             needRemain = 0;
             return received;
         }
 
-        /// <summary>
-        /// Set data received from the client.
-        /// </summary>
-        /// <param name="args">SocketAsyncEventArgs used in the operation.</param>
         public void SetData(SocketAsyncEventArgs args)
         {
             int count = args.BytesTransferred;
