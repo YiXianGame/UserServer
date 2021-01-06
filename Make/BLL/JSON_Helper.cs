@@ -1,10 +1,5 @@
 ﻿using Make.MODEL;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Make.BLL
 {
@@ -34,8 +29,8 @@ namespace Make.BLL
                 try
                 {
                     string state_temp = "";
-                    if (skillCard.Effect_States.Count > 0) state_temp = " 状态:";
-                    foreach (State state in skillCard.Effect_States)
+                    if (skillCard.Buff.Count > 0) state_temp = " 状态:";
+                    foreach (State state in skillCard.Buff)
                     {
                         state_temp += "（" + state.Name + ")能力:" + state.Effect_mp + " 回合:" + state.Duration_Round;
                     }
@@ -43,7 +38,7 @@ namespace Make.BLL
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message);
+                    
                 }         
             }
             msg += $"{{\"action\": \"\",\"name\": \"您当前仙气:{player.Mp}\"}}],\"emphasis_keyword\": \"\"}}}},\"text\": \"\",\"sourceAd\": \"\"}}";

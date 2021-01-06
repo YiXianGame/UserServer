@@ -40,25 +40,11 @@ namespace Make.BLL
         }
         public void Skill_Cards_Load()
         {
-            string filepath = GeneralControl.Directory + "\\技能卡";
-            DirectoryInfo root = new DirectoryInfo(filepath);
-            foreach (FileInfo file in root.GetFiles())
-            {
-                string json = File.ReadAllText(file.FullName);
-                SkillCardsModel skillCardsModel = JsonConvert.DeserializeObject<SkillCardsModel>(json);
-                skillCardsModel.Add_To_General(); 
-            }
+
         }
         public void Adventures_Load()
         {
-            string filepath = GeneralControl.Directory + "\\奇遇";
-            DirectoryInfo root = new DirectoryInfo(filepath);
-            foreach (FileInfo file in root.GetFiles())
-            {
-                string json = File.ReadAllText(file.FullName);
-                Adventure adventure= JsonConvert.DeserializeObject<Adventure>(json);
-                adventure.Add_To_General();
-            }
+
         }
     }
 }

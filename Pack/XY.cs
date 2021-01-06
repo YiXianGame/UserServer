@@ -9,12 +9,16 @@ using Make.MODEL.TCP_Async_Event;
 using Newtonsoft.Json;
 using Make.BLL;
 using System.Collections.Generic;
+using Make.MODEL.RPC.Request;
 
 namespace Pack
 {
     //主流工作区
     public static class XY
     {
+
+        //决定改成RPC，工程比较大,先注释掉暂存起来.
+        /*
         public static void TCP_Event_Receive(Token token, Msg_Client msg_Client)
         {
             if (msg_Client.Type == Enums.Msg_Client_Type.Game) Receive_Game(token, msg_Client);
@@ -307,7 +311,6 @@ namespace Pack
                         }
                         else user.SendMessages("充值仙域币#失败#玩家不存在");
                     }
-                    /*
                     else if(GeneralControl.QQ_Sockets.TryGetValue(socket,out long QQ))
                     {
                         if(QQ == frompersonal)
@@ -328,7 +331,6 @@ namespace Pack
                         }
                     }
                     else user.SendMessages("您的权限不足,仙域卡牌运营者以及仙域开发者具有此权限");
-                    */
                 }
                 //[抽卡] 长度:1 参一:Draw_Card 作用:抽取一张卡牌
                 else if (data.Length == 1 && data[0] == GeneralControl.Menu_Command_Class.Instance.Draw_Card)
@@ -815,7 +817,6 @@ namespace Pack
                 }
             }
         }
-        /*
         /// <summary>
         /// 管理员操作
         /// </summary>
@@ -885,3 +886,4 @@ namespace Pack
         */
     }
 }
+

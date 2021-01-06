@@ -30,7 +30,7 @@ namespace Make.BLL
                     State temp = room_player.State_Is_Exist("反弹");
                     if (temp!=null)
                     {
-                        array = (from SkillCard item in array  where (item.Is_Self == true||item.Need_Mp > temp.Effect_mp) select item).ToList();
+                        array = (from SkillCard item in array  where (item.Need_Mp > temp.Effect_mp) select item).ToList();
                     }
                     temp = room_player.State_Is_Exist("反制");
                     if (temp != null)
@@ -61,7 +61,8 @@ namespace Make.BLL
                     SkillCard temp = (SkillCard)array[random.Next(0, array.Count - 1)];
                     player.Mp -= temp.Need_Mp;
                     player.Action_Skill=temp.Clone(player);
-                    if (player.Action_Skill.Is_Self)
+                    /*
+                    if (player.Action_Skill.Is_Benefit)
                     {
                         foreach (Player direct in player.Friends)
                         {
@@ -82,11 +83,12 @@ namespace Make.BLL
                             player.Action_Skill.Enemies.Add(direct);
                         }
                     }
+
                     //先赋予状态
                     foreach (State state in player.Action_Skill.Effect_States)
                     {
                         state.Expire_Round = player.Room.Round + state.Duration_Round - 1;
-                        if (state.Is_Self)
+                        if (state.Is_Benefit)
                         {
                             foreach (Player friend in player.Action_Skill.Friends)
                             {
@@ -106,6 +108,7 @@ namespace Make.BLL
                         }
                     }
                     player.Action_Skill.Release(player);
+                    */
                 }
             }
         }
@@ -116,6 +119,7 @@ namespace Make.BLL
         /// <param name="enemies">敌人</param>
         public static void AI_Skill_Analysis_Immediate(Player player,List<Player> enemies)
         {
+            /*
             Random random = new Random();
             List<SkillCard> array = (from SkillCard item in player.Hand_SkillCards.Values where item.Need_Mp <= player.Mp select item).ToList();
             List<Player> attack = new List<Player>();
@@ -125,7 +129,7 @@ namespace Make.BLL
                 State temp = enemy.State_Is_Exist("反弹");
                 if (temp != null)
                 {
-                    array = (from SkillCard item in array where (item.Is_Self == true || item.Need_Mp > temp.Effect_mp) select item).ToList();
+                    array = (from SkillCard item in array where (item.Is_Benefit == true || item.Need_Mp > temp.Effect_mp) select item).ToList();
                 }
                 temp = enemy.State_Is_Exist("反制");
                 if (temp != null)
@@ -177,6 +181,7 @@ namespace Make.BLL
                 }
                 player.Action_Skill.Release(player);
             }
+            */
         }
         /// <summary>
         /// 生成一个新的机器人
@@ -187,7 +192,7 @@ namespace Make.BLL
             RandomChinese randomChinese = new RandomChinese();
             Player player = new Player();
             player.NickName = randomChinese.GetRandomChinese(3);
-            player.UserName = player.GetHashCode().ToString();
+            player.ID = (ulong)player.GetHashCode();
             player.Is_Robot = true;
             player.Init();
             if (GeneralControl.Skill_Card_ID_Skllcard.Count > 0)
@@ -200,7 +205,6 @@ namespace Make.BLL
                     for (int i = 0; i < cnt; i++)
                     {
                         SkillCard skillCard = skillCards[random.Next(0, skillCards.Length - 1)].Clone();
-                        skillCard.Amount = 1;
                         player.Hand_Skill_Add(skillCard);
                     }
                 }
@@ -217,7 +221,7 @@ namespace Make.BLL
             Monster player = new Monster();
             player.Init();
             player.NickName = randomChinese.GetRandomChinese(3);
-            player.UserName = player.GetHashCode().ToString();
+            player.ID = (ulong)player.GetHashCode();
             player.Is_Robot = true;
             if (GeneralControl.Skill_Card_ID_Skllcard.Count > 0)
             {
@@ -229,7 +233,6 @@ namespace Make.BLL
                     for (int i = 0; i < cnt; i++)
                     {
                         SkillCard skillCard = skillCards[random.Next(0, skillCards.Length - 1)].Clone();
-                        skillCard.Amount = 1;
                         player.Hand_Skill_Add(skillCard);
                     }
                 }

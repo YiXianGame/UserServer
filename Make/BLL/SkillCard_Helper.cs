@@ -1,11 +1,7 @@
 ﻿using Make.MODEL;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Make.BLL
 {
@@ -26,7 +22,6 @@ namespace Make.BLL
                 for (int i = 0; i < cnt; i++)
                 {
                     SkillCard skillCard = skillCards[random.Next(0, skillCards.Length - 1)].Clone();
-                    skillCard.Amount = 1;
                     temp.Add(skillCard);
                 }
                 return temp;
@@ -43,20 +38,13 @@ namespace Make.BLL
                 for (int i = 0; i < cnt; i++)
                 {
                     SkillCard skillCard = skillCards[random.Next(0, skillCards.Length - 1)].Clone();
-                    skillCard.Amount = num;
                     temp.Add(skillCard);
                 }
                 return temp;
             }
             return null;
         }
-        public static SkillCardsModel Get_SkillCardsModel_ID(string ID)
-        {
-            string filepath = Material.App.directory + "\\技能卡\\" + ID + ".json";
-            if (!File.Exists(filepath)) return null;
-            string json = (File.ReadAllText(filepath));
-            return JsonConvert.DeserializeObject<SkillCardsModel>(json);
-        }
+
         /// <summary>
         /// 查找该技能卡并返回该卡的一个实体(已经克隆过的)
         /// </summary>

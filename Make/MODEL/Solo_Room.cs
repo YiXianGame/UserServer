@@ -170,7 +170,7 @@ namespace Make.MODEL
             //释放技能
             foreach(Player player in Players)
             {
-                if(player.Action_Skill!=null) player.Action_Skill.Release(player);
+                //if(player.Action_Skill!=null) player.Action_Skill.Release(player);
             }
             SendMessages(universal_Informations);
 
@@ -181,11 +181,12 @@ namespace Make.MODEL
                 {
                     if (state.Name == "恒血")
                     {
-                        player.Add_Hp(Convert.ToInt32(state.Effect_mp));
+                        //RPC更新期间这里有改动，但不清楚为什么要改动 之前是Convert，暂时留个记录.
+                        player.Add_Hp(state.Effect_mp);
                     }
                     else if (state.Name == "恒气")
                     {
-                        player.Add_Mp(Convert.ToInt32(state.Effect_mp));
+                        player.Add_Mp(state.Effect_mp);
                     }
                 }
             }
@@ -201,7 +202,7 @@ namespace Make.MODEL
                     {
                         foreach (Player player in Players)
                         {
-                            User user = User.Load(player.UserName);
+                            User user = User.Load(player.ID);
                             user.Settle(Round, Round * 2);
                             user.Save();
                         }
@@ -210,19 +211,19 @@ namespace Make.MODEL
                     {
                         if ((Players[1] as Player).Is_Death)
                         {
-                            User user = User.Load(Players[0].UserName);
+                            User user = User.Load(Players[0].ID);
                             user.Settle(Round * 2, Round * 2);
                             user.Save();
-                            user = User.Load(Players[1].UserName);
+                            user = User.Load(Players[1].ID);
                             user.Settle(1, 1);
                             user.Save();
                         }
                         else
                         {
-                            User user = User.Load(Players[1].UserName);
+                            User user = User.Load(Players[1].ID);
                             user.Settle(Round * 2, Round * 2);
                             user.Save();
-                            user = User.Load(Players[0].UserName);
+                            user = User.Load(Players[0].ID);
                             user.Settle(1, 1);
                             user.Save();
                         }
@@ -233,7 +234,7 @@ namespace Make.MODEL
             }
             else
             {
-                User user = User.Load((Players.First() as Player).UserName);
+                User user = User.Load((Players.First() as Player).ID);
                 user.Settle(Round * 2, Round * 2);
                 user.Save();
                 Clean();

@@ -56,20 +56,17 @@ namespace Make.MODEL
                     }
                     player.Mp -= skillCard.Need_Mp;
                     Random random = new Random();
-                    while (skillCard.Level < GeneralControl.MaxLevel)
+                    if (random.Next(1, 100) <= skillCard.Probability)
                     {
-                        if (random.Next(1, 100) <= skillCard.Probability)
-                        {
-                            skillCard = SkillCard_Helper.Get_SkillCardsModel_ID(skillCard.Father_ID).SkillCards[skillCard.Level + 1];
-                            player.Send("您释放的技能在命运的帮助下提升为更高品质-" + skillCard.Name);
-                        }
-                        else break;
+                        //skillCard = SkillCard_Helper.Get_SkillCardsModel_ID(skillCard.Father_ID).SkillCards[skillCard.Level + 1];
+                        player.Send("您释放的技能在命运的帮助下提升为更高品质-" + skillCard.Name);
                     }
                     player.Action_Skill = skillCard.Clone(player);
                     player.Send("【" + player.Title + "】" + player.NickName + "释放了技能卡");
                     if(messages.Length == 1)
                     {
-                        if (player.Action_Skill.Is_Self)
+                        /*
+                        if (player.Action_Skill.Is_Benefit)
                         {
                             if (player.Action_Skill.Friends.Count < player.Action_Skill.Auxiliary_Number) player.Action_Skill.Friends.Add(player);
                             foreach (Player friend in player.Friends)
@@ -92,6 +89,7 @@ namespace Make.MODEL
                                 else break;
                             }
                         }
+                        */
                     }
                     else
                     {
@@ -119,7 +117,7 @@ namespace Make.MODEL
                             }
                         }
                     }
-                    player.Action_Skill.Release(player);
+                    //player.Action_Skill.Release(player);
                 }
                 else player.Send("您的仙气不足");
             }
@@ -147,11 +145,11 @@ namespace Make.MODEL
                 {
                     List<SkillCard> skillCards = new List<SkillCard>();
                     skillCards.AddRange(SkillCard_Helper.Get_Random(1, random.Next(1, 3)));
-                    if(skillCards.FirstOrDefault()!=null && skillCards.FirstOrDefault().Level>=3 && random.Next(1, 100) <= 30)
+                    if(skillCards.FirstOrDefault()!=null && random.Next(1, 100) <= 30)
                     {
                         continue;
                     }
-                    Console.WriteLine(skillCards.FirstOrDefault().Name + ":" + skillCards.FirstOrDefault().Level);
+                    Console.WriteLine(skillCards.FirstOrDefault().Name + ":" + skillCards.FirstOrDefault());
                     pos_Array[random.Next(0, pos_Array.Length - 1)].Add(skillCards);
                     Current_Resources_SkillCard++;
                 }

@@ -152,6 +152,7 @@ namespace Make.MODEL
             //检测是否全部出招
             if ((from Player item in Players where item.Action == false select item).Any() == false) Result_Stage();
         }
+
         /// <summary>
         /// 结算阶段
         /// </summary>
@@ -182,11 +183,12 @@ namespace Make.MODEL
                 {
                     if (state.Name == "恒血")
                     {
-                        player.Add_Hp(Convert.ToInt32(state.Effect_mp));
+                        //同另一个RPC大改动注释
+                        player.Add_Hp(state.Effect_mp);
                     }
                     else if (state.Name == "恒气")
                     {
-                        player.Add_Mp(Convert.ToInt32(state.Effect_mp));
+                        player.Add_Mp(state.Effect_mp);
                     }
                 }
             }
@@ -195,7 +197,7 @@ namespace Make.MODEL
             //释放技能
             foreach (Player player in Players)
             {
-                if (player.Action_Skill != null) player.Action_Skill.Release(player);
+                //if (player.Action_Skill != null) player.Action_Skill.Release(player);
             }
             SendMessages(universal_Informations);
 
@@ -208,7 +210,7 @@ namespace Make.MODEL
                 {
                     foreach(Player player in Players)
                     {
-                        User user = User.Load(player.UserName);
+                        User user = User.Load(player.ID);
                         user.Settle(Round, Round * 2);
                         user.Save();
                     }
@@ -217,7 +219,7 @@ namespace Make.MODEL
                 {
                     foreach(Player player in (from Player item in Players where item.Team == 0 select item))
                     {
-                        User user = User.Load(player.UserName);
+                        User user = User.Load(player.ID);
                         user.Settle(Round, Round * 2);
                         user.Save();
                     }
@@ -225,7 +227,7 @@ namespace Make.MODEL
                     universal_Informations = "";
                     foreach (Player player in (from Player item in Players where item.Team == 1 select item))
                     {
-                        User user = User.Load(player.UserName);
+                        User user = User.Load(player.ID);
                         user.Settle(1, 1);
                         user.Save();
                     }
@@ -235,7 +237,7 @@ namespace Make.MODEL
                 {
                     foreach (Player player in (from Player item in Players where item.Team == 0 select item))
                     {
-                        User user = User.Load(player.UserName);
+                        User user = User.Load(player.ID);
                         user.Settle(1,1);
                         user.Save();
                     }
@@ -243,7 +245,7 @@ namespace Make.MODEL
                     universal_Informations = "";
                     foreach (Player player in (from Player item in Players where item.Team == 1 select item))
                     {
-                        User user = User.Load(player.UserName);
+                        User user = User.Load(player.ID);
                         user.Settle(Round, Round * 2);
                         user.Save();
                     }

@@ -13,8 +13,6 @@ namespace Make.MODEL
     {
         #region --字段--
         private string name="";//技能卡名称
-        private int level;//技能卡等级
-        private string father_ID;//父卡类
         private string description="";//技能介绍
         private int need_Mp;//所需能量
         private int probability;//概率
@@ -22,24 +20,21 @@ namespace Make.MODEL
         private int cure;//治疗量
         private int self_Mp;//自我能量
         private int direct_Mp;//指向能量
-        private ObservableCollection<State> effect_States=new ObservableCollection<State>();//状态
+        private ObservableCollection<State> buff=new ObservableCollection<State>();//状态
         private List<Player> enemies = new List<Player>();//指向
         private List<Player> friends = new List<Player>();//指向
-        private string owner;
+        private ulong author_id;
+        private ulong owner_id;
         private bool is_Magic;//是否魔法
         private bool is_Physics;//是否物理
-        private bool is_Self;//是否释放于自己
         private bool is_Cure;//是否治疗
         private bool is_Attack;//是否攻击
         private bool is_Eternal;//是否永恒
-        private bool is_Basic;//是否基础卡组
         private int state=1;//技能卡状态(0 禁用 1 开启 2售卖)
-        private string messages="";//技能反馈
-        private int amount=1;//技能卡数量
         private DateTime date_Latest;
         private int attack_Number = 1;
         private int auxiliary_Number = 1;
-        private string iD;
+        private ulong iD;
         #endregion
 
         #region --属性--
@@ -61,48 +56,37 @@ namespace Make.MODEL
                 else return;
             }
         }
-        public bool Is_Basic { get => is_Basic; set => is_Basic = value; }
-        public int Level { get => level; set => level = value; }
-        public int Amount { get => amount; set => amount = value; }
         public int Need_Mp { get => need_Mp; set => need_Mp = value; }
         public int Probability { get => probability; set => probability = value; }
         public int Attack { get => attack; set => attack = value; }
         public int Cure { get => cure; set => cure = value; }
         public int Self_Mp { get => self_Mp; set => self_Mp = value; }
         public int Direct_Mp { get => direct_Mp; set => direct_Mp = value; }
-        public ObservableCollection<State> Effect_States { get => effect_States; set => effect_States = value;}
+        public ObservableCollection<State> Buff { get => buff; set => buff = value;}
         public bool Is_Magic { get => is_Magic; set => is_Magic = value; }
-        public string Messages { get => messages; set => messages = value; }
         public int State { get => state; set => state = value; }
         public string Description { get => description; set => description = value; }
         public int Attack_Number { get => attack_Number; set => attack_Number = value; }
         public int Auxiliary_Number { get => auxiliary_Number; set => auxiliary_Number = value; }
-        public bool Is_Self { get => is_Self; set => is_Self = value; }
         [JsonIgnore]
         public List<Player> Enemies { get => enemies; set => enemies = value; }
-        public string Owner { get => owner; set => owner = value; }
+        public ulong Owner_ID { get => owner_id; set => owner_id = value; }
         public bool Is_Cure { get => is_Cure; set => is_Cure = value; }
         public bool Is_Attack { get => is_Attack; set => is_Attack = value; }
         public bool Is_Eternal { get => is_Eternal; set => is_Eternal = value; }
         public bool Is_Physics { get => is_Physics; set => is_Physics = value; }
-        public string Father_ID { get => father_ID; set => father_ID = value; }
         [JsonIgnore]
         public DateTime Date_Latest { get => date_Latest; set => date_Latest = value; }
-        public string ID { get => iD; set => iD = value; }
+        public ulong ID { get => iD; set => iD = value; }
         [JsonIgnore]
         public List<Player> Friends { get => friends; set => friends = value; }
+        public ulong Author_ID { get => author_id; set => author_id = value; }
         #endregion
 
         #region --方法--
         public SkillCard()
         {
-            string temp_id;
-            do
-            {
-                temp_id = Guid.NewGuid().ToString();
-            }
-            while (File.Exists(GeneralControl.Directory + "\\技能卡\\" + temp_id + ".json"));
-            ID = temp_id;
+
         }
         public void Assign(SkillCard skillCard)
         {
@@ -155,8 +139,8 @@ namespace Make.MODEL
         public SkillCard Clone(Player player)
         {
             SkillCard skillCard= (SkillCard)MemberwiseClone();
-            skillCard.effect_States = new ObservableCollection<State>(effect_States.ToArray());
-            skillCard.owner = player.UserName;
+            skillCard.buff = new ObservableCollection<State>(buff.ToArray());
+            skillCard.owner_id = player.ID;
             skillCard.enemies = new List<Player>(enemies.ToArray());
             skillCard.friends = new List<Player>(friends.ToArray());
             return skillCard;
@@ -166,11 +150,11 @@ namespace Make.MODEL
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public SkillCard Clone(string id)
+        public SkillCard Clone(ulong id)
         {
             SkillCard skillCard = (SkillCard)MemberwiseClone();
-            skillCard.effect_States = new ObservableCollection<State>(effect_States.ToArray());
-            skillCard.owner = id;
+            skillCard.buff = new ObservableCollection<State>(buff.ToArray());
+            skillCard.owner_id = id;
             skillCard.enemies = new List<Player>(enemies.ToArray());
             skillCard.friends = new List<Player>(friends.ToArray());
             return skillCard;
@@ -182,25 +166,18 @@ namespace Make.MODEL
         public SkillCard Clone()
         {
             SkillCard skillCard = (SkillCard)MemberwiseClone();
-            skillCard.Effect_States = new ObservableCollection<State>();
+            skillCard.Buff = new ObservableCollection<State>();
             skillCard.enemies = new List<Player>();
             skillCard.friends = new List<Player>();
-            foreach (State item in Effect_States)
+            foreach (State item in Buff)
             {
-                skillCard.Effect_States.Add(item.Clone());
+                skillCard.Buff.Add(item.Clone());
             }
             skillCard.enemies = new List<Player>(enemies.ToArray());
             skillCard.friends = new List<Player>(friends.ToArray());
             return skillCard;
         }
-        /// <summary>
-        /// 返回这张卡的父亲级SkillCard_Model
-        /// </summary>
-        /// <returns></returns>
-        public SkillCardsModel Find_Father()
-        {
-            return (from SkillCardsModel item in GeneralControl.Skill_Cards where item.ID == Father_ID select item).FirstOrDefault();
-        }
+
         /// <summary>
         /// 该mp作用效果之下的状态是否存在
         /// </summary>
@@ -209,7 +186,7 @@ namespace Make.MODEL
         /// <returns></returns>
         public State State_Is_Exist(string state_Name, int mp)
         {
-            foreach (State state in Effect_States)
+            foreach (State state in Buff)
             {
                 if (state.Name == state_Name && state.Effect_mp >= mp) return state;
             }
@@ -222,12 +199,13 @@ namespace Make.MODEL
         /// <returns>返回该状态的有效范围,不存在返回-1</returns>
         public int State_Is_Exist(string state_Name)
         {
-            foreach (State state in Effect_States)
+            foreach (State state in Buff)
             {
                 if (state.Name == state_Name) return state.Effect_mp;
             }
             return -1;
         }
+        /*
         /// <summary>
         /// 释放技能
         /// </summary>
@@ -235,7 +213,8 @@ namespace Make.MODEL
         public void Release(Player player)
         {
             string total_messages = "";
-            foreach(Player enemy in Enemies)
+            string messages = "";
+            foreach (Player enemy in Enemies)
             {
                 if(!player.Map.Players.ContainsKey(enemy.UserName))
                 {
@@ -246,7 +225,7 @@ namespace Make.MODEL
                 if (player.Distance(enemy) <= 20)
                 {
                     enemy.Leisure = DateTime.Now.AddMinutes(5);
-                    string messages = "";
+                    messages = "";
                     if (!Is_Eternal)
                     {
                         //判断对方是否有格挡
@@ -255,7 +234,7 @@ namespace Make.MODEL
                             messages += player.NickName + "的【" + Name + "】被" + enemy.NickName + "格挡！\n";
                             foreach (State item in Effect_States)
                             {
-                                if (!item.Is_Self) enemy.States.Remove(item);
+                                if (!item.Is_Benefit) enemy.States.Remove(item);
                             }//无法释放技能，删掉之前赋予的状态
                             total_messages += messages;
                             continue;
@@ -266,7 +245,7 @@ namespace Make.MODEL
                             messages += player.NickName + "的【" + Name + "】被" + enemy.NickName + "反制！\n";
                             foreach (State item in Effect_States)
                             {
-                                if (!item.Is_Self) enemy.States.Remove(item);
+                                if (!item.Is_Benefit) enemy.States.Remove(item);
                             }//无法释放技能，删掉之前赋予的状态
                             total_messages += messages;
                             continue;
@@ -279,7 +258,7 @@ namespace Make.MODEL
                                 messages += player.NickName + "的【" + player.Action_Skill.Name + "】被" + enemy.NickName + "反弹！\n";
                                 foreach (State item in Effect_States)
                                 {
-                                    if (!item.Is_Self) enemy.States.Remove(item);
+                                    if (!item.Is_Benefit) enemy.States.Remove(item);
                                 }//无法释放技能，删掉之前赋予的状态
                                 SkillCard return_Skill = player.Action_Skill.Clone();
                                 //智能选择
@@ -327,7 +306,7 @@ namespace Make.MODEL
                     {
                         foreach (State state in player.Action_Skill.Effect_States)
                         {
-                            if (!state.Is_Self)
+                            if (!state.Is_Benefit)
                             {
                                 state.Expire_Immediate = DateTime.Now.AddSeconds(state.Duration_Immediate);
                                 state.Owner = player;
@@ -351,7 +330,7 @@ namespace Make.MODEL
                 if (player.Distance(friend) <= 20)
                 {
                     friend.Leisure = DateTime.Now.AddMinutes(5);
-                    string messages = "";
+                    messages = "";
                     if (!Is_Eternal)
                     {
                         //判断对方是否有格挡
@@ -360,7 +339,7 @@ namespace Make.MODEL
                             messages += player.NickName + "的【" + Name + "】被" + friend.NickName + "格挡！\n";
                             foreach (State item in Effect_States)
                             {
-                                if (!item.Is_Self) friend.States.Remove(item);
+                                if (!item.Is_Benefit) friend.States.Remove(item);
                             }//无法释放技能，删掉之前赋予的状态
                             total_messages += messages;
                             continue;
@@ -371,7 +350,7 @@ namespace Make.MODEL
                             messages += player.NickName + "的【" + Name + "】被" + friend.NickName + "反制！\n";
                             foreach (State item in Effect_States)
                             {
-                                if (!item.Is_Self) friend.States.Remove(item);
+                                if (!item.Is_Benefit) friend.States.Remove(item);
                             }//无法释放技能，删掉之前赋予的状态
                             total_messages += messages;
                             continue;
@@ -384,7 +363,7 @@ namespace Make.MODEL
                                 messages += player.NickName + "的【" + player.Action_Skill.Name + "】被" + friend.NickName + "反弹！\n";
                                 foreach (State item in Effect_States)
                                 {
-                                    if (!item.Is_Self) friend.States.Remove(item);
+                                    if (!item.Is_Benefit) friend.States.Remove(item);
                                 }//无法释放技能，删掉之前赋予的状态
                                 SkillCard return_Skill = player.Action_Skill.Clone();
                                 return_Skill.Enemies.Clear();
@@ -434,7 +413,7 @@ namespace Make.MODEL
                         //先赋予状态
                         foreach (State state in player.Action_Skill.Effect_States)
                         {
-                            if (state.Is_Self)
+                            if (state.Is_Benefit)
                             {
                                 state.Expire_Immediate = DateTime.Now.AddSeconds(state.Duration_Immediate);
                                 state.Owner = player;
@@ -458,6 +437,7 @@ namespace Make.MODEL
             player.Action_Skill = null;
             player.Send(total_messages);
         }
+        */
         #endregion
     }
 }

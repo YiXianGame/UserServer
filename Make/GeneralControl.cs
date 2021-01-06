@@ -1,4 +1,5 @@
 ﻿using Make.MODEL;
+using Make.MODEL.RPC.Request;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -30,15 +31,11 @@ namespace Make
         /// <summary>
         /// 技能卡MODEL
         /// </summary>
-        public static List<SkillCardsModel> Skill_Cards = new List<SkillCardsModel>();//总技能卡 //总引用,但UI层还有一层引用，删掉的同时记得删掉UI层
-        /// <summary>
-        /// 字典技能卡MODEL
-        /// </summary>
-        public static Dictionary<string,SkillCardsModel> Skill_Cards_ID = new Dictionary<string, SkillCardsModel>();
+        public static List<SkillCard> Skill_Cards = new List<SkillCard>();//总技能卡 //总引用,但UI层还有一层引用，删掉的同时记得删掉UI层
         /// <summary>
         /// ID技能卡
         /// </summary>
-        public static Dictionary<string, SkillCard> Skill_Card_ID_Skllcard = new Dictionary<string, SkillCard>();
+        public static Dictionary<ulong, SkillCard> Skill_Card_ID_Skllcard = new Dictionary<ulong, SkillCard>();
         /// <summary>
         /// 名字技能卡
         /// </summary>
@@ -50,11 +47,11 @@ namespace Make
         /// <summary>
         /// 奇遇字典
         /// </summary>
-        public static Dictionary<string, Adventure> Adventures_ID = new Dictionary<string, Adventure>();
+        public static Dictionary<ulong, Adventure> Adventures_ID = new Dictionary<ulong, Adventure>();
         /// <summary>
         /// 总状态
         /// </summary>
-        public static Dictionary<string, State> States = new Dictionary<string, State>();
+        public static Dictionary<ulong, State> States = new Dictionary<ulong, State>();
         /// <summary>
         /// 总房间
         /// </summary>
@@ -62,7 +59,10 @@ namespace Make
         /// <summary>
         /// 总玩家
         /// </summary>       
-        public static Dictionary<string,Player> Players = new Dictionary<string, Player>();
+        public static Dictionary<ulong,Player> Players = new Dictionary<ulong, Player>();
+
+        public static ICommand Command;
+
         public static DateTime Skill_Card_Date 
         { 
             get => skill_Card_Date; 
@@ -301,11 +301,11 @@ namespace Make
             });
             public string Expiration_Date { get; set; } = DateTime.Now.ToString();
             private ObservableCollection<Adventure> pubmit_Adventures = new ObservableCollection<Adventure>();
-            private ObservableCollection<SkillCardsModel> pubmit_SkillCardsModel = new ObservableCollection<SkillCardsModel>();
+            private ObservableCollection<SkillCard> pubmit_SkillCardsModel = new ObservableCollection<SkillCard>();
 
             public event PropertyChangedEventHandler PropertyChanged;
 
-            public ObservableCollection<SkillCardsModel> Pubmit_SkillCardsModel { get => pubmit_SkillCardsModel; set => pubmit_SkillCardsModel = value; }
+            public ObservableCollection<SkillCard> Pubmit_SkillCardsModel { get => pubmit_SkillCardsModel; set => pubmit_SkillCardsModel = value; }
             public ObservableCollection<Adventure> Pubmit_Adventures { get => pubmit_Adventures; set => pubmit_Adventures = value; }
             public string Players { get => players; set { players = value; OnPropertyChanged("Players"); } }
             public string Map_Players { get => map_Players; set { map_Players = value; OnPropertyChanged("map_Players"); } }
@@ -338,7 +338,7 @@ namespace Make
                     menu_Person_Informations_Class.Author.UserName = "839336369";
                     menu_Person_Informations_Class.Author.NickName = "剑仙";  
                     menu_Person_Informations_Class.Author.Information = "个性签名";
-                    menu_Person_Informations_Class.Author.QQ = 839336369;
+                    menu_Person_Informations_Class.Author.ID = 839336369;
                     menu_Person_Informations_Class.Author.Save();
                     return menu_Person_Informations_Class;
                 }

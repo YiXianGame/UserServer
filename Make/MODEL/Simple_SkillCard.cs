@@ -6,24 +6,29 @@ namespace Make.MODEL
     public class Simple_SkillCard
     {
         #region --字段--
-        private string name;
-        private int level;
-        private int amount;
+        private ulong userid;
+        private ulong cardid;
+        private string solution;
         #endregion
 
         #region --属性--
-        public string Name { get => name; set => name = value; }
-        public int Level { get => level; set => level = value; }
-        public int Amount { get => amount; set => amount = value; }
+        public ulong UserID { get => userid; set => userid = value; }
+        public ulong CardID { get => cardid; set => cardid = value; }
+        public string Solution { get => solution; set => solution = value; }
+
+
         #endregion
 
         #region --方法--
-        public Simple_SkillCard(string name,int level,int amount)
+
+        public Simple_SkillCard(ulong userid, ulong cardid, string solution)
         {
-            this.name = name;
-            this.level = level;
-            this.amount = amount;
+            this.userid = userid;
+            this.cardid = cardid;
+            this.solution = solution;
         }
+
+
         #endregion
     }
 }

@@ -8,7 +8,7 @@ namespace Make.MODEL.TCP_Async_Event
     /// Based on example from http://msdn2.microsoft.com/en-us/library/system.net.sockets.socketasynceventargs.socketasynceventargs.aspx
     /// Represents a collection of reusable SocketAsyncEventArgs objects.  
     /// </summary>
-    internal sealed class SocketAsyncEventArgsPool
+    public sealed class SocketAsyncEventArgsPool
     {
         /// <summary>
         /// Pool of SocketAsyncEventArgs.
@@ -19,7 +19,7 @@ namespace Make.MODEL.TCP_Async_Event
         /// Initializes the object pool to the specified size.
         /// </summary>
         /// <param name="capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
-        internal SocketAsyncEventArgsPool(Int32 capacity)
+        public SocketAsyncEventArgsPool(int capacity)
         {
             this.pool = new Stack<SocketAsyncEventArgs>(capacity);
         }
@@ -28,7 +28,7 @@ namespace Make.MODEL.TCP_Async_Event
         /// Removes a SocketAsyncEventArgs instance from the pool.
         /// </summary>
         /// <returns>SocketAsyncEventArgs removed from the pool.</returns>
-        internal SocketAsyncEventArgs Pop()
+        public SocketAsyncEventArgs Pop()
         {
             lock (this.pool)
             {
@@ -47,7 +47,7 @@ namespace Make.MODEL.TCP_Async_Event
         /// Add a SocketAsyncEventArg instance to the pool. 
         /// </summary>
         /// <param name="item">SocketAsyncEventArgs instance to add to the pool.</param>
-        internal void Push(SocketAsyncEventArgs item)
+        public void Push(SocketAsyncEventArgs item)
         {
             if (item == null) 
             { 

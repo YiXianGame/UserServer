@@ -23,7 +23,8 @@ namespace Make.MODEL
         #endregion
 
         #region --字段--
-        private string userName = "";//玩家ID也是QQ号（-1时为机器人）
+        private ulong id ;//玩家ID也是QQ号（-1时为机器人）
+        private string userName;//用户名
         private string nickName;//玩家昵称
         private int hp;//血量
         private int mp;//能量
@@ -49,7 +50,6 @@ namespace Make.MODEL
         private SkillCard action_Skill;//释放的技能
         private long from_Group=-1;//QQ群号
         private DateTime leisure;
-        private Token token;
         private bool is_Robot=false;
         private Enums.Player_Active active;
         #endregion
@@ -62,7 +62,7 @@ namespace Make.MODEL
             get => hp;
             set 
             { 
-                hp = value; 
+                hp = value;
                 if (hp <= 0)
                 {                    
                     Is_Death = true;
@@ -102,16 +102,17 @@ namespace Make.MODEL
         public string Title { get => title; set => title = value; }
         [JsonConverter(typeof(StringEnumConverter))]
         public Enums.Player_Active Active { get => active; set => active = value; }
-        public string UserName { get => userName; set => userName = value; }
+        public ulong ID { get => id; set => id = value; }
         public string NickName { get => nickName; set => nickName = value; }
-            
+        public string UserName { get => userName; set => userName = value; }
+
         #endregion
 
         #region --方法--
 
         public void Send(string msg,object bound = null)
         {
-            token.Send(Enums.Msg_Server_Type.Game,msg, bound);
+            //token.Send(Enums.Msg_Server_Type.Game,msg, bound);
         }
         public Player()
         {
@@ -121,12 +122,11 @@ namespace Make.MODEL
         {
             NickName = user.NickName;
             Title = user.Title;
-            foreach (KeyValuePair<string, Simple_SkillCard> item in user.Battle_SkillCards)
+            foreach (KeyValuePair<ulong, Simple_SkillCard> item in user.Battle_SkillCards)
             {
                 if (GeneralControl.Skill_Card_ID_Skllcard.TryGetValue(item.Key, out SkillCard skillCard))
                 {
                     SkillCard clone = skillCard.Clone(this);
-                    clone.Amount = item.Value.Amount;
                     Hand_Skill_Add(clone);
                 }
             }
@@ -211,8 +211,8 @@ namespace Make.MODEL
             foreach(SkillCard skillCard in hand_SkillCards.Values)
             {
                 string state_temp="";
-                if (skillCard.Effect_States.Count > 0) state_temp = " 状态 ";
-                foreach(State state in skillCard.Effect_States)
+                if (skillCard.Buff.Count > 0) state_temp = " 状态 ";
+                foreach(State state in skillCard.Buff)
                 {
                     state_temp += "（" + state.Name + ")能力 " + state.Effect_mp + " 回合 " + state.Duration_Round;
                 }
@@ -238,13 +238,13 @@ namespace Make.MODEL
         {
             Player killer = args.Killer;
             Player killed = args.Killed;
-            User killer_User = User.Load(killer.UserName);
-            User killed_User = User.Load(killed.UserName);
+            User killer_User = User.Load(killer.ID);
+            User killed_User = User.Load(killed.ID);
             int exp = killed_User.Exp / 10;
             Map.Players.Values.ToList().ForEach((Player item) => item.Send($"【{killer_User.Title}】{NickName}陨落!击毙者【{killer_User.Title}】{killer.NickName}"));
             foreach (SkillCard item in Hand_SkillCards.Values)
             {
-                item.Owner = killer.UserName;
+                item.Owner_ID = killer.ID;
                 killer.Hand_Skill_Add(item);
             }
             killer_User.Exp += exp;
@@ -303,17 +303,11 @@ namespace Make.MODEL
         {
             if (Hand_SkillCards.TryGetValue(add_Skill_Card.Name, out SkillCard skillCard))
             {
-                if (add_Skill_Card.Amount < 0 && skillCard.Amount <  -add_Skill_Card.Amount) return false;
-                skillCard.Amount += add_Skill_Card.Amount;
-                if (skillCard.Amount == 0)
-                {
-                    Hand_SkillCards.Remove(add_Skill_Card.ID);
-                }
+
             }
             else
             {
-                if (add_Skill_Card.Amount < 0) return false;
-                Hand_SkillCards.Add(add_Skill_Card.Name, add_Skill_Card);
+
             }
             return true;
         }

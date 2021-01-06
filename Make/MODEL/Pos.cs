@@ -28,6 +28,7 @@ namespace Make.MODEL
         }
         public void Effect(Player player)
         {
+            /*
             if (item != null)
             {
                 if (item is Adventure)
@@ -47,7 +48,7 @@ namespace Make.MODEL
                             //先赋予状态
                             foreach (State state in player.Action_Skill.Effect_States)
                             {
-                                if (!state.Is_Self)
+                                if (!state.Is_Benefit)
                                 {
                                     state.Expire_Immediate = DateTime.Now.AddSeconds(state.Duration_Immediate);
                                     state.Owner = player;
@@ -83,7 +84,7 @@ namespace Make.MODEL
                             //先赋予状态
                             foreach (State state in player.Action_Skill.Effect_States)
                             {
-                                if (state.Is_Self)
+                                if (state.Is_Benefit)
                                 {
                                     state.Expire_Immediate = DateTime.Now.AddSeconds(state.Duration_Immediate);
                                     state.Owner = player;
@@ -123,6 +124,7 @@ namespace Make.MODEL
                     }
                 }
             }
+            */
         }
 
         public bool Add(object add_item)

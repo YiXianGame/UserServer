@@ -24,7 +24,7 @@ namespace Make.MODEL
         public AutoResetEvent State_Hp_Manager = new AutoResetEvent(false);
         public AutoResetEvent State_Mp_Manager = new AutoResetEvent(false);
         public AutoResetEvent Map_Mp_Manager = new AutoResetEvent(false);
-        public Dictionary<string,Player> Players = new Dictionary<string, Player>();
+        public Dictionary<ulong,Player> Players = new Dictionary<ulong, Player>();
         #endregion
 
         #region --方法--
@@ -33,10 +33,10 @@ namespace Make.MODEL
 
         public void Leave(Player player)
         {
-            User user = User.Load(player.UserName);
+            User user = User.Load(player.ID);
             foreach (SkillCard item in player.Hand_SkillCards.Values)
             {
-                user.Repository_Skill_Add(item);
+                //user.Repository_Skill_Add(item);
             }
             player.Pos.Init();
             player.Enemies.ToList().ForEach(new Action<Player>(item => player.Cancel_Direct(item)));
@@ -47,11 +47,11 @@ namespace Make.MODEL
 
             player.Friendsed.ToList().ForEach(new Action<Player>(item => item.Cancel_Friend(player)));
 
-            GeneralControl.Players.Remove(player.UserName);
+            GeneralControl.Players.Remove(player.ID);
             player.Hand_SkillCards.Clear();
             player.Init();
             player.Send("离开地图#成功");
-            Players.Remove(player.UserName);
+            Players.Remove(player.ID);
             GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
             GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Map.Players.Count}人";
             GeneralControl.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
@@ -87,8 +87,8 @@ namespace Make.MODEL
                 player.Hp = GeneralControl.Menu_GameControl_Class.Instance.Map_Hp_Max;
                 player.Mp = 20;//**GeneralControl.Menu_GameControl_Class.Instance.Map_Hp_Max / 3
 
-                GeneralControl.Players.Add(player.UserName, player);
-                Players.Add(player.UserName,player);
+                GeneralControl.Players.Add(player.ID, player);
+                Players.Add(player.ID,player);
                 if (Players.Count <= 1) Map_Mp_Manager.Set();
                 /*
                 foreach(Simple_SkillCard simple_SkillCard in player.Battle_SkillCards.Values)

@@ -7,6 +7,7 @@ namespace Make.MODEL
     public class State
     {
         #region --字段--
+        private ulong id;
         private string name;//状态名称
         private Player owner;//状态来源
         private Player direct;//状态对象
@@ -14,11 +15,9 @@ namespace Make.MODEL
         private int expire_Round;//到期回合
         private int duration_Immediate;//持续时长
         private DateTime expire_Immediate;//到期时间
-        private string message;//状态反馈
-        private bool is_Self;//是否自身
         private int effect_mp;//作用范围
         private string effect_Information;
-        private string message_Information;
+        private string description;
         #endregion
 
         #region --属性--
@@ -82,8 +81,6 @@ namespace Make.MODEL
                 }
             }
         }
-        public string Message { get => message; set => message = value; }
-        public bool Is_Self { get => is_Self; set => is_Self = value; }
         public int Duration_Round { get => duration_Round; set => duration_Round = value; }
         public int Expire_Round { get => expire_Round; set => expire_Round = value; }
         public int Duration_Immediate
@@ -105,7 +102,8 @@ namespace Make.MODEL
         [JsonIgnore]
         public Player Direct { get => direct; set => direct = value; }
         public string Effect_Information { get => effect_Information; set => effect_Information = value; }
-        public string Message_Information { get => message_Information; set => message_Information = value; }
+        public string Description { get => description; set => description = value; }
+        public ulong ID { get => id; set => id = value; }
         #endregion
 
         #region --方法--

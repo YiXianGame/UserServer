@@ -47,20 +47,17 @@ namespace Make.MODEL
                             }
                             player.Mp -= skillCard.Need_Mp;
                             Random random = new Random();
-                            while (skillCard.Level < GeneralControl.MaxLevel)
+                            if (random.Next(1, 100) <= skillCard.Probability)
                             {
-                                if (random.Next(1, 100) <= skillCard.Probability)
-                                {
-                                    skillCard = BLL.SkillCard_Helper.Get_SkillCardsModel_ID(skillCard.Father_ID).SkillCards[skillCard.Level + 1];
-                                    player.Send("您释放的技能在命运的帮助下提升为更高品质-" + skillCard.Name);
-                                }
-                                else break;
+                                //skillCard = BLL.SkillCard_Helper.Get_SkillCardsModel_ID(skillCard.Father_ID).SkillCards[skillCard.Level + 1];
+                                player.Send("您释放的技能在命运的帮助下提升为更高品质-" + skillCard.Name);
                             }
                             player.Action_Skill = skillCard.Clone(player);
                             player.Action = true;
                             if (messages.Length == 1)
                             {
-                                if (player.Action_Skill.Is_Self)
+                                /*
+                                if (player.Action_Skill.Is_Benefit)
                                 {
                                     if (player.Action_Skill.Friends.Count < player.Action_Skill.Auxiliary_Number) player.Action_Skill.Friends.Add(player);
                                     foreach (Player friend in player.Friends)
@@ -83,6 +80,7 @@ namespace Make.MODEL
                                         else break;
                                     }
                                 }
+                                */
                             }
                             else
                             {
@@ -104,10 +102,11 @@ namespace Make.MODEL
                                 }
                             }
                             //先赋予状态
-                            foreach (State state in player.Action_Skill.Effect_States)
+                            foreach (State state in player.Action_Skill.Buff)
                             {
+                                /*
                                 state.Expire_Round = Round + state.Duration_Round - 1;
-                                if (state.Is_Self)
+                                if (state.Is_Benefit)
                                 {
                                     foreach (Player attacked in player.Action_Skill.Friends)
                                     {
@@ -135,6 +134,7 @@ namespace Make.MODEL
                                         attacked.Add_States(state);
                                     }
                                 }
+                                */
                             }
                             if (Players.Find((Player item) => item != player) == null)
                             {
@@ -184,7 +184,7 @@ namespace Make.MODEL
         {
             foreach(Player player in Players)
             {
-                GeneralControl.Players.Remove(player.UserName);
+                GeneralControl.Players.Remove(player.ID);
             }
             GeneralControl.Rooms.Remove(this);
             GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
@@ -205,7 +205,7 @@ namespace Make.MODEL
                 player.Active = Enums.Player_Active.Round;
                 Players.Add(player);
                 user.Active = Enums.User_Active.Ready;
-                GeneralControl.Players.Add(player.UserName, player);
+                GeneralControl.Players.Add(player.ID, player);
                 GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
                 GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Map.Players.Count}人";
                 GeneralControl.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
@@ -222,7 +222,7 @@ namespace Make.MODEL
             {
                 player.Active = Enums.Player_Active.Round;
                 Players.Add(player);
-                GeneralControl.Players.Add(player.UserName, player);
+                GeneralControl.Players.Add(player.ID, player);
                 GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
                 GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Map.Players.Count}人";
                 GeneralControl.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
@@ -235,7 +235,7 @@ namespace Make.MODEL
         public override void Leave(Player player)
         {
             Players.Remove(player);
-            GeneralControl.Players.Remove(player.UserName);
+            GeneralControl.Players.Remove(player.ID);
             if (Players.Count == 0)
             {
                 GeneralControl.Rooms.Remove(this);

@@ -6,18 +6,23 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Make.MODEL.TCP_Async_Event;
+using Make.MODEL.RPC;
+using Make.MODEL.RPC.Adapt;
+using Make.MODEL.RPC.Request;
+using Make;
+
 namespace Pack
 {
     class Program
     {
         static void Main(string[] args)
         {
+            //服务端
             Initialization initialization = new Initialization();
-            TCP_Server tcp_server = new TCP_Server();
-            TCP_Server socket_Server = new TCP_Server();//TCP初始化
-            TCP_Event.Receive += XY.TCP_Event_Receive;
-            Thread thread = new Thread(() => { socket_Server.Init(new string[] {Environment.MachineName, "28015", "1000", "1024"}); });
-            thread.Start();
+            //适配远程客户端服务
+            RPCAdaptFactory.Register<User>("User", Environment.MachineName, "28015");
+            //注册远程服务
+            GeneralControl.Command = RPCRequestProxyFactory.Register<ICommand>("Command", Environment.MachineName, "28015");
         }
     }
 }

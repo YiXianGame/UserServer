@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Make.MODEL
 {
+    /*封存
     public class Battle_Royale_Room : Room_Round
     {
-        public Battle_Royale_Room(int max, int min,Socket socket ,long fromGroup = 0) : base(max,min,socket,fromGroup)
+        public Battle_Royale_Room(int max, int min):base(max,min)
         { 
-            Max_Personals = max;
-            Min_Personals = min;
+
         }
 
         /// <summary>
@@ -237,11 +237,11 @@ namespace Make.MODEL
                 {
                     if (state.Name == "恒血")
                     {
-                        universal_Informations += player.Add_Hp(Convert.ToInt32(state.Effect_mp), "因为恒血BUFF");
+                        universal_Informations += player.Add_Hp(Convert.Toint(state.Effect_mp), "因为恒血BUFF");
                     }
                     else if (state.Name == "恒气")
                     {
-                        universal_Informations += player.Add_Mp(Convert.ToInt32(state.Effect_mp), "因为恒气BUFF");
+                        universal_Informations += player.Add_Mp(Convert.Toint(state.Effect_mp), "因为恒气BUFF");
                     }
                 }
             }
@@ -310,4 +310,6 @@ namespace Make.MODEL
         }
 
     }
+    */
 }
+

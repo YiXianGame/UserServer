@@ -18,15 +18,15 @@ namespace Make.MODEL
     {
         #region --字段--
         private string username="";
-        private long qQ = -1;
+        private ulong id;
         private string nickname;
         private int upgrade_num=0;
         private int create_num=0;
         private int money = 0;
         private string information="";
         private string passwords = "";
-        private Dictionary<string, Simple_SkillCard> repository_SkillCards = new Dictionary<string, Simple_SkillCard>();//技能卡仓库
-        private Dictionary<string, Simple_SkillCard> battle_SkillCards = new Dictionary<string, Simple_SkillCard>();//备战的技能卡
+        private Dictionary<ulong, Simple_SkillCard> repository_SkillCards = new Dictionary<ulong, Simple_SkillCard>();//技能卡仓库
+        private Dictionary<ulong, Simple_SkillCard> battle_SkillCards = new Dictionary<ulong, Simple_SkillCard>();//备战的技能卡
         private int battle_Count;//战斗场次
         private int exp;//经验
         private int balances;//金钱
@@ -35,20 +35,19 @@ namespace Make.MODEL
         private Enums.User_Active active = Enums.User_Active.Leisure;//玩家当前游戏状态
         private int kills;//击杀数
         private int deaths;//死亡数
-        private DateTime skillCards_Date;//技能卡版本
         private DateTime registration_date;//注册时间
         private Token token;
         #endregion
 
         #region --属性--
         [JsonIgnore]
-        public Dictionary<string, Simple_SkillCard> Repository_SkillCards { get => repository_SkillCards; set => repository_SkillCards = value; }
+        public Dictionary<ulong, Simple_SkillCard> Repository_SkillCards { get => repository_SkillCards; set => repository_SkillCards = value; }
         [JsonIgnore]
-        public Dictionary<string, Simple_SkillCard> Battle_SkillCards { get => battle_SkillCards; set => battle_SkillCards = value; }
+        public Dictionary<ulong, Simple_SkillCard> Battle_SkillCards { get => battle_SkillCards; set => battle_SkillCards = value; }
         public string UserName { get => username; set => username = value; }
         public string NickName { get => nickname; set => nickname = value; }
         public string Information { get => information; set => information = value; }
-        public long QQ { get => qQ; set => qQ = value; }
+        public ulong ID { get => id; set => id = value; }
         public int Upgrade_num { get => upgrade_num; set => upgrade_num = value; }
         public int Create_num { get => create_num; set => create_num = value; }
         public int Money { get => money; set => money = value; }
@@ -110,8 +109,6 @@ namespace Make.MODEL
         public int Kills { get => kills; set => kills = value; }
         public int Deaths { get => deaths; set => deaths = value; }
         [JsonIgnore]
-        public DateTime SkillCards_Date { get => skillCards_Date; set => skillCards_Date = value; }
-        [JsonIgnore]
         public DateTime Registration_date { get => registration_date; set => registration_date = value; }
         [JsonIgnore]
         public Token Token { get => token; set => token = value; }
@@ -120,7 +117,7 @@ namespace Make.MODEL
         #region --方法--
         public void SendMessages(String message, string bound = null)
         {
-            token.Send( Enums.Msg_Server_Type.Information,message, bound);
+            //token.Send(Enums.Msg_Server_Type.Information,message, bound);
         }
 
         public void Save()
@@ -129,9 +126,9 @@ namespace Make.MODEL
             string filepath = GeneralControl.Directory + "\\用户\\" + UserName + ".json";
             File.WriteAllText(filepath, json);
         }
-        public static User Load(string iD)
+        public static User Load(ulong iD)
         {
-            string filepath = Material.App.directory + "\\用户\\" + iD + ".json";
+            string filepath = Material.App.directory + "\\用户\\" + iD.ToString() + ".json";
             if (!File.Exists(filepath)) return null;
             string json = (File.ReadAllText(filepath));
             return JsonConvert.DeserializeObject<User>(json);
@@ -185,6 +182,7 @@ namespace Make.MODEL
             Add_Balances(Bal);
             Battle_Count++;
         }
+        /*
         public bool Battle_Skill_Add(SkillCard add_Skill_Card, bool is_save = true)
         {
             if (Battle_SkillCards.TryGetValue(add_Skill_Card.ID, out Simple_SkillCard simple_SkillCard))
@@ -261,42 +259,8 @@ namespace Make.MODEL
             if (is_save) Save();
             return true;
         }
-        /// <summary>
-        /// 升级卡牌
-        /// </summary>
-        /// <param name="name">技能卡名</param>
-        /// <param name="number">升级的技能卡数量</param>
-        /// <returns></returns>
-        public bool Upgrate_Skill(string name, int number)
-        {
-            GeneralControl.Skill_Card_Name_Skllcard.TryGetValue(name, out SkillCard skillCard);
-            if (number <= 0) SendMessages("升级技能卡#失败#数量不足");
-            if (skillCard.Level < GeneralControl.MaxLevel)
-            {
-                if (Add_Balances(-(number / 4) * 4))
-                {
-                    if (Repository_Skill_Add(skillCard.ID, -(number / 4) * GeneralControl.Menu_GameControl_Class.Instance.Upgrade_Card_Coast))
-                    {
-                        SkillCardsModel father_Skill_Card = SkillCard_Helper.Get_SkillCardsModel_ID(skillCard.Father_ID);
-                        SkillCard new_Skill_Card = father_Skill_Card.SkillCards[skillCard.Level + 1].Clone(UserName);
-                        new_Skill_Card.Amount = number / 4;
-                        Repository_Skill_Add(new_Skill_Card);
-                        Save();
-                        SendMessages("升级技能卡#成功#升级成功！" + ((number / 4) * 4).ToString() + "张" + name + "升级成为" + number / 4 + "张" + new_Skill_Card.Name);
-                        return true;
-                    }
-                    else SendMessages("升级技能卡#失败#您技能卡数量不足4张");
-                    return false;
-                }
-                else
-                {
-                    SendMessages($"升级技能卡#失败#您的金额不足以升级卡牌,还需:{(number / 4) * GeneralControl.Menu_GameControl_Class.Instance.Upgrade_Card_Coast - Balances}枚仙域币");
-                }
-                return false;
-            }
-            else SendMessages("升级技能卡#失败#该技能卡已为最高等级");
-            return false;
-        }
+        */
+        /*
         /// <summary>
         /// 检查卡牌版本
         /// </summary>
@@ -332,7 +296,7 @@ namespace Make.MODEL
             }
             return Messages;
         }
-
+        */
         #endregion
     }
 }
