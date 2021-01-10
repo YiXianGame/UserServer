@@ -23,7 +23,7 @@ namespace Make.MODEL
         #endregion
 
         #region --字段--
-        private ulong id ;//玩家ID也是QQ号（-1时为机器人）
+        private long id ;//玩家ID也是QQ号（-1时为机器人）
         private string userName;//用户名
         private string nickName;//玩家昵称
         private int hp;//血量
@@ -102,7 +102,7 @@ namespace Make.MODEL
         public string Title { get => title; set => title = value; }
         [JsonConverter(typeof(StringEnumConverter))]
         public Enums.Player_Active Active { get => active; set => active = value; }
-        public ulong ID { get => id; set => id = value; }
+        public long ID { get => id; set => id = value; }
         public string NickName { get => nickName; set => nickName = value; }
         public string UserName { get => userName; set => userName = value; }
 
@@ -122,14 +122,7 @@ namespace Make.MODEL
         {
             NickName = user.NickName;
             Title = user.Title;
-            foreach (KeyValuePair<ulong, Simple_SkillCard> item in user.Battle_SkillCards)
-            {
-                if (GeneralControl.Skill_Card_ID_Skllcard.TryGetValue(item.Key, out SkillCard skillCard))
-                {
-                    SkillCard clone = skillCard.Clone(this);
-                    Hand_Skill_Add(clone);
-                }
-            }
+
         }
         public void Add_States(State state)
         {

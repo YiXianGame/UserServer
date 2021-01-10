@@ -9,14 +9,14 @@ using System.Text;
 
 namespace Make.MODEL.RPC
 {
-    public class RPCRequestProxy<T> : DispatchProxy
+    public class RPCRequestProxy : DispatchProxy
     {
         public Random random = new Random();
         private string servicename;
         private Tuple<string, string> key;
-        public static T Create(string servicename, Tuple<string, string> clientkey)
+        public static T Create<T>(string servicename, Tuple<string, string> clientkey)
         {
-            RPCRequestProxy<T> proxy = (RPCRequestProxy<T>)(Create<T, RPCRequestProxy<T>>() as object);
+            RPCRequestProxy proxy = (RPCRequestProxy)(Create<T, RPCRequestProxy>() as object);
             proxy.key = clientkey;
             proxy.servicename = servicename;
             return (T)(proxy as object);

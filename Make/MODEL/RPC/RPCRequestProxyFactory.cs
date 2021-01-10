@@ -30,7 +30,7 @@ namespace Make.MODEL.RPC
             {
                 Tuple<string, string> serverkey = new Tuple<string, string>(hostname, port);
                 RPCServerFactory.GetServer(serverkey);
-                service = RPCRequestProxy<T>.Create(servicename, new Tuple<string, string>(hostname, port));
+                service = RPCRequestProxy.Create<T>(servicename, new Tuple<string, string>(hostname, port));
                 services[key] = service;
             }
             return service;

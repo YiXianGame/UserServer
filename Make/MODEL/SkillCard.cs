@@ -23,8 +23,8 @@ namespace Make.MODEL
         private ObservableCollection<State> buff=new ObservableCollection<State>();//状态
         private List<Player> enemies = new List<Player>();//指向
         private List<Player> friends = new List<Player>();//指向
-        private ulong author_id;
-        private ulong owner_id;
+        private long author_id;
+        private long owner_id;
         private bool is_Magic;//是否魔法
         private bool is_Physics;//是否物理
         private bool is_Cure;//是否治疗
@@ -34,7 +34,7 @@ namespace Make.MODEL
         private DateTime date_Latest;
         private int attack_Number = 1;
         private int auxiliary_Number = 1;
-        private ulong iD;
+        private long iD;
         #endregion
 
         #region --属性--
@@ -70,17 +70,17 @@ namespace Make.MODEL
         public int Auxiliary_Number { get => auxiliary_Number; set => auxiliary_Number = value; }
         [JsonIgnore]
         public List<Player> Enemies { get => enemies; set => enemies = value; }
-        public ulong Owner_ID { get => owner_id; set => owner_id = value; }
+        public long Owner_ID { get => owner_id; set => owner_id = value; }
         public bool Is_Cure { get => is_Cure; set => is_Cure = value; }
         public bool Is_Attack { get => is_Attack; set => is_Attack = value; }
         public bool Is_Eternal { get => is_Eternal; set => is_Eternal = value; }
         public bool Is_Physics { get => is_Physics; set => is_Physics = value; }
         [JsonIgnore]
         public DateTime Date_Latest { get => date_Latest; set => date_Latest = value; }
-        public ulong ID { get => iD; set => iD = value; }
+        public long ID { get => iD; set => iD = value; }
         [JsonIgnore]
         public List<Player> Friends { get => friends; set => friends = value; }
-        public ulong Author_ID { get => author_id; set => author_id = value; }
+        public long Author_ID { get => author_id; set => author_id = value; }
         #endregion
 
         #region --方法--
@@ -150,7 +150,7 @@ namespace Make.MODEL
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public SkillCard Clone(ulong id)
+        public SkillCard Clone(long id)
         {
             SkillCard skillCard = (SkillCard)MemberwiseClone();
             skillCard.buff = new ObservableCollection<State>(buff.ToArray());

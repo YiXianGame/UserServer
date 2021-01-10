@@ -79,7 +79,7 @@ namespace Make.MODEL.TCP_Async_Event
                         ClientRequestModel request = JsonConvert.DeserializeObject<ClientRequestModel>(data);
                         RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, hostname, port), out RPCAdaptProxy proxy);
                         proxy.methods.TryGetValue(request.Methodid, out MethodInfo method);
-                        //0-Response 1-VoidRespond
+                        //0-Request 1-Command
                         if (pattern[0] == 0)
                         {
 #if DEBUG

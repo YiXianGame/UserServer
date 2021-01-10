@@ -24,7 +24,7 @@ namespace Make.MODEL
         public AutoResetEvent State_Hp_Manager = new AutoResetEvent(false);
         public AutoResetEvent State_Mp_Manager = new AutoResetEvent(false);
         public AutoResetEvent Map_Mp_Manager = new AutoResetEvent(false);
-        public Dictionary<ulong,Player> Players = new Dictionary<ulong, Player>();
+        public Dictionary<long,Player> Players = new Dictionary<long, Player>();
         #endregion
 
         #region --方法--

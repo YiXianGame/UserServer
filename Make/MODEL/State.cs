@@ -7,7 +7,7 @@ namespace Make.MODEL
     public class State
     {
         #region --字段--
-        private ulong id;
+        private long id;
         private string name;//状态名称
         private Player owner;//状态来源
         private Player direct;//状态对象
@@ -103,7 +103,7 @@ namespace Make.MODEL
         public Player Direct { get => direct; set => direct = value; }
         public string Effect_Information { get => effect_Information; set => effect_Information = value; }
         public string Description { get => description; set => description = value; }
-        public ulong ID { get => id; set => id = value; }
+        public long ID { get => id; set => id = value; }
         #endregion
 
         #region --方法--

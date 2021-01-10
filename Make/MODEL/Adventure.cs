@@ -21,12 +21,12 @@ namespace Make.MODEL
         private ObservableCollection<State> effect_States=new ObservableCollection<State>();//奇遇所自带的状态效果
         private int probability;//概率
         private string description="";//奇遇的描述（介绍）
-        private ulong iD;
+        private long iD;
         private long userid;
         #endregion
 
         #region --属性--
-        public ulong ID { get => iD; set => iD = value; }
+        public long ID { get => iD; set => iD = value; }
         public string Name
         { 
             get => name;

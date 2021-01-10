@@ -18,15 +18,13 @@ namespace Make.MODEL
     {
         #region --字段--
         private string username="";
-        private ulong id;
+        private long id;
         private string nickname;
         private int upgrade_num=0;
         private int create_num=0;
         private int money = 0;
         private string information="";
         private string passwords = "";
-        private Dictionary<ulong, Simple_SkillCard> repository_SkillCards = new Dictionary<ulong, Simple_SkillCard>();//技能卡仓库
-        private Dictionary<ulong, Simple_SkillCard> battle_SkillCards = new Dictionary<ulong, Simple_SkillCard>();//备战的技能卡
         private int battle_Count;//战斗场次
         private int exp;//经验
         private int balances;//金钱
@@ -35,19 +33,14 @@ namespace Make.MODEL
         private Enums.User_Active active = Enums.User_Active.Leisure;//玩家当前游戏状态
         private int kills;//击杀数
         private int deaths;//死亡数
-        private DateTime registration_date;//注册时间
-        private Token token;
+        private DateTime registration_date;//注册时间   
         #endregion
 
         #region --属性--
-        [JsonIgnore]
-        public Dictionary<ulong, Simple_SkillCard> Repository_SkillCards { get => repository_SkillCards; set => repository_SkillCards = value; }
-        [JsonIgnore]
-        public Dictionary<ulong, Simple_SkillCard> Battle_SkillCards { get => battle_SkillCards; set => battle_SkillCards = value; }
+        
         public string UserName { get => username; set => username = value; }
         public string NickName { get => nickname; set => nickname = value; }
         public string Information { get => information; set => information = value; }
-        public ulong ID { get => id; set => id = value; }
         public int Upgrade_num { get => upgrade_num; set => upgrade_num = value; }
         public int Create_num { get => create_num; set => create_num = value; }
         public int Money { get => money; set => money = value; }
@@ -110,8 +103,7 @@ namespace Make.MODEL
         public int Deaths { get => deaths; set => deaths = value; }
         [JsonIgnore]
         public DateTime Registration_date { get => registration_date; set => registration_date = value; }
-        [JsonIgnore]
-        public Token Token { get => token; set => token = value; }
+        public long ID { get => id; set => id = value; }
         #endregion
 
         #region --方法--
@@ -126,7 +118,7 @@ namespace Make.MODEL
             string filepath = GeneralControl.Directory + "\\用户\\" + UserName + ".json";
             File.WriteAllText(filepath, json);
         }
-        public static User Load(ulong iD)
+        public static User Load(long iD)
         {
             string filepath = Material.App.directory + "\\用户\\" + iD.ToString() + ".json";
             if (!File.Exists(filepath)) return null;

@@ -35,7 +35,7 @@ namespace Make
         /// <summary>
         /// ID技能卡
         /// </summary>
-        public static Dictionary<ulong, SkillCard> Skill_Card_ID_Skllcard = new Dictionary<ulong, SkillCard>();
+        public static Dictionary<long, SkillCard> Skill_Card_ID_Skllcard = new Dictionary<long, SkillCard>();
         /// <summary>
         /// 名字技能卡
         /// </summary>
@@ -47,11 +47,11 @@ namespace Make
         /// <summary>
         /// 奇遇字典
         /// </summary>
-        public static Dictionary<ulong, Adventure> Adventures_ID = new Dictionary<ulong, Adventure>();
+        public static Dictionary<long, Adventure> Adventures_ID = new Dictionary<long, Adventure>();
         /// <summary>
         /// 总状态
         /// </summary>
-        public static Dictionary<ulong, State> States = new Dictionary<ulong, State>();
+        public static Dictionary<long, State> States = new Dictionary<long, State>();
         /// <summary>
         /// 总房间
         /// </summary>
@@ -59,7 +59,7 @@ namespace Make
         /// <summary>
         /// 总玩家
         /// </summary>       
-        public static Dictionary<ulong,Player> Players = new Dictionary<ulong, Player>();
+        public static Dictionary<long, Player> Players = new Dictionary<long, Player>();
 
         public static ICommand Command;
 
@@ -335,26 +335,25 @@ namespace Make
                 else
                 {
                     Menu_Person_Information_Class menu_Person_Informations_Class = new Menu_Person_Information_Class();
-                    menu_Person_Informations_Class.Author.UserName = "839336369";
-                    menu_Person_Informations_Class.Author.NickName = "剑仙";  
-                    menu_Person_Informations_Class.Author.Information = "个性签名";
-                    menu_Person_Informations_Class.Author.ID = 839336369;
-                    menu_Person_Informations_Class.Author.Save();
+                    menu_Person_Informations_Class.User.UserName = "839336369";
+                    menu_Person_Informations_Class.User.NickName = "剑仙";  
+                    menu_Person_Informations_Class.User.Information = "个性签名";
+                    menu_Person_Informations_Class.User.ID = 839336369;
+                    menu_Person_Informations_Class.User.Save();
                     return menu_Person_Informations_Class;
                 }
             });
             public static Menu_Person_Information_Class Instance { get { return lazy.Value; } }
             public event PropertyChangedEventHandler PropertyChanged = delegate { };
-            private User author = new User();
-            public User Author
+            private User user = new User();
+            public User User
             {
-                get { return author; }
+                get { return user; }
                 set
                 {
-                    if (Author != value)
+                    if (User != value)
                     {
-                        author = value;
-                        PropertyChanged(this, new PropertyChangedEventArgs("Author"));
+                        user = value;
                     }
                 }
             }

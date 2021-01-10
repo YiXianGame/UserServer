@@ -192,7 +192,7 @@ namespace Make.BLL
             RandomChinese randomChinese = new RandomChinese();
             Player player = new Player();
             player.NickName = randomChinese.GetRandomChinese(3);
-            player.ID = (ulong)player.GetHashCode();
+            player.ID = player.GetHashCode();
             player.Is_Robot = true;
             player.Init();
             if (GeneralControl.Skill_Card_ID_Skllcard.Count > 0)
@@ -221,7 +221,7 @@ namespace Make.BLL
             Monster player = new Monster();
             player.Init();
             player.NickName = randomChinese.GetRandomChinese(3);
-            player.ID = (ulong)player.GetHashCode();
+            player.ID = player.GetHashCode();
             player.Is_Robot = true;
             if (GeneralControl.Skill_Card_ID_Skllcard.Count > 0)
             {
