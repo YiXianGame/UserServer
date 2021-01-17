@@ -14,7 +14,7 @@ namespace Make.MODEL.RPC
     /// </summary>
     public class RPCServerFactory 
     {
-        private static ConcurrentDictionary<Tuple<string, string>, SocketListener> socketservers { get; } = new ConcurrentDictionary<Tuple<string, string>, SocketListener>();
+        private static Dictionary<Tuple<string, string>, SocketListener> socketservers { get; } = new Dictionary<Tuple<string, string>, SocketListener>();
         
         /// <summary>
         /// 获取客户端
@@ -50,8 +50,17 @@ namespace Make.MODEL.RPC
 
         public static void Destory(Tuple<string, string> key)
         {
-            socketservers.TryRemove(key, out SocketListener socket);
-            socket.Dispose();
+            SocketListener socketListener;
+            socketservers.TryGetValue(key, out socketListener);
+            if (socketListener != null)
+            {
+                Interlocked.Decrement(ref socketListener.remain);
+                if (socketListener.remain <= 0)
+                {
+                    socketservers.Remove(key, out SocketListener socket);
+                    socket.Dispose();
+                }
+            }
         }
     }
 }

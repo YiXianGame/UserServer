@@ -14,146 +14,136 @@ namespace Make.MODEL.TCP_Async_Event
 {
     public sealed class Token
     {
-
-        private Socket connection;
-
-        private StringBuilder sb;
-
+        private SocketAsyncEventArgs eventArgs;
+        private DotNetty.Buffers.IByteBuffer content;
         private int needRemain;
-
         private User user;
         string hostname;
         string port;
         //下面两部分只负责接收部分，发包构造部分并没有使用，修改时请注意！
         //下面这部分用于拆包分析   
-        const int headsize = 32;//头包长度
-        const int bodysize = 4;//数据大小长度
-        const int patternsize = 1;//消息类型长度
-        const int futuresize = 27;//后期看情况加
+        private static int headsize = 32;//头包长度
+        private static int bodysize = 4;//数据大小长度
+        private static int patternsize = 1;//消息类型长度
+        private static int futuresize = 27;//后期看情况加
         //下面这部分的byte用于接收数据
-        private byte[] head = new byte[headsize + 1];//留一个字节表示头包数据已接收大小
-        private byte[] pattern = new byte[patternsize];
-        private byte[] future = new byte[futuresize];
-        public Token(int bufferSize,string hostname,string port)
+        private static byte pattern;
+        private static byte[] future = new byte[futuresize];
+        public Token(SocketAsyncEventArgs eventArgs,string hostname,string port)
         {
-            this.sb = new StringBuilder(bufferSize);
+            this.eventArgs = eventArgs;
+            this.content = DotNetty.Buffers.UnpooledByteBufferAllocator.Default.DirectBuffer(eventArgs.Buffer.Length,1024000);
             this.hostname = hostname;
             this.port = port;
         }
-        public void Init(Socket socket)
+        public void Init()
         {
-            connection = socket;
-            sb.Length = 0;
-            head[0] = 0;
-        }
-        public Socket Connection
-        {
-            get { return this.connection; }
-            set { connection = value; }
+            content.ResetWriterIndex();
         }
 
         public User User { get => user; set => user = value; }
 
-        public string ProcessData(SocketAsyncEventArgs args)
+        public void ProcessData()
         {
-            String received = this.sb.ToString();
-            sb.Length = 0;
-            needRemain = 0;
-            return received;
-        }
-
-        public void SetData(SocketAsyncEventArgs args)
-        {
-            int count = args.BytesTransferred;
-            int pos = 0;
-            while (pos < count)
+            int writerIndex = eventArgs.BytesTransferred + eventArgs.Offset;
+            int readerIndex = 0;
+            while (readerIndex < writerIndex)
             {
                 //存在断包
                 if (needRemain != 0)
                 {
                     //如果接收数据满足整条量
-                    if (needRemain <= count - pos)
+                    if (needRemain <= writerIndex - readerIndex)
                     {
-                        string data = Encoding.UTF8.GetString(args.Buffer, pos, needRemain);
+                        content.WriteBytes(eventArgs.Buffer, readerIndex, needRemain);
                         //从客户端发回来的，只可能是请求，绝对不会是响应，因为服务器绝对不会因为一个客户进行一个线程等待.
-                        ClientRequestModel request = JsonConvert.DeserializeObject<ClientRequestModel>(data);
-                        RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, hostname, port), out RPCAdaptProxy proxy);
-                        proxy.methods.TryGetValue(request.Methodid, out MethodInfo method);
-                        //0-Request 1-Command
-                        if (pattern[0] == 0)
+                        ClientRequestModel request = JsonConvert.DeserializeObject<ClientRequestModel>(content.GetString(0,content.WriterIndex, Encoding.UTF8));
+                        content.ResetWriterIndex();
+                        if(!RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, hostname, port), out RPCAdaptProxy proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
                         {
 #if DEBUG
-                            Console.WriteLine("--------------------------------------------------");
-                            Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客-请求]\n{request.ToString()}");
-                            Console.WriteLine("--------------------------------------------------"); 
-#endif
-                            request.Params[0] = this;
-                            Task.Run(() => {
-                                Send(new ClientResponseModel("2.0", method.Invoke(null, request.Params), new Error(), request.ID));
-                            });
-                            //也可以直接调用，看实际情况，是打算开Task处理还是就在接收线程中处理，前者节约接收信息的时间，后者节约资源
-                            //Send(new ClientResponseModel("2.0", method.Invoke(null, request.Params), new Error(), request.ID));
+                            Console.WriteLine("------------------未找到该方法--------------------");
+                            Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客]\n{request}");
+                            Console.WriteLine("------------------未找到该方法--------------------");
+#endif                      
+                            return;
                         }
                         else
                         {
+                            proxy.ConvertParams(request.MethodId, request.Params);
+                            //0-Request 1-Command
+                            if (pattern == 0)
+                            {
 #if DEBUG
-                            Console.WriteLine("--------------------------------------------------");
-                            Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客-指令]\n{data.ToString()}");
-                            Console.WriteLine("--------------------------------------------------"); 
+                                Console.WriteLine("--------------------------------------------------");
+                                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客-请求]\n{request}");
+                                Console.WriteLine("--------------------------------------------------");
 #endif
-                            request.Params[0] = this;
-                            //也可以直接调用，看实际情况，是打算开Task处理还是就在接收线程中处理，前者节约接收信息的时间，后者节约资源
-                            //method.Invoke(null, request.Params);
-                            Task.Run(() => {
-                                method.Invoke(null, request.Params);
-                            });
+                                request.Params[0] = this;
+                                Send(new ClientResponseModel("2.0", method.Invoke(null, request.Params), new Error(), request.Id));
+                            }
+                            else
+                            {
+#if DEBUG
+                                Console.WriteLine("--------------------------------------------------");
+                                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客-指令]\n{request}");
+                                Console.WriteLine("--------------------------------------------------");
+#endif
+                                request.Params[0] = this;
+                                //也可以直接调用，看实际情况，是打算开Task处理还是就在接收线程中处理，前者节约接收信息的时间、一条线程并发处理消息，后者节约资源
+                                //method.Invoke(null, request.Params);
+                                Task.Run(() => {
+                                    method.Invoke(null, request.Params);
+                                });
+                            }
                         }
-                        pos = needRemain + pos;
+                        readerIndex = needRemain + readerIndex;
                         needRemain = 0;
                         continue;
                     }
                     else
                     {
-                        sb.Append(Encoding.UTF8.GetString(args.Buffer, pos, count - pos));
-                        needRemain = needRemain - count + pos;
+                        int remain = writerIndex - readerIndex;
+                        content.WriteBytes(eventArgs.Buffer, readerIndex, remain);
+                        needRemain -= remain;
                         break;
                     }
                 }
                 else
                 {
+                    int remain = writerIndex - readerIndex;
                     //头包凑不齐，直接返回等待下一次数据
-                    if (count - pos < headsize - head[0])
+                    if (remain < headsize)
                     {
-                        Buffer.BlockCopy(args.Buffer, pos, head, head[0] + 1, count - pos);
-                        head[0] += (byte)(count - pos);
-                        break;
+                        Buffer.BlockCopy(eventArgs.Buffer, readerIndex,eventArgs.Buffer,0,remain);
+                        eventArgs.SetBuffer(remain,eventArgs.Buffer.Length - remain);
+                        return;
                     }
                     else
                     {
-                        Buffer.BlockCopy(args.Buffer, pos, head, head[0] + 1, headsize - head[0]);
-                        pos += headsize - head[0];
-                        head[0] = 0;
                         //收到头包，开始对头包拆分
                         //4个字节的数据大小
-                        needRemain = BitConverter.ToInt32(head, 1);
+                        needRemain = BitConverter.ToInt32(eventArgs.Buffer, readerIndex);
                         //1个字节的接收方式
-                        pattern[0] = head[bodysize + 1];
+                        pattern = eventArgs.Buffer[readerIndex + bodysize];
                         //接收剩下的27个不用的字节
-                        Buffer.BlockCopy(head, bodysize + patternsize + 1, future, 0, futuresize);
+                        Buffer.BlockCopy(eventArgs.Buffer, readerIndex + bodysize + patternsize, future, 0, futuresize);
+                        readerIndex += headsize;
                         continue;
                     }
                 }
             }
+            eventArgs.SetBuffer(0, eventArgs.Buffer.Length);
         }
 
 
         public void Send(ServerRequestModel request)
         {
-            if (Connection.Connected)
+            if (eventArgs.AcceptSocket.Connected)
             {
 #if DEBUG
                 Console.WriteLine("---------------------------------------------------------");
-                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[服-指令]\n{request.ToString()}");
+                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[服-指令]\n{request}");
                 Console.WriteLine("---------------------------------------------------------"); 
 #endif
                 //构造data数据
@@ -173,7 +163,7 @@ namespace Make.MODEL.TCP_Async_Event
                 Buffer.BlockCopy(bodyBytes, 0, sendBuffer, headerBytes.Length + pattern.Length + future.Length, bodyBytes.Length);
                 SocketAsyncEventArgs sendEventArgs = new SocketAsyncEventArgs();
                 sendEventArgs.SetBuffer(sendBuffer, 0, sendBuffer.Length);
-                Connection.SendAsync(sendEventArgs);
+                eventArgs.AcceptSocket.SendAsync(sendEventArgs);
             }
             else
             {
@@ -182,11 +172,11 @@ namespace Make.MODEL.TCP_Async_Event
         }
         public void Send(ClientResponseModel response)
         {
-            if (Connection.Connected)
+            if (eventArgs.AcceptSocket.Connected)
             {
 #if DEBUG
                 Console.WriteLine("---------------------------------------------------------");
-                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[服-返回]\n{response.ToString()}");
+                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[服-返回]\n{response}");
                 Console.WriteLine("---------------------------------------------------------"); 
 #endif
                 //构造data数据
@@ -206,7 +196,7 @@ namespace Make.MODEL.TCP_Async_Event
                 Buffer.BlockCopy(bodyBytes, 0, sendBuffer, headerBytes.Length + pattern.Length + future.Length, bodyBytes.Length);
                 SocketAsyncEventArgs sendEventArgs = new SocketAsyncEventArgs();
                 sendEventArgs.SetBuffer(sendBuffer, 0, sendBuffer.Length);
-                Connection.SendAsync(sendEventArgs);
+                eventArgs.AcceptSocket.SendAsync(sendEventArgs);
             }
         }
     }

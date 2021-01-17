@@ -11,14 +11,17 @@ namespace Make.MODEL.RPC
 {
     public class RPCRequestProxy : DispatchProxy
     {
-        public Random random = new Random();
         private string servicename;
         private Tuple<string, string> key;
-        public static T Create<T>(string servicename, Tuple<string, string> clientkey)
+        Dictionary<Type, String> typeToAbstract;
+
+
+        public static T Register<T>(string servicename, Tuple<string, string> clientkey, Dictionary<Type, String> typeToAbstract)
         {
             RPCRequestProxy proxy = (RPCRequestProxy)(Create<T, RPCRequestProxy>() as object);
             proxy.key = clientkey;
             proxy.servicename = servicename;
+            proxy.typeToAbstract = typeToAbstract;
             return (T)(proxy as object);
         }
 
@@ -30,8 +33,14 @@ namespace Make.MODEL.RPC
             ParameterInfo[] parameters = targetMethod.GetParameters();
             for (int i = 1; i < parameters.Length; i++)
             {
-                methodid.Append("-");
-                methodid.Append(parameters[i].ParameterType.Name);
+                try
+                {
+                    methodid.Append("-" + typeToAbstract[parameters[i].ParameterType]);
+                }
+                catch (Exception)
+                {
+                    throw new Exception($"C#对应的{parameters[i].ParameterType}类型参数尚未注册");
+                }
             }
             object[] obj;
             if (args.Length > 1)

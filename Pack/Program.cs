@@ -17,12 +17,16 @@ namespace Pack
     {
         static void Main(string[] args)
         {
+            RPCType type = new RPCType();
+            type.Add<int>("int");
+            type.Add<string>("string");
+            type.Add<bool>("bool");
             //服务端
             Initialization initialization = new Initialization();
             //适配远程客户端服务
-            RPCAdaptFactory.Register<User>("User", Environment.MachineName, "28015");
+            RPCAdaptFactory.Register<User>("User", "192.168.0.105", "28015",type);
             //注册远程服务
-            GeneralControl.Command = RPCRequestProxyFactory.Register<ICommand>("Command", Environment.MachineName, "28015");
+            GeneralControl.Command = RPCRequestProxyFactory.Register<ICommand>("Command", "192.168.0.105", "28015",type);
         }
     }
 }

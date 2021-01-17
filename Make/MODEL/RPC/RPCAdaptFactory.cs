@@ -13,8 +13,28 @@ namespace Make.MODEL.RPC
     {
         public static ConcurrentDictionary<Tuple<string, string, string>, RPCAdaptProxy> services { get; } = new ConcurrentDictionary<Tuple<string, string, string>, RPCAdaptProxy>();
 
-        public static void Register<T>(string servicename,string hostname, string port) where T:class
+        public static void Register<T>(string servicename,string hostname, string port,RPCType type) where T:class
         {
+            if (string.IsNullOrEmpty(servicename))
+            {
+                throw new ArgumentException("参数为空", nameof(servicename));
+            }
+
+            if (string.IsNullOrEmpty(hostname))
+            {
+                throw new ArgumentException("参数为空", nameof(hostname));
+            }
+
+            if (string.IsNullOrEmpty(port))
+            {
+                throw new ArgumentException("参数为空", nameof(port));
+            }
+
+            if (type is null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
             RPCAdaptProxy service = null;
             Tuple<string, string, string> key = new Tuple<string, string, string>(servicename, hostname, port.ToString());
             services.TryGetValue(key,out service);
@@ -24,7 +44,7 @@ namespace Make.MODEL.RPC
                 {
                     SocketListener socketListener = RPCServerFactory.GetServer(new Tuple<string, string>(hostname, port));
                     service = new RPCAdaptProxy();
-                    service.Register<T>();
+                    service.Register<T>(type);
                     services[key] = service;
                 }
                 catch (Exception err)
@@ -38,13 +58,7 @@ namespace Make.MODEL.RPC
         public static void Destory(string servicename, string hostname, string port)
         {
             services.TryRemove(new Tuple<string, string, string>(servicename,hostname,port), out RPCAdaptProxy value);
-            value.Dispose();
-            bool flag = false;
-            foreach(Tuple<string,string,string> item in services.Keys)
-            {
-                if (item.Item2 == hostname && item.Item3 == port) flag = true;
-            }
-            if (flag == false) RPCServerFactory.Destory(new Tuple<string, string>(hostname, port));
+            RPCServerFactory.Destory(new Tuple<string, string>(hostname, port));
         }
     }
 }

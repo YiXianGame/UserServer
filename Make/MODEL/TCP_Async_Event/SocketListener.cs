@@ -9,11 +9,11 @@ namespace Make.MODEL.TCP_Async_Event
 
     public sealed class SocketListener : IDisposable
     {
+        public int remain = 0;
+
         private Socket listenSocket;
 
         private static Mutex mutex = new Mutex(false);
-
-        private int bufferSize;
 
         private int numConnectedSockets;
 
@@ -32,7 +32,6 @@ namespace Make.MODEL.TCP_Async_Event
         {
             this.numConnectedSockets = 0;
             this.numConnections = numConnections;
-            this.bufferSize = bufferSize;
             this.hostname = hostname;
             this.port = int.Parse(port);
             this.readWritePool = new SocketAsyncEventArgsPool(numConnections);
@@ -41,23 +40,19 @@ namespace Make.MODEL.TCP_Async_Event
 
             for (int i = 0; i < this.numConnections; i++)
             {
-                SocketAsyncEventArgs readWriteEventArg = new SocketAsyncEventArgs();
-                readWriteEventArg.Completed += OnReceiveCompleted;
-                readWriteEventArg.UserToken = new Token(bufferSize, hostname, port);
-                readWriteEventArg.SetBuffer(new Byte[this.bufferSize], 0, this.bufferSize);
-                this.readWritePool.Push(readWriteEventArg);
+                SocketAsyncEventArgs receiveEventArg = new SocketAsyncEventArgs();
+                receiveEventArg.Completed += OnReceiveCompleted;
+                receiveEventArg.SetBuffer(new Byte[bufferSize], 0, bufferSize);
+                receiveEventArg.UserToken = new Token(receiveEventArg,hostname,port);
+                this.readWritePool.Push(receiveEventArg);
             }
 
 
             IPAddress[] addressList = Dns.GetHostEntry(hostname).AddressList;
 
-
             IPEndPoint localEndPoint = new IPEndPoint(addressList[addressList.Length - 1],int.Parse(port));
 
-
             this.listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            this.listenSocket.ReceiveBufferSize = this.bufferSize;
-            this.listenSocket.SendBufferSize = this.bufferSize;
             if (localEndPoint.AddressFamily == AddressFamily.InterNetworkV6)
             {
                 this.listenSocket.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)27, false);
@@ -101,6 +96,7 @@ namespace Make.MODEL.TCP_Async_Event
 
         private void ProcessAccept(SocketAsyncEventArgs e)
         {
+            if (e.AcceptSocket == null) throw new SocketException((int)SocketError.SocketError);
             Socket s = e.AcceptSocket;
             try
             {
@@ -112,8 +108,7 @@ namespace Make.MODEL.TCP_Async_Event
                         // Get the socket for the accepted client connection and put it into the 
                         // ReadEventArg object user token.
                         readEventArgs.AcceptSocket = s;
-                        Token token = (readEventArgs.UserToken as Token);
-                        token.Init(s);
+                        (readEventArgs.UserToken as Token).Init();
                         Interlocked.Increment(ref this.numConnectedSockets);
                         Console.WriteLine("Client connection accepted. There are {0} clients connected to the server",
                             this.numConnectedSockets);
@@ -132,7 +127,7 @@ namespace Make.MODEL.TCP_Async_Event
             catch (SocketException ex)
             {
                 Token token = e.UserToken as Token;
-                Console.WriteLine("Error when processing data received from {0}:\r\n{1}", token.Connection.RemoteEndPoint, ex.ToString());
+                Console.WriteLine("Error when processing data received from {0}:\r\n{1}", e.RemoteEndPoint, ex.ToString());
             }
             catch (Exception ex)
             {
@@ -146,6 +141,7 @@ namespace Make.MODEL.TCP_Async_Event
 
         public void StartAccept(SocketAsyncEventArgs acceptEventArg)
         {
+
             Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:{hostname}:{port}线程任务已经开始运行");
             while (true)
             {
@@ -173,10 +169,8 @@ namespace Make.MODEL.TCP_Async_Event
                 }
                 Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:完成{hostname}:{port}中请求的Accpet");
                 mutex.ReleaseMutex();
-                Thread.Sleep(50);
             }
         }
-
         private void ProcessReceive(SocketAsyncEventArgs e)
         {
             // Check if the remote host closed the connection.
@@ -184,9 +178,9 @@ namespace Make.MODEL.TCP_Async_Event
             {
                 if (e.SocketError == SocketError.Success)
                 {
-                    Token token = e.UserToken as Token;
-                    token.SetData(e);
-                    if (!token.Connection.ReceiveAsync(e))
+
+                    (e.UserToken as Token).ProcessData();
+                    if (!e.AcceptSocket.ReceiveAsync(e))
                     {
                         // Read the next block of data sent by client.
                         this.ProcessReceive(e);
@@ -227,8 +221,8 @@ namespace Make.MODEL.TCP_Async_Event
 
         private void Dispose(bool disposing)
         {
-            Console.WriteLine($"{Thread.CurrentThread.Name}开始销毁{hostname}:{port}实例");
             if (isDipose) return;
+            Console.WriteLine($"{Thread.CurrentThread.Name}开始销毁{hostname}:{port}实例");
             if (disposing)
             {
                 semaphoreAcceptedClients = null;

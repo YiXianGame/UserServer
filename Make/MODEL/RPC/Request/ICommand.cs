@@ -7,6 +7,6 @@ namespace Make.MODEL.RPC.Request
 {
     public interface ICommand
     {
-        public void AddHp(Token token, long num);
+        public void AddHp(Token token, int num);
     }
 }
