@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Make.MODEL.RPC
+namespace Material.RPC
 {
     public class Error
     {

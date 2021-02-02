@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace Make.MODEL.TCP_Async_Event
+namespace Material.TCP_Async_Event
 {
 
     public sealed class SocketAsyncEventArgsPool

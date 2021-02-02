@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Net.Sockets;
-using System.Globalization;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using Make.MODEL;
 using Newtonsoft.Json;
-using Make.MODEL.RPC;
 using System.Reflection;
+using Material.RPC;
 
-namespace Make.MODEL.TCP_Async_Event
+namespace Material.TCP_Async_Event
 {
     public sealed class Token
     {
         private SocketAsyncEventArgs eventArgs;
         private DotNetty.Buffers.IByteBuffer content;
         private int needRemain;
-        private User user;
         string hostname;
         string port;
         //下面两部分只负责接收部分，发包构造部分并没有使用，修改时请注意！
@@ -40,8 +35,6 @@ namespace Make.MODEL.TCP_Async_Event
         {
             content.ResetWriterIndex();
         }
-
-        public User User { get => user; set => user = value; }
 
         public void ProcessData()
         {
@@ -66,11 +59,10 @@ namespace Make.MODEL.TCP_Async_Event
                             Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客]\n{request}");
                             Console.WriteLine("------------------未找到该方法--------------------");
 #endif                      
-                            return;
                         }
                         else
                         {
-                            proxy.ConvertParams(request.MethodId, request.Params);
+                            proxy.ConvertParams(request.MethodId,request.Params);
                             //0-Request 1-Command
                             if (pattern == 0)
                             {

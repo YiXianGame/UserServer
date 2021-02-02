@@ -15,8 +15,6 @@ namespace Make.BLL
                 $"{{ \"title\": \"境界\",\"value\": \"{user.Title}\" }}," +
                 $"{{ \"title\": \"经验\", \"value\": \"{user.Exp}\" }}," +
                 $"{{ \"title\": \"战斗场次\", \"value\": \"{user.Battle_Count}\" }}," +
-                $"{{ \"title\": \"仙域币\", \"value\": \"{user.Balances}\" }}," +
-                $"{{ \"title\": \"注册日期\", \"value\": \"{user.Registration_date}\" }}" +
                 $"], \"emphasis_keyword\": \"\",\"title\": \"个人信息\"}}  }} }}";
             return msg;
         }

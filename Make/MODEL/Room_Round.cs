@@ -12,8 +12,8 @@ namespace Make.MODEL
         {
             Max_Personals = max;
             Min_Personals = min;
-            GeneralControl.Rooms.Add(this);
-            GeneralControl.Menu_Data_Monitor_Class.Instance.Rooms = $"房间总数:{GeneralControl.Rooms.Count}";
+            Core.Rooms.Add(this);
+            Core.Menu_Data_Monitor_Class.Instance.Rooms = $"房间总数:{Core.Rooms.Count}";
         }
         public override void SendMessages(string msg, object bound = null)
         {
@@ -184,12 +184,12 @@ namespace Make.MODEL
         {
             foreach(Player player in Players)
             {
-                GeneralControl.Players.Remove(player.ID);
+                Core.Players.Remove(player.ID);
             }
-            GeneralControl.Rooms.Remove(this);
-            GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
-            GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Map.Players.Count}人";
-            GeneralControl.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
+            Core.Rooms.Remove(this);
+            Core.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{Core.Players.Count}人";
+            Core.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{Core.Map.Players.Count}人";
+            Core.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{Core.Players.Count - Core.Map.Players.Count}人";
         }
         /// <summary>
         /// 加入房间
@@ -204,11 +204,11 @@ namespace Make.MODEL
                 player.DeathEvent += player.OnDeath_Room;
                 player.Active = Enums.Player_Active.Round;
                 Players.Add(player);
-                user.Active = Enums.User_Active.Ready;
-                GeneralControl.Players.Add(player.ID, player);
-                GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
-                GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Map.Players.Count}人";
-                GeneralControl.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
+                user.Active = User.State.Ready;
+                Core.Players.Add(player.ID, player);
+                Core.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{Core.Players.Count}人";
+                Core.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{Core.Map.Players.Count}人";
+                Core.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{Core.Players.Count - Core.Map.Players.Count}人";
             }
             else user.SendMessages("人数已满,加入房间失败");
         }
@@ -222,10 +222,10 @@ namespace Make.MODEL
             {
                 player.Active = Enums.Player_Active.Round;
                 Players.Add(player);
-                GeneralControl.Players.Add(player.ID, player);
-                GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
-                GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Map.Players.Count}人";
-                GeneralControl.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
+                Core.Players.Add(player.ID, player);
+                Core.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{Core.Players.Count}人";
+                Core.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{Core.Map.Players.Count}人";
+                Core.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{Core.Players.Count - Core.Map.Players.Count}人";
             }
         }
         /// <summary>
@@ -235,15 +235,15 @@ namespace Make.MODEL
         public override void Leave(Player player)
         {
             Players.Remove(player);
-            GeneralControl.Players.Remove(player.ID);
+            Core.Players.Remove(player.ID);
             if (Players.Count == 0)
             {
-                GeneralControl.Rooms.Remove(this);
-                GeneralControl.Menu_Data_Monitor_Class.Instance.Rooms = $"房间总数:{GeneralControl.Rooms.Count}";
+                Core.Rooms.Remove(this);
+                Core.Menu_Data_Monitor_Class.Instance.Rooms = $"房间总数:{Core.Rooms.Count}";
             }
-            GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
-            GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Map.Players.Count}人";
-            GeneralControl.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
+            Core.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{Core.Players.Count}人";
+            Core.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{Core.Map.Players.Count}人";
+            Core.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{Core.Players.Count - Core.Map.Players.Count}人";
             player.Init();
         }
         #endregion

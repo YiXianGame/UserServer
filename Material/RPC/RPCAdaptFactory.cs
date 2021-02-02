@@ -1,4 +1,4 @@
-﻿using Make.MODEL.TCP_Async_Event;
+﻿using Material.TCP_Async_Event;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Make.MODEL.RPC
+namespace Material.RPC
 {
     public class RPCAdaptFactory
     {

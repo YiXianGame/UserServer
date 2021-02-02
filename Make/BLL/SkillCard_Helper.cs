@@ -15,7 +15,7 @@ namespace Make.BLL
         public static List<SkillCard> Get_Random(int cnt)
         {
             Random random = new Random();
-            SkillCard[] skillCards = GeneralControl.Skill_Card_ID_Skllcard.Values.ToArray();
+            SkillCard[] skillCards = Core.Skill_Card_ID_Skllcard.Values.ToArray();
             List<SkillCard> temp=new List<SkillCard>();
             if (skillCards.Length > 0)
             {
@@ -31,7 +31,7 @@ namespace Make.BLL
         public static List<SkillCard> Get_Random(int cnt,int num)
         {
             Random random = new Random();
-            SkillCard[] skillCards = GeneralControl.Skill_Card_ID_Skllcard.Values.ToArray();
+            SkillCard[] skillCards = Core.Skill_Card_ID_Skllcard.Values.ToArray();
             List<SkillCard> temp = new List<SkillCard>();
             if (skillCards.Length > 0)
             {
@@ -52,7 +52,7 @@ namespace Make.BLL
         /// <returns>成功返回具体实例，失败返回 null</returns>
         public static SkillCard Query(string Name)
         {
-            if (GeneralControl.Skill_Card_Name_Skllcard.TryGetValue(Name, out SkillCard skillCard))
+            if (Core.Skill_Card_Name_Skllcard.TryGetValue(Name, out SkillCard skillCard))
             {
                 return skillCard.Clone();
             }

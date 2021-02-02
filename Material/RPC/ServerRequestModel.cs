@@ -4,20 +4,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace Make.MODEL.RPC
+namespace Material.RPC
 {
-    public class ClientRequestModel
+    public class ServerRequestModel
     {
         public readonly string JsonRpc;
         public readonly string MethodId;
         public readonly object[] Params;
-        public string Id;
         public readonly string Service;
 
-        public ClientRequestModel(string jsonRpc, string service, string methodId, object[] @params)
+        public ServerRequestModel(string jsonrpc,string service,string methodid, object[] @params)
         {
-            JsonRpc = jsonRpc;
-            MethodId = methodId;
+            JsonRpc = jsonrpc;
+            MethodId = methodid;
             Params = @params;
             Service = service;
         }

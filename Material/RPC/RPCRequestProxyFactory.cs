@@ -1,5 +1,4 @@
-﻿using Make.MODEL.TCP_Async_Event;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -8,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Make.MODEL.RPC
+namespace Material.RPC
 {
     public class RPCRequestProxyFactory
     {
@@ -50,7 +49,7 @@ namespace Make.MODEL.RPC
             {
                 Tuple<string, string> serverkey = new Tuple<string, string>(hostname, port);
                 RPCServerFactory.GetServer(serverkey);
-                service = RPCRequestProxy.Register<T>(servicename, new Tuple<string, string>(hostname, port),type.TypeToAbstract);
+                service = RPCRequestProxy.Register<T>(servicename, new Tuple<string, string>(hostname, port),type);
                 services[key] = service;
             }
             return service;

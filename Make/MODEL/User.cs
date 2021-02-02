@@ -1,5 +1,4 @@
 ﻿using Make.BLL;
-using Make.MODEL.TCP_Async_Event;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -16,94 +15,77 @@ namespace Make.MODEL
     [JsonObject(MemberSerialization.OptOut)]
     public class User
     {
+        #region --Enum--
+        public enum State { Leisure, Ready, Queue, Gaming, Offline };
+        #endregion
+
         #region --字段--
-        private string username="";
+
         private long id;
-        private string nickname;
-        private int upgrade_num=0;
-        private int create_num=0;
+
+        private string userName;
+
+        private byte[] headImage;
+
+        private string nickName;
+
+        private int upgrade_num = 0;
+
+        private int create_num = 0;
+
         private int money = 0;
-        private string information="";
-        private string passwords = "";
+
+        private string passwords;
+
+        private string information;
+
         private int battle_Count;//战斗场次
+
         private int exp;//经验
-        private int balances;//金钱
+
         private int lv = 1;//等级
+
         private string title = "炼气";//称号
-        private Enums.User_Active active = Enums.User_Active.Leisure;//玩家当前游戏状态
+
+        private State active = State.Offline;//玩家当前游戏状态
+
         private int kills;//击杀数
+
         private int deaths;//死亡数
-        private DateTime registration_date;//注册时间   
+
+        long registerDate;//注册日期
+
+        long attribute_update;//个人信息更新日期
+
+        long skillCard_update;//卡牌更新日期
+
+        long headImage_update;//头像更新日期
+
         #endregion
 
         #region --属性--
-        
-        public string UserName { get => username; set => username = value; }
-        public string NickName { get => nickname; set => nickname = value; }
-        public string Information { get => information; set => information = value; }
+
+        public long Id { get => id; set => id = value; }
+        public string UserName { get => userName; set => userName = value; }
+        public byte[] HeadImage { get => headImage; set => headImage = value; }
+        public string NickName { get => nickName; set => nickName = value; }
         public int Upgrade_num { get => upgrade_num; set => upgrade_num = value; }
         public int Create_num { get => create_num; set => create_num = value; }
         public int Money { get => money; set => money = value; }
         public string Passwords { get => passwords; set => passwords = value; }
+        public string Information { get => information; set => information = value; }
         public int Battle_Count { get => battle_Count; set => battle_Count = value; }
-        public int Exp
-        {
-            get => exp;
-            set
-            {
-                exp = value;
-                if (exp < 10)
-                {
-                    Title = "炼气";
-                    Lv = 1;
-                }
-                else if (exp >= 10)
-                {
-                    Title = "筑基";
-                    Lv = 2;
-                }
-                else if (exp >= 100)
-                {
-                    Title = "金丹";
-                    Lv = 3;
-                }
-                else if (exp >= 500)
-                {
-                    Title = "元婴";
-                    Lv = 4;
-                }
-                else if (exp >= 1000)
-                {
-                    Title = "分神";
-                    Lv = 5;
-                }
-                else if (exp >= 1500)
-                {
-                    Title = "洞虚";
-                    Lv = 6;
-                }
-                else if (exp >= 2000)
-                {
-                    Title = "大乘";
-                    Lv = 7;
-                }
-                else if (exp >= 3000)
-                {
-                    Lv = 8;
-                    Title = "羽化";
-                }
-            }
-        }
-        public int Balances { get => balances; set => balances = value; }
+        public int Exp { get => exp; set => exp = value; }
         public int Lv { get => lv; set => lv = value; }
         public string Title { get => title; set => title = value; }
         [JsonConverter(typeof(StringEnumConverter))]
-        public Enums.User_Active Active { get => active; set => active = value; }
+        public State Active { get => active; set => active = value; }
         public int Kills { get => kills; set => kills = value; }
         public int Deaths { get => deaths; set => deaths = value; }
-        [JsonIgnore]
-        public DateTime Registration_date { get => registration_date; set => registration_date = value; }
-        public long ID { get => id; set => id = value; }
+        public long RegisterDate { get => registerDate; set => registerDate = value; }
+        public long Attribute_update { get => attribute_update; set => attribute_update = value; }
+        public long SkillCard_update { get => skillCard_update; set => skillCard_update = value; }
+        public long HeadImage_update { get => headImage_update; set => headImage_update = value; }
         #endregion
 
         #region --方法--
@@ -115,7 +97,7 @@ namespace Make.MODEL
         public void Save()
         {
             string json = JsonConvert.SerializeObject(this);
-            string filepath = GeneralControl.Directory + "\\用户\\" + UserName + ".json";
+            string filepath = Core.Directory + "\\用户\\" + UserName + ".json";
             File.WriteAllText(filepath, json);
         }
         public static User Load(long iD)
@@ -127,7 +109,7 @@ namespace Make.MODEL
         }
         public void Delete()
         {
-            string filepath = GeneralControl.Directory + "\\用户\\" + UserName + ".json";
+            string filepath = Core.Directory + "\\用户\\" + UserName + ".json";
             File.Delete(filepath);
         }
         /// <summary>
@@ -149,13 +131,13 @@ namespace Make.MODEL
         /// <param name="reason">缘由</param>
         /// <param name="isSend">是否发送消息</param>
         /// <returns></returns>
-        public bool Add_Balances(int value)
+        public bool Add_Money(int value)
         {
-            if (value < 0 && (-value) > Balances)
+            if (value < 0 && (-value) > money)
             {
                 return false;
             }
-            Balances += value;
+            money += value;
             Save();
             return true;
         }
@@ -171,7 +153,7 @@ namespace Make.MODEL
         public void Settle(int Ex, int Bal)
         {
             Add_Exp(Ex);
-            Add_Balances(Bal);
+            Add_Money(Bal);
             Battle_Count++;
         }
         /*

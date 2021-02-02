@@ -22,7 +22,7 @@ namespace Make.MODEL
             foreach (Player player in Players)
             {
                 player.Action = false;
-                player.Hp = GeneralControl.Menu_GameControl_Class.Instance.Room_Hp_Max;
+                player.Hp = Core.Menu_GameControl_Class.Instance.Room_Hp_Max;
                 player.Mp = 0;
                 player.Action_Skill = null;
                 player.Action = false;
@@ -52,9 +52,9 @@ namespace Make.MODEL
             //奇遇
             foreach (Player player in Players)
             {
-                if (random.Next(1, 100) <= GeneralControl.Menu_GameControl_Class.Instance.Adventure_Probability) continue;
+                if (random.Next(1, 100) <= Core.Menu_GameControl_Class.Instance.Adventure_Probability) continue;
                 int random_personal = random.Next(1, 100);
-                foreach(Adventure adventure in GeneralControl.Adventures)
+                foreach(Adventure adventure in Core.Adventures)
                 {
                     if (random_personal >= adventure.Probability)
                     {
@@ -89,7 +89,7 @@ namespace Make.MODEL
                                 friend.Add_States(state.Clone());
                             }
                         }
-                        if (!GeneralControl.Menu_GameControl_Class.Instance.Adventure_Concurrent) break;
+                        if (!Core.Menu_GameControl_Class.Instance.Adventure_Concurrent) break;
                     }
                 }
             }

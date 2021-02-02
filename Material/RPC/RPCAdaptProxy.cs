@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Make.MODEL.RPC;
 
-namespace Make.MODEL.RPC
+namespace Material.RPC
 {
     public class RPCAdaptProxy
     {
@@ -14,13 +15,13 @@ namespace Make.MODEL.RPC
         //猜测类似C++函数指针可能会更快,C#.NET理念下函数指针只能用委托替代，但委托自由度不高.
         //string连接的时候使用引用要比tuple慢很多
         private Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
-        private Dictionary<String, RPCType.ConvertDelegage> abstractToType;
+        private RPCType type;
 
         public Dictionary<string, MethodInfo> Methods { get => methods; set => methods = value; }
 
         public void Register<T>(RPCType type)
         {
-            this.abstractToType = type.AbstractToType;
+            this.type = type;
             StringBuilder methodid = new StringBuilder();
             foreach (MethodInfo method in typeof(T).GetMethods())
             {
@@ -28,7 +29,7 @@ namespace Make.MODEL.RPC
                 {
                     methodid.Append(method.Name);
                     ParameterInfo[] parameters = method.GetParameters();
-                    //跳过第一个参数Token，本来打算让客户端加上这个参数，但是分析后觉得不加最好，还节省资源.
+                    //跳过第一个参数Token，本来打算让客户端加上这个参数，但是分析后觉得代码不够友好，还节省资源.
                     for (int i = 1; i < parameters.Length; i++)
                     {
                         try
@@ -37,7 +38,7 @@ namespace Make.MODEL.RPC
                         }
                         catch (Exception)
                         {
-                            throw new RPCException($"C#中的{type}类型参数尚未注册");
+                            throw new RPCException($"C#中的{parameters[i].ParameterType}类型参数尚未注册");
                         }
                     }
                     Methods.TryAdd(methodid.ToString(), method);
@@ -45,16 +46,22 @@ namespace Make.MODEL.RPC
                 }
             }
         }
-        public void ConvertParams(string methodId,Object[] parameters)
+        public void ConvertParams(string methodId,object[] parameters)
         {
-            String[] param_id = methodId.Split('-') ;
-            for(int i = 1; i < param_id.Length; i++)
-            {
-                if (abstractToType.TryGetValue(param_id[i], out RPCType.ConvertDelegage convert))
+            String[] param_id = methodId.Split('-');
+            if (param_id.Length > 1) {
+                for (int i = 1, j = 1; i < param_id.Length; i++,j++)
                 {
-                    parameters[i - 1] = convert(parameters[i - 1]);
+                    if (type != null)
+                    {
+                        if (type.TypeConvert.TryGetValue(param_id[i], out RPCType.ConvertDelegage convert))
+                        {
+                            parameters[j] = convert(parameters[j]);
+                        }
+                        else throw new RPCException($"RPC中的{param_id[i]}类型转换器在TypeConvert字典中尚未被注册");
+                    }
+                    else throw new RPCException($"RPC中的{param_id[i]}类型参数在AbstractToType字典中尚未被注册");
                 }
-                else throw new RPCException($"RPC中的{param_id[i]}类型参数尚未被注册");
             }
         }
     }

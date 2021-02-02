@@ -1,9 +1,8 @@
-﻿using Make.MODEL.TCP_Async_Event;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Make.MODEL.RPC
+namespace Material.RPC
 {
     public class ClientResponseModel
     {

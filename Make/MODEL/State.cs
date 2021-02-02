@@ -89,7 +89,7 @@ namespace Make.MODEL
             set 
             { 
                 duration_Immediate = value;
-                int round = Duration_Immediate / GeneralControl.Menu_GameControl_Class.Instance.Immediate_To_Round;
+                int round = Duration_Immediate / Core.Menu_GameControl_Class.Instance.Immediate_To_Round;
                 if (round > 0) Duration_Round = round;
                 else Duration_Round = 1;
             }

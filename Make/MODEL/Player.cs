@@ -1,5 +1,4 @@
-﻿using Make.MODEL.TCP_Async_Event;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
@@ -313,7 +312,7 @@ namespace Make.MODEL
         public void Init()
         {
                 Action = false;
-                Hp = GeneralControl.Menu_GameControl_Class.Instance.Room_Hp_Max;
+                Hp = Core.Menu_GameControl_Class.Instance.Room_Hp_Max;
                 Mp = 0;
                 Action_Skill = null;
                 Action = false;

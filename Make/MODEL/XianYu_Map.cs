@@ -128,20 +128,20 @@ namespace Make.MODEL
             Random random = new Random();
             Pos[] pos_Array = (from Pos item in Pos_Map where item.Item == null select item).ToArray();
             //奇遇 
-            if (GeneralControl.Adventures.Count > 0)
+            if (Core.Adventures.Count > 0)
             {
-                for (int i = 0; i < GeneralControl.Menu_GameControl_Class.Instance.Map_Resources_Adventure; i++)
+                for (int i = 0; i < Core.Menu_GameControl_Class.Instance.Map_Resources_Adventure; i++)
                 {
-                    pos_Array[random.Next(0, pos_Array.Length - 1)].Add(GeneralControl.Adventures[random.Next(0, GeneralControl.Adventures.Count - 1)]);
+                    pos_Array[random.Next(0, pos_Array.Length - 1)].Add(Core.Adventures[random.Next(0, Core.Adventures.Count - 1)]);
                     Current_Resources_Adventure++;
                 }
             }
 
             //技能卡
-            if (GeneralControl.Adventures.Count > 0)
+            if (Core.Adventures.Count > 0)
             {
                 pos_Array = (from Pos item in Pos_Map where item.Item == null select item).ToArray();
-                for (int i = 0; i < GeneralControl.Menu_GameControl_Class.Instance.Map_Resources_SkillCard; i++)
+                for (int i = 0; i < Core.Menu_GameControl_Class.Instance.Map_Resources_SkillCard; i++)
                 {
                     List<SkillCard> skillCards = new List<SkillCard>();
                     skillCards.AddRange(SkillCard_Helper.Get_Random(1, random.Next(1, 3)));
@@ -156,25 +156,25 @@ namespace Make.MODEL
             }
 
             //状态
-            if (GeneralControl.States.Count > 0)
+            if (Core.States.Count > 0)
             {
                 pos_Array = (from Pos item in Pos_Map where item.Item == null select item).ToArray();
-                for (int i = 0; i < GeneralControl.Menu_GameControl_Class.Instance.Map_Resources_State; i++)
+                for (int i = 0; i < Core.Menu_GameControl_Class.Instance.Map_Resources_State; i++)
                 {
-                    List<State> states = GeneralControl.States.Values.ToList();
-                    pos_Array[random.Next(0, pos_Array.Length - 1)].Add(states[random.Next(0, GeneralControl.States.Count - 1)]);
+                    List<State> states = Core.States.Values.ToList();
+                    pos_Array[random.Next(0, pos_Array.Length - 1)].Add(states[random.Next(0, Core.States.Count - 1)]);
                     Current_Resources_State++;
                 }
             }
             //野怪;
             pos_Array = (from Pos item in Pos_Map where item.Item == null select item).ToArray();
-            for (int i = 0; i < GeneralControl.Menu_GameControl_Class.Instance.Map_Resources_Monster; i++)
+            for (int i = 0; i < Core.Menu_GameControl_Class.Instance.Map_Resources_Monster; i++)
             {
                 Monster monster = NPC_Helper.New_Monster();
-                monster.Map = GeneralControl.Map;
+                monster.Map = Core.Map;
                 monster.Active = Enums.Player_Active.Map;
                 monster.Move(pos_Array[random.Next(0, pos_Array.Count() - 1)]);
-                monster.Hp = GeneralControl.Menu_GameControl_Class.Instance.Map_Hp_Max;
+                monster.Hp = Core.Menu_GameControl_Class.Instance.Map_Hp_Max;
                 monster.Mp = 0;//**GeneralControl.Menu_GameControl_Class.Instance.Map_Hp_Max / 3;
                 Current_Resources_Monster++;
             }

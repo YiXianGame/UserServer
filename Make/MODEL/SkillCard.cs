@@ -45,11 +45,11 @@ namespace Make.MODEL
             {
                 if (!int.TryParse(value, out int result))
                 {
-                    if (GeneralControl.Skill_Card_Name_Skllcard.ContainsKey(name) && GeneralControl.Skill_Card_ID_Skllcard.ContainsKey(ID))
+                    if (Core.Skill_Card_Name_Skllcard.ContainsKey(name) && Core.Skill_Card_ID_Skllcard.ContainsKey(ID))
                     {
-                        while ((from string item in GeneralControl.Skill_Card_Name_Skllcard.Keys where item == value && item != Name select item).Any()) value += "-副本";
-                        GeneralControl.Skill_Card_Name_Skllcard.Remove(name);
-                        GeneralControl.Skill_Card_Name_Skllcard.Add(value, this);
+                        while ((from string item in Core.Skill_Card_Name_Skllcard.Keys where item == value && item != Name select item).Any()) value += "-副本";
+                        Core.Skill_Card_Name_Skllcard.Remove(name);
+                        Core.Skill_Card_Name_Skllcard.Add(value, this);
                     }
                     name = value;
                 }

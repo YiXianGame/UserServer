@@ -20,7 +20,7 @@ namespace Make.BLL
         public Initialization()
         {
             string path = System.IO.Directory.GetCurrentDirectory() + "\\仙战";//游戏数据文档路径
-            GeneralControl.Directory = path;
+            Core.Directory = path;
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);

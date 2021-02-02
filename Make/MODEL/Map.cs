@@ -47,26 +47,26 @@ namespace Make.MODEL
 
             player.Friendsed.ToList().ForEach(new Action<Player>(item => item.Cancel_Friend(player)));
 
-            GeneralControl.Players.Remove(player.ID);
+            Core.Players.Remove(player.ID);
             player.Hand_SkillCards.Clear();
             player.Init();
             player.Send("离开地图#成功");
             Players.Remove(player.ID);
-            GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
-            GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Map.Players.Count}人";
-            GeneralControl.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
+            Core.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{Core.Players.Count}人";
+            Core.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{Core.Map.Players.Count}人";
+            Core.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{Core.Players.Count - Core.Map.Players.Count}人";
         }
         public void Enter(User user)
         {
             Random random = new Random();
-            if (GeneralControl.Menu_GameControl_Class.Instance.Map_Enter_Is_Coast)
+            if (Core.Menu_GameControl_Class.Instance.Map_Enter_Is_Coast)
             {
-                if (user.Add_Balances(-GeneralControl.Menu_GameControl_Class.Instance.Map_Enter_Coast))
+                if (user.Add_Money(-Core.Menu_GameControl_Class.Instance.Map_Enter_Coast))
                 {
                     user.Save();
-                    GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
-                    GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Map.Players.Count}人";
-                    GeneralControl.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
+                    Core.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{Core.Players.Count}人";
+                    Core.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{Core.Map.Players.Count}人";
+                    Core.Menu_Data_Monitor_Class.Instance.Room_Players = $"当前房间在线:{Core.Players.Count - Core.Map.Players.Count}人";
                 }
                 else
                 {
@@ -75,19 +75,19 @@ namespace Make.MODEL
                 
                 
             }
-            Pos[] Leisure_Pos = (from Pos item in GeneralControl.Map.Pos_Map where item.Item == null select item).ToArray();
+            Pos[] Leisure_Pos = (from Pos item in Core.Map.Pos_Map where item.Item == null select item).ToArray();
             if (Leisure_Pos.Count() > 1)
             {
                 Player player = new Player(user);
                 player.Init();
-                player.Map = GeneralControl.Map;
+                player.Map = Core.Map;
                 player.Active = Enums.Player_Active.Map;
                 player.Move(Leisure_Pos[random.Next(0, Leisure_Pos.Count() - 1)]);
                 
-                player.Hp = GeneralControl.Menu_GameControl_Class.Instance.Map_Hp_Max;
+                player.Hp = Core.Menu_GameControl_Class.Instance.Map_Hp_Max;
                 player.Mp = 20;//**GeneralControl.Menu_GameControl_Class.Instance.Map_Hp_Max / 3
 
-                GeneralControl.Players.Add(player.ID, player);
+                Core.Players.Add(player.ID, player);
                 Players.Add(player.ID,player);
                 if (Players.Count <= 1) Map_Mp_Manager.Set();
                 /*
@@ -96,9 +96,9 @@ namespace Make.MODEL
                     player.Hand_Skill_Add(GeneralControl.Skill_Card_Name_Skllcard[simple_SkillCard.Name].Clone(), false);
                 }
                 */
-                GeneralControl.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{GeneralControl.Players.Count}人";
-                GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Map.Players.Count}人";
-                GeneralControl.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{GeneralControl.Players.Count - GeneralControl.Map.Players.Count}人";
+                Core.Menu_Data_Monitor_Class.Instance.Players = $"当前在线:{Core.Players.Count}人";
+                Core.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{Core.Map.Players.Count}人";
+                Core.Menu_Data_Monitor_Class.Instance.Map_Players = $"当前地图在线:{Core.Players.Count - Core.Map.Players.Count}人";
                 player.Send("进入房间#成功",player.Room);
             }
             else user.SendMessages("地图位置已满，暂时无法进入");

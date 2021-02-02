@@ -34,9 +34,9 @@ namespace Make.MODEL
             {
                 if (!int.TryParse(value, out int result))
                 {
-                    if (GeneralControl.Adventures.Contains(this))
+                    if (Core.Adventures.Contains(this))
                     {
-                        while ((from Adventure item in GeneralControl.Adventures where item.Name == value && item.Name != Name select item).Any()) value += "-副本";
+                        while ((from Adventure item in Core.Adventures where item.Name == value && item.Name != Name select item).Any()) value += "-副本";
                     }
                     name = value;
                 }
@@ -68,24 +68,24 @@ namespace Make.MODEL
         public void Save()
         {
             string json = JsonConvert.SerializeObject(this);
-            string filepath = GeneralControl.Directory + "\\奇遇\\" + ID + ".json";
+            string filepath = Core.Directory + "\\奇遇\\" + ID + ".json";
             File.WriteAllText(filepath, json);
         }
 
         public void Delete()
         {
-            string filepath = GeneralControl.Directory + "\\奇遇\\" + ID + ".json";
-            GeneralControl.Adventures.Remove(this);
-            GeneralControl.Adventures_ID.Remove(ID);
+            string filepath = Core.Directory + "\\奇遇\\" + ID + ".json";
+            Core.Adventures.Remove(this);
+            Core.Adventures_ID.Remove(ID);
             File.Delete(filepath);
         }
 
         public void Add_To_General()
         {
-            while ((from Adventure item in GeneralControl.Adventures where item.Name == Name select item).Any()) Name += "-副本";
+            while ((from Adventure item in Core.Adventures where item.Name == Name select item).Any()) Name += "-副本";
             //while ((from Adventure item in GeneralControl.Adventures where item.ID == ID select item).Any()) ID = Guid.NewGuid().ToString();
-            GeneralControl.Adventures.Add(this);
-            GeneralControl.Adventures_ID.Add(ID, this);
+            Core.Adventures.Add(this);
+            Core.Adventures_ID.Add(ID, this);
         }
         #endregion
     }

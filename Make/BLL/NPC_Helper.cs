@@ -195,11 +195,11 @@ namespace Make.BLL
             player.ID = player.GetHashCode();
             player.Is_Robot = true;
             player.Init();
-            if (GeneralControl.Skill_Card_ID_Skllcard.Count > 0)
+            if (Core.Skill_Card_ID_Skllcard.Count > 0)
             {
                 int cnt = 30; //机器人手牌数量
                 Random random = new Random();
-                SkillCard[] skillCards = GeneralControl.Skill_Card_ID_Skllcard.Values.ToArray();
+                SkillCard[] skillCards = Core.Skill_Card_ID_Skllcard.Values.ToArray();
                 if (skillCards.Length > 0)
                 {
                     for (int i = 0; i < cnt; i++)
@@ -223,11 +223,11 @@ namespace Make.BLL
             player.NickName = randomChinese.GetRandomChinese(3);
             player.ID = player.GetHashCode();
             player.Is_Robot = true;
-            if (GeneralControl.Skill_Card_ID_Skllcard.Count > 0)
+            if (Core.Skill_Card_ID_Skllcard.Count > 0)
             {
                 int cnt = 30; //机器人手牌数量
                 Random random = new Random();
-                SkillCard[] skillCards = GeneralControl.Skill_Card_ID_Skllcard.Values.ToArray();
+                SkillCard[] skillCards = Core.Skill_Card_ID_Skllcard.Values.ToArray();
                 if (skillCards.Length > 0)
                 {
                     for (int i = 0; i < cnt; i++)
