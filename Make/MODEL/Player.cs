@@ -232,7 +232,7 @@ namespace Make.MODEL
             Player killed = args.Killed;
             User killer_User = User.Load(killer.ID);
             User killed_User = User.Load(killed.ID);
-            int exp = killed_User.Exp / 10;
+            long exp = killed_User.Exp / 10;
             Map.Players.Values.ToList().ForEach((Player item) => item.Send($"【{killer_User.Title}】{NickName}陨落!击毙者【{killer_User.Title}】{killer.NickName}"));
             foreach (SkillCard item in Hand_SkillCards.Values)
             {

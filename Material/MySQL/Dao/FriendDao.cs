@@ -9,10 +9,14 @@ namespace Material.MySQL.Dao
 {
     public class FriendDao : IFriendDao
     {
-        MySqlConnection connection;
-        public FriendDao(MySqlConnection connection)
+        string ConnectionString;
+        public FriendDao(string connectionString)
         {
-            this.connection = connection;
+            this.ConnectionString = connectionString;
+        }
+        public MySqlConnection GetConnection()
+        {
+            return new MySqlConnection(ConnectionString);
         }
     }
 }

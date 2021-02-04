@@ -24,7 +24,7 @@ namespace Material.RPC
             {
                 TypeToAbstract.Add(typeof(T), typeName);
                 AbstractToType.Add(typeName, typeof(T));
-                TypeConvert.Add(typeName, obj => ((JObject)obj).ToObject<T>());
+                TypeConvert.Add(typeName, obj=>Convert.ChangeType(obj,typeof(T)));
             }
             catch (Exception)
             {

@@ -14,7 +14,7 @@ namespace Make.BLL
                 $"{{ \"title\": \"玩家名\",  \"value\": \"{user.NickName}\" }}," +
                 $"{{ \"title\": \"境界\",\"value\": \"{user.Title}\" }}," +
                 $"{{ \"title\": \"经验\", \"value\": \"{user.Exp}\" }}," +
-                $"{{ \"title\": \"战斗场次\", \"value\": \"{user.Battle_Count}\" }}," +
+                $"{{ \"title\": \"战斗场次\", \"value\": \"{user.BattleCount}\" }}," +
                 $"], \"emphasis_keyword\": \"\",\"title\": \"个人信息\"}}  }} }}";
             return msg;
         }

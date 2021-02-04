@@ -6,10 +6,14 @@ namespace Material.MySQL.Dao
 {
     public class CardRepositoryDao : ICardRepositoryDao
     {
-        MySqlConnection connection;
-        public CardRepositoryDao(MySqlConnection connection)
+        string ConnectionString;
+        public CardRepositoryDao(string connectionString)
         {
-            this.connection = connection;
+            this.ConnectionString = connectionString;
+        }
+        public MySqlConnection GetConnection()
+        {
+            return new MySqlConnection(ConnectionString);
         }
     }
 }

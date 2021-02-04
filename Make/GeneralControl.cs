@@ -1,12 +1,11 @@
-﻿using Make.MODEL;
-using Make.MODEL.Server;
+﻿using Make.BLL.Server;
+using Make.MODEL;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Net.Sockets;
 
 namespace Make
 {
@@ -63,7 +62,7 @@ namespace Make
 
         public static Material.Repository.Repository Repository;
 
-        public static UserRequest UserRequest;
+        public static UserClient UserRequest;
         public static DateTime Skill_Card_Date 
         { 
             get => skill_Card_Date; 
@@ -338,7 +337,7 @@ namespace Make
                     Menu_Person_Information_Class menu_Person_Informations_Class = new Menu_Person_Information_Class();
                     menu_Person_Informations_Class.User.UserName = "839336369";
                     menu_Person_Informations_Class.User.NickName = "剑仙";  
-                    menu_Person_Informations_Class.User.Information = "个性签名";
+                    menu_Person_Informations_Class.User.PersonalSignature = "个性签名";
                     menu_Person_Informations_Class.User.Id = 839336369;
                     menu_Person_Informations_Class.User.Save();
                     return menu_Person_Informations_Class;

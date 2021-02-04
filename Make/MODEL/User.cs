@@ -1,4 +1,5 @@
 ﻿using Make.BLL;
+using Material.Entity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -13,69 +14,20 @@ using System.Threading.Tasks;
 namespace Make.MODEL
 {
     [JsonObject(MemberSerialization.OptOut)]
-    public class User
+    public class User : UserBase
     {
-        #region --Enum--
-        public enum State { Leisure, Ready, Queue, Gaming, Offline };
-        #endregion
-
-        #region --字段--
-
-        private long id;
-
-        private string userName;
-
-        private byte[] headImage;
-
-        private string nickName;
-
-        private int upgrade_num = 0;
-
-        private int create_num = 0;
-
-        private int money = 0;
-
-        private string passwords;
-
-        private string information;
-
-        private int battle_Count;//战斗场次
-
-        private int exp;//经验
-
-        private int lv = 1;//等级
-
-        private string title = "炼气";//称号
-
-        private State active = State.Offline;//玩家当前游戏状态
-
-        private int kills;//击杀数
-
-        private int deaths;//死亡数
-
-        long registerDate;//注册日期
-
-        long attribute_update;//个人信息更新日期
-
-        long skillCard_update;//卡牌更新日期
-
-        long headImage_update;//头像更新日期
-
-        #endregion
-
         #region --属性--
 
         public long Id { get => id; set => id = value; }
-        public string UserName { get => userName; set => userName = value; }
+        public string UserName { get => username; set => username = value; }
         public byte[] HeadImage { get => headImage; set => headImage = value; }
-        public string NickName { get => nickName; set => nickName = value; }
+        public string NickName { get => nickname; set => nickname = value; }
         public int Upgrade_num { get => upgrade_num; set => upgrade_num = value; }
         public int Create_num { get => create_num; set => create_num = value; }
-        public int Money { get => money; set => money = value; }
-        public string Passwords { get => passwords; set => passwords = value; }
-        public string Information { get => information; set => information = value; }
-        public int Battle_Count { get => battle_Count; set => battle_Count = value; }
-        public int Exp { get => exp; set => exp = value; }
+        public long Money { get => money; set => money = value; }
+        public string PersonalSignature { get => personalSignature; set => personalSignature = value; }
+        public int BattleCount { get => battleCount; set => battleCount = value; }
+        public long Exp { get => exp; set => exp = value; }
         public int Lv { get => lv; set => lv = value; }
         public string Title { get => title; set => title = value; }
         [JsonConverter(typeof(StringEnumConverter))]
@@ -87,7 +39,6 @@ namespace Make.MODEL
         public long SkillCard_update { get => skillCard_update; set => skillCard_update = value; }
         public long HeadImage_update { get => headImage_update; set => headImage_update = value; }
         #endregion
-
         #region --方法--
         public void SendMessages(String message, string bound = null)
         {
@@ -154,7 +105,7 @@ namespace Make.MODEL
         {
             Add_Exp(Ex);
             Add_Money(Bal);
-            Battle_Count++;
+            BattleCount++;
         }
         /*
         public bool Battle_Skill_Add(SkillCard add_Skill_Card, bool is_save = true)
