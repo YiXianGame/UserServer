@@ -16,6 +16,8 @@ namespace Material.Entity
 
         protected internal string username;
 
+        protected internal string password;
+
         protected internal byte[] headImage;
 
         protected internal string nickname;

@@ -20,6 +20,8 @@ namespace Make.MODEL
 
         public long Id { get => id; set => id = value; }
         public string UserName { get => username; set => username = value; }
+
+        public string PassWord { get => password; set => password = value; }
         public byte[] HeadImage { get => headImage; set => headImage = value; }
         public string NickName { get => nickname; set => nickname = value; }
         public int Upgrade_num { get => upgrade_num; set => upgrade_num = value; }

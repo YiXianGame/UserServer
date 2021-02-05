@@ -10,6 +10,12 @@ namespace Material.TCP_Async_Event
 {
     public sealed class Token
     {
+        #region --User_Cutsom--
+
+        public long Id { get; set; }
+        string key;
+
+        #endregion
         private SocketAsyncEventArgs eventArgs;
         private DotNetty.Buffers.IByteBuffer content;
         private int needRemain;

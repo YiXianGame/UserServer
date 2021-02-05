@@ -20,11 +20,12 @@ namespace Make.BLL.Server
         {
             Task<long> task = Core.Repository.LoginUser(id,username, password);
             task.Wait();
-            return task.Result;
+            token.Id = task.Result;
+            return token.Id;
         }
-        public static UserBase Sync_UserAttribute(Token token,long id,long date)
+        public static UserBase Sync_UserAttribute(Token token,long date)
         {
-            Task<UserBase> task = Core.Repository.Sync_UserAttribute(id, date);
+            Task<UserBase> task = Core.Repository.Sync_UserAttribute(token.Id, date);
             task.Wait();
             return task.Result;
         }

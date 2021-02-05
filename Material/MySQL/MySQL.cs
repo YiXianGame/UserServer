@@ -35,6 +35,5 @@ namespace Material.MySQL
             cardRepositoryDao = new CardRepositoryDao(dbConnStr);
             friendDao = new FriendDao(dbConnStr);
         }
-
     }
 }

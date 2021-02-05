@@ -46,72 +46,47 @@ namespace Material.Repository
         }
         public async Task<long> Register(string username,string nickname,string password)
         {
-            bool result = await mySQL.userDao.Insert_Person(username, nickname, password);
+            bool result = await mySQL.userDao.Insert_User(username, nickname, password);
             if (result)
             {
-                MySqlDataReader reader = await mySQL.userDao.Query_UserByUsername(username);
-                if (reader.Read())
-                {
-                    redis.userDao.SetAccount(username, password, reader.GetInt64("id"), reader.GetInt64("attribute_update"), reader.GetInt64("skill_card_update"), reader.GetInt64("head_image_update"));
-                    return reader.GetInt64("id");
-                }
-                else return -1;
+                UserBase user = await mySQL.userDao.Query_UserAttributeByUsername(username);
+                redis.userDao.SetAccount(user);
+                return user.id;
             }
             else return -1;
         }
-        public async Task<UserBase> Sync_UserAttribute(long id,long date)
+        //从Mysql缓存到Redis
+        public async Task<UserBase> CacheUser(long id)
         {
-            MySqlDataReader reader = await mySQL.userDao.Query_UserByID(id);
-            UserBase user = null;
-            if (reader.Read() && reader.GetInt64("attribute_update") != date)
+            //这里要到了密码，用来同步，但是切记要及时置null
+            UserBase user = await mySQL.userDao.Query_UserAttributeByID(id, true);
+            if (user != null)//Mysql中有此用户的数据
             {
-                user = new UserBase();
-                user.id = reader.GetInt64("id");
-                user.username = reader.GetString("username");
-                user.nickname = reader.GetString("nickname");
-                user.upgrade_num = reader.GetInt32("upgrade_num");
-                user.create_num = reader.GetInt32("create_num");
-                user.money = reader.GetInt32("money");
-                user.personalSignature = reader.GetString("personal_signature");
-                user.battleCount = reader.GetInt32("battle_count");
-                user.exp = reader.GetInt64("exp");
-                user.lv = reader.GetInt32("lv");
-                user.title = reader.GetString("title");
-                user.active = (UserBase.State)Enum.Parse(typeof(UserBase.State), reader.GetString("active"));
-                user.kills = reader.GetInt32("kills");
-                user.deaths = reader.GetInt32("deaths");
-                user.registerDate = reader.GetInt64("register_date");
-                user.attribute_update = reader.GetInt64("attribute_update");
-                user.skillCard_update = reader.GetInt64("skill_card_update");
-                user.headImage_update = reader.GetInt64("head_image_update");
+                redis.userDao.SetAccount(user);
+                return user;
             }
-            return user;
+            else return null;
+        }
+        public async Task<UserBase> Sync_UserAttribute(long id,long timestamp)
+        {
+            //先从Redis里面取更新信息
+            UserBase user = await redis.userDao.Query_UserAttribute(id);
+            if (user == null)//Redis不存在该用户
+            {
+                user = await CacheUser(id);//缓存该用户
+            }
+            if(user.attribute_update != timestamp)//说明需要更新了
+            {
+                return user;
+            }
+            else return null;
         }
         public async Task<UserBase> Query_UserAttributeById(long id)
         {
-            MySqlDataReader reader = await mySQL.userDao.Query_UserByID(id);
-            UserBase user = null;
-            if (reader.Read())
+            UserBase user = await redis.userDao.Query_UserAttribute(id);
+            if(user == null)
             {
-                user = new UserBase();
-                user.id = reader.GetInt64("id");
-                user.username = reader.GetString("username");
-                user.nickname = reader.GetString("nickname");
-                user.upgrade_num = reader.GetInt32("upgrade_num");
-                user.create_num = reader.GetInt32("create_num");
-                user.money = reader.GetInt32("money");
-                user.personalSignature = reader.GetString("personal_signature");
-                user.battleCount = reader.GetInt32("battle_count");
-                user.exp = reader.GetInt64("exp");
-                user.lv = reader.GetInt32("lv");
-                user.title = reader.GetString("title");
-                user.active = (UserBase.State)Enum.Parse(typeof(UserBase.State), reader.GetString("active"));
-                user.kills = reader.GetInt32("kills");
-                user.deaths = reader.GetInt32("deaths");
-                user.registerDate = reader.GetInt64("register_date");
-                user.attribute_update = reader.GetInt64("attribute_update");
-                user.skillCard_update = reader.GetInt64("skill_card_update");
-                user.headImage_update = reader.GetInt64("head_image_update");
+                user = await CacheUser(id);
             }
             return user;
         }
