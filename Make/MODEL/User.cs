@@ -31,7 +31,7 @@ namespace Make.MODEL
         public void Save()
         {
             string json = JsonConvert.SerializeObject(this);
-            string filepath = Core.Directory + "\\用户\\" + UserName + ".json";
+            string filepath = Core.Directory + "\\用户\\" + Username + ".json";
             File.WriteAllText(filepath, json);
         }
         public static User Load(long iD)
@@ -43,7 +43,7 @@ namespace Make.MODEL
         }
         public void Delete()
         {
-            string filepath = Core.Directory + "\\用户\\" + UserName + ".json";
+            string filepath = Core.Directory + "\\用户\\" + Username + ".json";
             File.Delete(filepath);
         }
         /// <summary>

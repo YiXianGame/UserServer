@@ -42,15 +42,16 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT id,username,nickname,upgrade_num,create_num,money,personal_signature," +
+                MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT id,nickname,password,upgrade_num,create_num,money,personal_signature," +
                     $"battle_count,exp,lv,title,active,kills,deaths,register_date,attribute_update,skill_card_update,head_image_update FROM users WHERE username='{username}'");
                 UserBase user = null;
                 if (reader.Read())
                 {
                     user = new UserBase();
                     user.id = reader.GetInt64("id");
-                    user.username = reader.GetString("username");
+                    user.username = username;
                     user.nickname = reader.GetString("nickname");
+                    user.password = reader.GetString("password");
                     user.upgrade_num = reader.GetInt32("upgrade_num");
                     user.create_num = reader.GetInt32("create_num");
                     user.money = reader.GetInt32("money");

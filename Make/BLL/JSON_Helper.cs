@@ -11,7 +11,7 @@ namespace Make.BLL
                 $" \"meta\": {{ \"notification\":{{ \"appInfo\":{{ \"appName\": \"{"仙战-仙域篇"}\", \"appType\": 4, \"appid\": 1109659848, " +
                 $"\"iconUrl\": \"http://dl.4177.com/hgame_album/180131/082d2384810d60a5d4fc9e5a1cd4ede8aeff0950.082d2384810d60a5d4fc9e5a1cd4ede8aeff0950.png\" }}," +
                 $"\"data\": [ " +
-                $"{{ \"title\": \"玩家名\",  \"value\": \"{user.NickName}\" }}," +
+                $"{{ \"title\": \"玩家名\",  \"value\": \"{user.Nickname}\" }}," +
                 $"{{ \"title\": \"境界\",\"value\": \"{user.Title}\" }}," +
                 $"{{ \"title\": \"经验\", \"value\": \"{user.Exp}\" }}," +
                 $"{{ \"title\": \"战斗场次\", \"value\": \"{user.BattleCount}\" }}," +

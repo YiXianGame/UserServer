@@ -335,8 +335,8 @@ namespace Make
                 else
                 {
                     Menu_Person_Information_Class menu_Person_Informations_Class = new Menu_Person_Information_Class();
-                    menu_Person_Informations_Class.User.UserName = "839336369";
-                    menu_Person_Informations_Class.User.NickName = "剑仙";  
+                    menu_Person_Informations_Class.User.Username = "839336369";
+                    menu_Person_Informations_Class.User.Nickname = "剑仙";  
                     menu_Person_Informations_Class.User.PersonalSignature = "个性签名";
                     menu_Person_Informations_Class.User.Id = 839336369;
                     menu_Person_Informations_Class.User.Save();

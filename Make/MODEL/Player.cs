@@ -119,7 +119,7 @@ namespace Make.MODEL
         }
         public Player(User user)
         {
-            NickName = user.NickName;
+            NickName = user.Nickname;
             Title = user.Title;
 
         }

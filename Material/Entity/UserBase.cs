@@ -60,11 +60,11 @@ namespace Material.Entity
         #region --属性--
 
         public long Id { get => id; set => id = value; }
-        public string UserName { get => username; set => username = value; }
+        public string Username { get => username; set => username = value; }
 
-        public string PassWord { get => password; set => password = value; }
+        public string Password { get => password; set => password = value; }
         public byte[] HeadImage { get => headImage; set => headImage = value; }
-        public string NickName { get => nickname; set => nickname = value; }
+        public string Nickname { get => nickname; set => nickname = value; }
         public int Upgrade_num { get => upgrade_num; set => upgrade_num = value; }
         public int Create_num { get => create_num; set => create_num = value; }
         public long Money { get => money; set => money = value; }

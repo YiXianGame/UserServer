@@ -74,7 +74,7 @@ namespace Material.Repository
         }
         public async Task<UserBase> Sync_UserAttribute(long id,long timestamp)
         {
-            //先从Redis里面取更新信息
+            //先从Redis里面取更新信息    
             UserBase user = await redis.userDao.Query_UserAttribute(id);
             if (user == null)//Redis不存在该用户
             {
