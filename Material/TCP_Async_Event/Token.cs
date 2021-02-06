@@ -174,7 +174,7 @@ namespace Material.TCP_Async_Event
             {
 #if DEBUG
                 Console.WriteLine("---------------------------------------------------------");
-                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[服-返回]\n{response}");
+                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客-返回]\n{response}");
                 Console.WriteLine("---------------------------------------------------------"); 
 #endif
                 //构造data数据

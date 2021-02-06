@@ -27,15 +27,15 @@ namespace Material.Repository
                 if (result == -1)
                 {
                     //在Mysql中用ID查询验证一下密码
-                    UserBase user = await mySQL.userDao.ValidUser(id, password);
-                    //说明密码正确
-                    if (user.id != -1 && user.id != -2)
+                    UserBase user = await mySQL.userDao.Query_UserAttributeByID(id,true);
+                    if (user == null) return -1;//账户不存在
+                    if (user.password.Equals(password))
                     {
                         //将账户信息存至Redis
-                        redis.userDao.SetAccount(username, password, user.id, user.attribute_update, user.skillCard_update, user.skillCard_update);
+                        redis.userDao.SetAccount(user);
                         return user.id;//返回验证值
                     }
-                    else return user.id;//密码不正确，返回原因
+                    else return -2;//账户密码错误
                 }
                 else return result;//账户存在,返回验证值
             }
@@ -46,14 +46,19 @@ namespace Material.Repository
         }
         public async Task<long> Register(string username,string nickname,string password)
         {
-            bool result = await mySQL.userDao.Insert_User(username, nickname, password);
-            if (result)
+            long id = await mySQL.userDao.Query_IdByUsername(username);
+            if (id == -1)
             {
-                UserBase user = await mySQL.userDao.Query_UserAttributeByUsername(username);
-                redis.userDao.SetAccount(user);
-                return user.id;
+                bool result = await mySQL.userDao.Insert_User(username, nickname, password);
+                if (result)
+                {
+                    UserBase user = await mySQL.userDao.Query_UserAttributeByUsername(username);
+                    redis.userDao.SetAccount(user);
+                    return user.id;
+                }
+                else return -1;
             }
-            else return -1;
+            else return -2;
         }
         //从Mysql缓存到Redis
         public async Task<UserBase> CacheUser(long id)

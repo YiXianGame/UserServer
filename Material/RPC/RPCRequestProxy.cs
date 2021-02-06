@@ -13,14 +13,11 @@ namespace Material.RPC
     public class RPCRequestProxy : DispatchProxy
     {
         private string servicename;
-        private Tuple<string, string> key;
         RPCType type;
 
-
-        public static T Register<T>(string servicename, Tuple<string, string> clientkey, RPCType type)
+        public static T Register<T>(string servicename,RPCType type)
         {
             RPCRequestProxy proxy = (RPCRequestProxy)(Create<T, RPCRequestProxy>() as object);
-            proxy.key = clientkey;
             proxy.servicename = servicename;
             proxy.type = type;
             return (T)(proxy as object);

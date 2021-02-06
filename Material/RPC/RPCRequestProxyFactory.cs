@@ -49,7 +49,7 @@ namespace Material.RPC
             {
                 Tuple<string, string> serverkey = new Tuple<string, string>(hostname, port);
                 RPCServerFactory.GetServer(serverkey);
-                service = RPCRequestProxy.Register<T>(servicename, new Tuple<string, string>(hostname, port),type);
+                service = RPCRequestProxy.Register<T>(servicename,type);
                 services[key] = service;
             }
             return service;

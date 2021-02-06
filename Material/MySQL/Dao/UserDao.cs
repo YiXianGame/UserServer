@@ -80,13 +80,13 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT id,username,nickname,password,upgrade_num,create_num,money,personal_signature," +
+                MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT username,nickname,password,upgrade_num,create_num,money,personal_signature," +
                     $"battle_count,exp,lv,title,active,kills,deaths,register_date,attribute_update,skill_card_update,head_image_update FROM users WHERE id='{id}'");
                 UserBase user = null;
                 if (reader.Read())
                 {
                     user = new UserBase();
-                    user.id = reader.GetInt64("id");
+                    user.id = id;
                     user.username = reader.GetString("username");
                     user.nickname = reader.GetString("nickname");
                     if(has_password)user.password = reader.GetString("password");
@@ -127,32 +127,7 @@ namespace Material.MySQL.Dao
             if (result == 1) return true;
             else return false;
         }
-        public async Task<UserBase> ValidUser(long id, string password)
-        {
-            GetConnection(out MySqlConnection connection);
-            try
-            {
-                MySqlDataReader result = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT password,id,attribute_update,skill_card_update,head_image_update FROM users WHERE id='{id}'");
-                UserBase user = new UserBase();
-                if (result.Read())
-                {
-                    if (password.Equals(result.GetString(0)))
-                    {
-                        user.id = result.GetInt64(1);
-                        user.attribute_update = result.GetInt64("attribute_update");
-                        user.skillCard_update = result.GetInt64("skill_card_update");
-                        user.headImage_update = result.GetInt64("head_image_update");
-                    }
-                    else user.id = -2;
-                }
-                else user.id = -1;
-                return user;
-            }
-            finally
-            {
-                connection.Close();
-            } 
-        }
+
         public async Task<long> ValidUser(string username, string password)
         {
             GetConnection(out MySqlConnection connection);
@@ -166,6 +141,24 @@ namespace Material.MySQL.Dao
                         return result.GetInt64(0);
                     }
                     else return -2;
+                }
+                else return -1;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        public async Task<long> Query_IdByUsername(string username)
+        {
+            GetConnection(out MySqlConnection connection);
+            try
+            {
+                MySqlDataReader result = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT id FROM users WHERE username='{username}'");
+                if (result.Read())
+                {
+                    return result.GetInt64(0);
                 }
                 else return -1;
             }

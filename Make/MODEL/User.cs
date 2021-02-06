@@ -16,30 +16,11 @@ namespace Make.MODEL
     [JsonObject(MemberSerialization.OptOut)]
     public class User : UserBase
     {
+        #region --字段--
+
+        #endregion
         #region --属性--
 
-        public long Id { get => id; set => id = value; }
-        public string UserName { get => username; set => username = value; }
-
-        public string PassWord { get => password; set => password = value; }
-        public byte[] HeadImage { get => headImage; set => headImage = value; }
-        public string NickName { get => nickname; set => nickname = value; }
-        public int Upgrade_num { get => upgrade_num; set => upgrade_num = value; }
-        public int Create_num { get => create_num; set => create_num = value; }
-        public long Money { get => money; set => money = value; }
-        public string PersonalSignature { get => personalSignature; set => personalSignature = value; }
-        public int BattleCount { get => battleCount; set => battleCount = value; }
-        public long Exp { get => exp; set => exp = value; }
-        public int Lv { get => lv; set => lv = value; }
-        public string Title { get => title; set => title = value; }
-        [JsonConverter(typeof(StringEnumConverter))]
-        public State Active { get => active; set => active = value; }
-        public int Kills { get => kills; set => kills = value; }
-        public int Deaths { get => deaths; set => deaths = value; }
-        public long RegisterDate { get => registerDate; set => registerDate = value; }
-        public long Attribute_update { get => attribute_update; set => attribute_update = value; }
-        public long SkillCard_update { get => skillCard_update; set => skillCard_update = value; }
-        public long HeadImage_update { get => headImage_update; set => headImage_update = value; }
         #endregion
         #region --方法--
         public void SendMessages(String message, string bound = null)
