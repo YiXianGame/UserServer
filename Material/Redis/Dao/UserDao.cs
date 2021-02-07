@@ -25,11 +25,11 @@ namespace Material.Redis.Dao
         }
         public void SetAccount(UserBase user)
         {
-            db.HashSetAsync("UA" + user.id, new HashEntry[]{ new HashEntry("username",user.username),new HashEntry("nickname",user.nickname),new HashEntry("password",user.password),
-                new HashEntry("upgrade_num",user.upgrade_num),new HashEntry("create_num",user.create_num),new HashEntry("money",user.money),new HashEntry("personal_signature",user.personalSignature),
-                new HashEntry("battle_count",user.battleCount),new HashEntry("exp",user.exp),new HashEntry("lv",user.lv),new HashEntry("title",user.title),new HashEntry("active",user.active.ToString()),
-                new HashEntry("kills",user.kills),new HashEntry("death",user.deaths),new HashEntry("register_date",user.registerDate),
-                new HashEntry("attribute_update",user.attribute_update),new HashEntry("skill_card_update", user.skillCard_update),new HashEntry("head_image_update",user.headImage_update) });
+            db.HashSetAsync("UA" + user.Id, new HashEntry[]{ new HashEntry("username",user.Username),new HashEntry("nickname",user.Nickname),new HashEntry("password",user.Password),
+                new HashEntry("upgrade_num",user.Upgrade_num),new HashEntry("create_num",user.Create_num),new HashEntry("money",user.Money),new HashEntry("personal_signature",user.PersonalSignature),
+                new HashEntry("battle_count",user.BattleCount),new HashEntry("exp",user.Exp),new HashEntry("lv",user.Lv),new HashEntry("title",user.Title),new HashEntry("active",user.Active.ToString()),
+                new HashEntry("kills",user.Kills),new HashEntry("death",user.Deaths),new HashEntry("register_date",user.RegisterDate),
+                new HashEntry("attribute_update",user.Attribute_update),new HashEntry("skill_card_update", user.SkillCard_update),new HashEntry("head_image_update",user.HeadImage_update) });
         }
 
         public async Task<long> ValidPerson(long id, string password)
@@ -53,25 +53,25 @@ namespace Material.Redis.Dao
             if (!values[0].IsNullOrEmpty)
             {
                 user = new UserBase();
-                user.id = id;
-                user.username = values[0];
-                user.nickname = values[1];
-                if(has_password)user.password = values[2];
-                user.upgrade_num = (int)values[3];
-                user.create_num = (int)values[4];
-                user.money = (long)values[5];
-                user.personalSignature = values[6];
-                user.battleCount = (int)values[7];
-                user.exp = (long)values[8];
-                user.lv = (int)values[9];
-                user.title = values[10];
-                user.active = (UserBase.State)Enum.Parse(typeof(UserBase.State),values[11]);
-                user.kills = (int)values[12];
-                user.deaths = (int)values[13];
-                user.registerDate = (int)values[14];
-                user.attribute_update = (long)values[15];
-                user.skillCard_update = (long)values[16];
-                user.headImage_update = (long)values[17];
+                user.Id = id;
+                user.Username = values[0];
+                user.Nickname = values[1];
+                if(has_password)user.Password = values[2];
+                user.Upgrade_num = (int)values[3];
+                user.Create_num = (int)values[4];
+                user.Money = (long)values[5];
+                user.PersonalSignature = values[6];
+                user.BattleCount = (int)values[7];
+                user.Exp = (long)values[8];
+                user.Lv = (int)values[9];
+                user.Title = values[10];
+                user.Active = (UserBase.State)Enum.Parse(typeof(UserBase.State),values[11]);
+                user.Kills = (int)values[12];
+                user.Deaths = (int)values[13];
+                user.RegisterDate = (int)values[14];
+                user.Attribute_update = (long)values[15];
+                user.SkillCard_update = (long)values[16];
+                user.HeadImage_update = (long)values[17];
             }
             return user;
         }

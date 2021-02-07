@@ -1,16 +1,15 @@
 ﻿using Material.Entity;
 using Material.MySQL.Dao.Interface;
 using MySql.Data.MySqlClient;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Material.MySQL.Dao
 {
-    public class CardRepositoryDao : ICardRepositoryDao
+    public class CoreDao : ICoreDao
     {
         string ConnectionString;
-        public CardRepositoryDao(string connectionString)
+        public CoreDao(string connectionString)
         {
             this.ConnectionString = connectionString;
         }
@@ -22,16 +21,15 @@ namespace Material.MySQL.Dao
         }
 
 
-        public async Task<bool> Insert(CardRepositoryBase item)
+        public async Task<bool> Insert(CoreBase item)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "INSERT INTO card_repository(owner_id,item_id,solution) VALUES(@owner_id,@item_id,@solution)";
+                string sqlcommand = "INSERT INTO core(category,skill_card_update) VALUES(@category,@skill_card_update)";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
-                parameters.Add(new MySqlParameter("@owner_id", item.OwnerId));
-                parameters.Add(new MySqlParameter("@item_id", item.ItemId));
-                parameters.Add(new MySqlParameter("@solution", item.Category));
+                parameters.Add(new MySqlParameter("@category", item.Category.ToString()));
+                parameters.Add(new MySqlParameter("@skill_card_update", item.SkillCardUpdate));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
                 if (result == 1)
                 {
@@ -44,15 +42,14 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<bool> Delete(long owner_id, long item_id)
+        public async Task<bool> Delete(CoreBase.ConfigCategory category)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "DELETE FROM card_repository WHERE owner_id=@owner_id,item_id=@item_id";
+                string sqlcommand = "DELETE FROM core WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
-                parameters.Add(new MySqlParameter("@owner_id", owner_id));
-                parameters.Add(new MySqlParameter("@item_id", item_id));
+                parameters.Add(new MySqlParameter("@category", category.ToString()));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
                 if (result == 1)
                 {
@@ -65,16 +62,15 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<bool> Update(CardRepositoryBase item)
+        public async Task<bool> Update(CoreBase core)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "UPDATE card_repository SET solution=@solution WHERE owner_id=@owner_id,item_id=@item_id";
+                string sqlcommand = "UPDATE core SET skill_card_update=@skill_card_update WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
-                parameters.Add(new MySqlParameter("@owner_id", item.OwnerId));
-                parameters.Add(new MySqlParameter("@item_id", item.ItemId));
-                parameters.Add(new MySqlParameter("@solution", item.Category));
+                parameters.Add(new MySqlParameter("@category", core.Category.ToString()));
+                parameters.Add(new MySqlParameter("@skill_card_update", core.SkillCardUpdate));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
                 if (result == 1)
                 {
@@ -87,23 +83,21 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<CardRepositoryBase> Query(long owner_id, long item_id)
+        public async Task<CoreBase> Query(CoreBase.ConfigCategory category)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "SELECT solution FROM card_repository WHERE owner_id=@owner_id,item_id=@item_id";
+                string sqlcommand = "SELECT skill_card_update FROM core WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
-                parameters.Add(new MySqlParameter("@owner_id", owner_id));
-                parameters.Add(new MySqlParameter("@item_id", item_id));
+                parameters.Add(new MySqlParameter("@category", category.ToString()));
                 MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, sqlcommand, parameters.ToArray());
                 if (reader.Read())
                 {
-                    CardRepositoryBase repository = new CardRepositoryBase();
-                    repository.OwnerId = owner_id;
-                    repository.ItemId = item_id;
-                    repository.Category = (CardRepositoryBase.CardRepositoryCategory)Enum.Parse(typeof(CardRepositoryBase.CardRepositoryCategory), reader.GetString("solution"));
-                    return repository;
+                    CoreBase core = new CoreBase();
+                    core.Category = category;
+                    core.SkillCardUpdate = reader.GetInt64("skill_card_update");
+                    return core;
                 }
                 else return null;
             }

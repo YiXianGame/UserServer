@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entity\新文件夹\" />
     <Folder Include="MySQL\Exception\" />
   </ItemGroup>
 

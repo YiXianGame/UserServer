@@ -1,10 +1,5 @@
 ﻿using Material.MySQL.Dao;
 using Material.MySQL.Dao.Interface;
-using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Material.MySQL
 {
@@ -16,7 +11,9 @@ namespace Material.MySQL
         private const bool Asyn_Process = true;//设置异步访问数据库
         private const int Conn_Timeout = 15;//设置连接等待时间
         private const int Conn_Lifetime = 30;//设置连接的生命周期
+        public ICoreDao coreDao;
         public IUserDao userDao;
+        public ISkillCArdDao skillCardDao;
         public ICardRepositoryDao cardRepositoryDao;
         public IFriendDao friendDao;
         private string GetConnString(string ip, string port, string db, string username, string password)
@@ -32,7 +29,9 @@ namespace Material.MySQL
         {
             dbConnStr = GetConnString(ip, port, db,username,password);
             userDao = new UserDao(dbConnStr);
+            skillCardDao = new SkillCardDao(dbConnStr);
             cardRepositoryDao = new CardRepositoryDao(dbConnStr);
+            coreDao = new CoreDao(dbConnStr);
             friendDao = new FriendDao(dbConnStr);
         }
     }

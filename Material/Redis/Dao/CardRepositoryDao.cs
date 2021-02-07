@@ -12,7 +12,6 @@ namespace Material.Redis.Dao
         public CardRepositoryDao(IDatabase db)
         {
             this.db = db;
-
         }
     }
 }

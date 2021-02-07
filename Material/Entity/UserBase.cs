@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Material.Entity
 {
@@ -10,50 +7,51 @@ namespace Material.Entity
     public class UserBase
     {
         #region --Enum--
+        [JsonConverter(typeof(StringEnumConverter))]
         public enum State { Leisure, Ready, Queue, Gaming, Offline };
         #endregion
 
         #region --字段--
 
-        protected internal long id;
+        protected long id;
 
-        protected internal string username;
+        protected string username;
 
-        protected internal string password;
+        protected string password;
 
-        protected internal byte[] headImage;
+        protected byte[] headImage;
 
-        protected internal string nickname;
+        protected string nickname;
 
-        protected internal int upgrade_num = 0;
+        protected int upgrade_num = 0;
 
-        protected internal int create_num = 0;
+        protected int create_num = 0;
 
-        protected internal long money = 0;
+        protected long money = 0;
 
-        protected internal string personalSignature;
+        protected string personalSignature;
 
-        protected internal int battleCount;//战斗场次
+        protected int battleCount;//战斗场次
 
-        protected internal long exp;//经验
+        protected long exp;//经验
 
-        protected internal int lv = 1;//等级
+        protected int lv = 1;//等级
 
-        protected internal string title = "炼气";//称号
+        protected string title = "炼气";//称号
 
-        protected internal State active = State.Offline;//玩家当前游戏状态
+        protected State active = State.Offline;//玩家当前游戏状态
 
-        protected internal int kills;//击杀数
+        protected int kills;//击杀数
 
-        protected internal int deaths;//死亡数
+        protected int deaths;//死亡数
 
-        protected internal long registerDate;//注册日期
+        protected long registerDate;//注册日期
 
-        protected internal long attribute_update;//个人信息更新日期
+        protected long attribute_update;//个人信息更新日期
 
-        protected internal long skillCard_update;//卡牌更新日期
+        protected long skillCard_update;//卡牌更新日期
 
-        protected internal long headImage_update;//头像更新日期
+        protected long headImage_update;//头像更新日期
 
         #endregion
 
@@ -73,7 +71,6 @@ namespace Material.Entity
         public long Exp { get => exp; set => exp = value; }
         public int Lv { get => lv; set => lv = value; }
         public string Title { get => title; set => title = value; }
-        [JsonConverter(typeof(StringEnumConverter))]
         public State Active { get => active; set => active = value; }
         public int Kills { get => kills; set => kills = value; }
         public int Deaths { get => deaths; set => deaths = value; }

@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace Make.MODEL
 {
-    [JsonObject(MemberSerialization.OptOut)]
     public class User : UserBase
     {
         #region --字段--

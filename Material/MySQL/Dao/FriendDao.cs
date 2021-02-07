@@ -14,9 +14,11 @@ namespace Material.MySQL.Dao
         {
             this.ConnectionString = connectionString;
         }
-        public MySqlConnection GetConnection()
+        public MySqlConnection GetConnection(out MySqlConnection connection)
         {
-            return new MySqlConnection(ConnectionString);
+            connection = new MySqlConnection(ConnectionString);
+            connection.Open();
+            return connection;
         }
     }
 }

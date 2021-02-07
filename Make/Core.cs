@@ -1,5 +1,6 @@
 ﻿using Make.BLL.Server;
 using Make.MODEL;
+using Material.Entity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -26,39 +27,31 @@ namespace Make
         /// <summary>
         /// 仙域地图
         /// </summary>
-        public static XianYu_Map Map; //仙域地图
-        /// <summary>
-        /// 技能卡MODEL
-        /// </summary>
-        public static List<SkillCard> Skill_Cards = new List<SkillCard>();//总技能卡 //总引用,但UI层还有一层引用，删掉的同时记得删掉UI层
+        //public static XianYu_Map Map; //仙域地图
         /// <summary>
         /// ID技能卡
         /// </summary>
         public static Dictionary<long, SkillCard> Skill_Card_ID_Skllcard = new Dictionary<long, SkillCard>();
         /// <summary>
-        /// 名字技能卡
-        /// </summary>
-        public static Dictionary<string, SkillCard> Skill_Card_Name_Skllcard = new Dictionary<string, SkillCard>();
-        /// <summary>
         /// 总奇遇
         /// </summary>
-        public static List<Adventure> Adventures = new  List<Adventure>();//总引用,但UI层还有一层引用，删掉的同时记得删掉UI层
+        //public static List<Adventure> Adventures = new  List<Adventure>();//总引用,但UI层还有一层引用，删掉的同时记得删掉UI层
         /// <summary>
         /// 奇遇字典
         /// </summary>
-        public static Dictionary<long, Adventure> Adventures_ID = new Dictionary<long, Adventure>();
+        //public static Dictionary<long, Adventure> Adventures_ID = new Dictionary<long, Adventure>();
         /// <summary>
         /// 总状态
         /// </summary>
-        public static Dictionary<long, State> States = new Dictionary<long, State>();
+        public static Dictionary<BuffBase.BuffCategory, Buff> States = new Dictionary<BuffBase.BuffCategory, Buff>();
         /// <summary>
         /// 总房间
         /// </summary>
-        public static List<Room> Rooms = new List<Room>();
+        //public static List<Room> Rooms = new List<Room>();
         /// <summary>
         /// 总玩家
         /// </summary>       
-        public static Dictionary<long, Player> Players = new Dictionary<long, Player>();
+        //public static Dictionary<long, Player> Players = new Dictionary<long, Player>();
 
         public static Material.Repository.Repository Repository;
 
@@ -300,13 +293,13 @@ namespace Make
                 else return new Menu_Data_Monitor_Class();
             });
             public string Expiration_Date { get; set; } = DateTime.Now.ToString();
-            private ObservableCollection<Adventure> pubmit_Adventures = new ObservableCollection<Adventure>();
+            //private ObservableCollection<Adventure> pubmit_Adventures = new ObservableCollection<Adventure>();
             private ObservableCollection<SkillCard> pubmit_SkillCardsModel = new ObservableCollection<SkillCard>();
 
             public event PropertyChangedEventHandler PropertyChanged;
 
             public ObservableCollection<SkillCard> Pubmit_SkillCardsModel { get => pubmit_SkillCardsModel; set => pubmit_SkillCardsModel = value; }
-            public ObservableCollection<Adventure> Pubmit_Adventures { get => pubmit_Adventures; set => pubmit_Adventures = value; }
+            //public ObservableCollection<Adventure> Pubmit_Adventures { get => pubmit_Adventures; set => pubmit_Adventures = value; }
             public string Players { get => players; set { players = value; OnPropertyChanged("Players"); } }
             public string Map_Players { get => map_Players; set { map_Players = value; OnPropertyChanged("map_Players"); } }
             public string Room_Players { get => room_Players; set { room_Players = value; OnPropertyChanged("room_Players"); } }

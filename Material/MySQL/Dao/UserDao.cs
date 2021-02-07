@@ -1,4 +1,5 @@
 ﻿using Material.Entity;
+using Material.ExceptionModel;
 using Material.MySQL.Dao.Interface;
 using MySql.Data.MySqlClient;
 using StackExchange.Redis;
@@ -20,7 +21,7 @@ namespace Material.MySQL.Dao
             connection.Open();
             return connection;
         }
-        public async Task<bool> Insert_User(string username, string nickname, string password)
+        public async Task<long> Insert(string username, string nickname, string password)
         {
             GetConnection(out MySqlConnection connection);
             DateTime startTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local); // 当地时区
@@ -28,8 +29,11 @@ namespace Material.MySQL.Dao
             try
             {
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, $"INSERT INTO users(username,nickname,password,register_date,attribute_update,skill_card_update,head_image_update,active) VALUES ('{username}','{nickname}','{password}','{timeStamp}','{timeStamp}','{timeStamp}','{timeStamp}','{UserBase.State.Offline}')");
-                if (result == 1) return true;
-                else return false;
+                if (result == 1)
+                {
+                    return await Query_LastInsertId(connection);
+                }
+                else return -1;
             }
             finally
             {
@@ -37,7 +41,7 @@ namespace Material.MySQL.Dao
             }
         }
 
-        public async Task<UserBase> Query_UserAttributeByUsername(string username)
+        public async Task<UserBase> Query_AttributeByUsername(string username)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -48,25 +52,25 @@ namespace Material.MySQL.Dao
                 if (reader.Read())
                 {
                     user = new UserBase();
-                    user.id = reader.GetInt64("id");
-                    user.username = username;
-                    user.nickname = reader.GetString("nickname");
-                    user.password = reader.GetString("password");
-                    user.upgrade_num = reader.GetInt32("upgrade_num");
-                    user.create_num = reader.GetInt32("create_num");
-                    user.money = reader.GetInt32("money");
-                    user.personalSignature = reader.GetString("personal_signature");
-                    user.battleCount = reader.GetInt32("battle_count");
-                    user.exp = reader.GetInt64("exp");
-                    user.lv = reader.GetInt32("lv");
-                    user.title = reader.GetString("title");
-                    user.active = (UserBase.State)Enum.Parse(typeof(UserBase.State), reader.GetString("active"));
-                    user.kills = reader.GetInt32("kills");
-                    user.deaths = reader.GetInt32("deaths");
-                    user.registerDate = reader.GetInt64("register_date");
-                    user.attribute_update = reader.GetInt64("attribute_update");
-                    user.skillCard_update = reader.GetInt64("skill_card_update");
-                    user.headImage_update = reader.GetInt64("head_image_update");
+                    user.Id = reader.GetInt64("id");
+                    user.Username= username;
+                    user.Nickname = reader.GetString("nickname");
+                    user.Password = reader.GetString("password");
+                    user.Upgrade_num = reader.GetInt32("upgrade_num");
+                    user.Create_num = reader.GetInt32("create_num");
+                    user.Money = reader.GetInt32("money");
+                    user.PersonalSignature= reader.GetString("personal_signature");
+                    user.BattleCount = reader.GetInt32("battle_count");
+                    user.Exp = reader.GetInt64("exp");
+                    user.Lv  = reader.GetInt32("lv");
+                    user.Title = reader.GetString("title");
+                    user.Active = (UserBase.State)Enum.Parse(typeof(UserBase.State), reader.GetString("active"));
+                    user.Kills = reader.GetInt32("kills");
+                    user.Deaths = reader.GetInt32("deaths");
+                    user.RegisterDate= reader.GetInt64("register_date");
+                    user.Attribute_update= reader.GetInt64("attribute_update");
+                    user.SkillCard_update = reader.GetInt64("skill_card_update");
+                    user.HeadImage_update = reader.GetInt64("head_image_update");
                 }
                 return user;
             }
@@ -76,36 +80,36 @@ namespace Material.MySQL.Dao
             }
         }
 
-        public async Task<UserBase> Query_UserAttributeByID(long id,bool has_password = false)
+        public async Task<UserBase> Query_AttributeByID(long id,bool has_password = false)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
                 MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT username,nickname,password,upgrade_num,create_num,money,personal_signature," +
-                    $"battle_count,exp,lv,title,active,kills,deaths,register_date,attribute_update,skill_card_update,head_image_update FROM users WHERE id='{id}'");
+                    $"battle_count,exp,lv,title,active,kills,deaths,register_date,attribute_update,skill_card_update,head_image_update FROM users WHERE id={id}");
                 UserBase user = null;
                 if (reader.Read())
                 {
                     user = new UserBase();
-                    user.id = id;
-                    user.username = reader.GetString("username");
-                    user.nickname = reader.GetString("nickname");
-                    if(has_password)user.password = reader.GetString("password");
-                    user.upgrade_num = reader.GetInt32("upgrade_num");
-                    user.create_num = reader.GetInt32("create_num");
-                    user.money = reader.GetInt32("money");
-                    user.personalSignature = reader.GetString("personal_signature");
-                    user.battleCount = reader.GetInt32("battle_count");
-                    user.exp = reader.GetInt64("exp");
-                    user.lv = reader.GetInt32("lv");
-                    user.title = reader.GetString("title");
-                    user.active = (UserBase.State)Enum.Parse(typeof(UserBase.State), reader.GetString("active"));
-                    user.kills = reader.GetInt32("kills");
-                    user.deaths = reader.GetInt32("deaths");
-                    user.registerDate = reader.GetInt64("register_date");
-                    user.attribute_update = reader.GetInt64("attribute_update");
-                    user.skillCard_update = reader.GetInt64("skill_card_update");
-                    user.headImage_update = reader.GetInt64("head_image_update");
+                    user.Id = id;
+                    user.Username = reader.GetString("username");
+                    user.Nickname = reader.GetString("nickname");
+                    user.Password = reader.GetString("password");
+                    user.Upgrade_num = reader.GetInt32("upgrade_num");
+                    user.Create_num = reader.GetInt32("create_num");
+                    user.Money = reader.GetInt32("money");
+                    user.PersonalSignature = reader.GetString("personal_signature");
+                    user.BattleCount = reader.GetInt32("battle_count");
+                    user.Exp = reader.GetInt64("exp");
+                    user.Lv = reader.GetInt32("lv");
+                    user.Title = reader.GetString("title");
+                    user.Active = (UserBase.State)Enum.Parse(typeof(UserBase.State), reader.GetString("active"));
+                    user.Kills = reader.GetInt32("kills");
+                    user.Deaths = reader.GetInt32("deaths");
+                    user.RegisterDate = reader.GetInt64("register_date");
+                    user.Attribute_update = reader.GetInt64("attribute_update");
+                    user.SkillCard_update = reader.GetInt64("skill_card_update");
+                    user.HeadImage_update = reader.GetInt64("head_image_update");
                 }
                 return user;
             }
@@ -129,7 +133,7 @@ namespace Material.MySQL.Dao
             else return false;
         }
 
-        public async Task<long> ValidUser(string username, string password)
+        public async Task<long> Valid(string username, string password)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -162,6 +166,22 @@ namespace Material.MySQL.Dao
                     return result.GetInt64(0);
                 }
                 else return -1;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        private async Task<long> Query_LastInsertId(MySqlConnection connection)
+        {
+            try
+            {
+                MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT LAST_INSERT_ID()");
+                if (reader.Read())
+                {
+                    return reader.GetInt64(0);
+                }
+                throw new UserException(UserException.ErrorCode.NotFoundLastIndex, "找不到自增主键的ID值");
             }
             finally
             {
