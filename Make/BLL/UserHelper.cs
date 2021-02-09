@@ -1,4 +1,5 @@
 ﻿using Make.MODEL;
+using Material.Entity;
 using Material.TCP_Async_Event;
 
 namespace Make.BLL

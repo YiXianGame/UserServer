@@ -23,7 +23,7 @@ namespace Material.Redis.Dao
             db.HashSetAsync("UA" + id,new HashEntry[]{ new HashEntry("username",username),new HashEntry("password",password),new HashEntry("attribute_update",attribute_update),
                 new HashEntry("skill_card_update", skill_card_update),new HashEntry("head_image_update",head_image_update)  });
         }
-        public void SetAccount(UserBase user)
+        public void SetAccount(User user)
         {
             db.HashSetAsync("UA" + user.Id, new HashEntry[]{ new HashEntry("username",user.Username),new HashEntry("nickname",user.Nickname),new HashEntry("password",user.Password),
                 new HashEntry("upgrade_num",user.Upgrade_num),new HashEntry("create_num",user.Create_num),new HashEntry("money",user.Money),new HashEntry("personal_signature",user.PersonalSignature),
@@ -45,14 +45,14 @@ namespace Material.Redis.Dao
             }
             return -1;
         }
-        public async Task<UserBase> Query_UserAttribute(long id, bool has_password = false)
+        public async Task<User> Query_UserAttribute(long id, bool has_password = false)
         {
             RedisValue[] values = await db.HashGetAsync("UA" + id, new RedisValue[] { "username", "nickname","password", "upgrade_num", "create_num", "money", "personal_signature", "battle_count",
                 "exp", "lv", "title","active","kills","deaths","register_date","attribute_update", "skill_card_update" , "head_image_update" });
-            UserBase user = null;
+            User user = null;
             if (!values[0].IsNullOrEmpty)
             {
-                user = new UserBase();
+                user = new User();
                 user.Id = id;
                 user.Username = values[0];
                 user.Nickname = values[1];
@@ -65,7 +65,7 @@ namespace Material.Redis.Dao
                 user.Exp = (long)values[8];
                 user.Lv = (int)values[9];
                 user.Title = values[10];
-                user.Active = (UserBase.State)Enum.Parse(typeof(UserBase.State),values[11]);
+                user.Active = (User.State)Enum.Parse(typeof(User.State),values[11]);
                 user.Kills = (int)values[12];
                 user.Deaths = (int)values[13];
                 user.RegisterDate = (int)values[14];

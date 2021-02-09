@@ -28,7 +28,7 @@ namespace Material.MySQL.Dao
             long timeStamp = (long)(DateTime.Now - startTime).TotalSeconds; // 相差秒数
             try
             {
-                int result = await MySqlHelper.ExecuteNonQueryAsync(connection, $"INSERT INTO users(username,nickname,password,register_date,attribute_update,skill_card_update,head_image_update,active) VALUES ('{username}','{nickname}','{password}','{timeStamp}','{timeStamp}','{timeStamp}','{timeStamp}','{UserBase.State.Offline}')");
+                int result = await MySqlHelper.ExecuteNonQueryAsync(connection, $"INSERT INTO users(username,nickname,password,register_date,attribute_update,skill_card_update,head_image_update,active) VALUES ('{username}','{nickname}','{password}','{timeStamp}','{timeStamp}','{timeStamp}','{timeStamp}','{User.State.Offline}')");
                 if (result == 1)
                 {
                     return await Query_LastInsertId(connection);
@@ -41,17 +41,17 @@ namespace Material.MySQL.Dao
             }
         }
 
-        public async Task<UserBase> Query_AttributeByUsername(string username)
+        public async Task<User> Query_AttributeByUsername(string username)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
                 MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT id,nickname,password,upgrade_num,create_num,money,personal_signature," +
                     $"battle_count,exp,lv,title,active,kills,deaths,register_date,attribute_update,skill_card_update,head_image_update FROM users WHERE username='{username}'");
-                UserBase user = null;
+                User user = null;
                 if (reader.Read())
                 {
-                    user = new UserBase();
+                    user = new User();
                     user.Id = reader.GetInt64("id");
                     user.Username= username;
                     user.Nickname = reader.GetString("nickname");
@@ -64,7 +64,7 @@ namespace Material.MySQL.Dao
                     user.Exp = reader.GetInt64("exp");
                     user.Lv  = reader.GetInt32("lv");
                     user.Title = reader.GetString("title");
-                    user.Active = (UserBase.State)Enum.Parse(typeof(UserBase.State), reader.GetString("active"));
+                    user.Active = (User.State)Enum.Parse(typeof(User.State), reader.GetString("active"));
                     user.Kills = reader.GetInt32("kills");
                     user.Deaths = reader.GetInt32("deaths");
                     user.RegisterDate= reader.GetInt64("register_date");
@@ -80,17 +80,17 @@ namespace Material.MySQL.Dao
             }
         }
 
-        public async Task<UserBase> Query_AttributeByID(long id,bool has_password = false)
+        public async Task<User> Query_AttributeByID(long id,bool has_password = false)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
                 MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT username,nickname,password,upgrade_num,create_num,money,personal_signature," +
                     $"battle_count,exp,lv,title,active,kills,deaths,register_date,attribute_update,skill_card_update,head_image_update FROM users WHERE id={id}");
-                UserBase user = null;
+                User user = null;
                 if (reader.Read())
                 {
-                    user = new UserBase();
+                    user = new User();
                     user.Id = id;
                     user.Username = reader.GetString("username");
                     user.Nickname = reader.GetString("nickname");
@@ -103,7 +103,7 @@ namespace Material.MySQL.Dao
                     user.Exp = reader.GetInt64("exp");
                     user.Lv = reader.GetInt32("lv");
                     user.Title = reader.GetString("title");
-                    user.Active = (UserBase.State)Enum.Parse(typeof(UserBase.State), reader.GetString("active"));
+                    user.Active = (User.State)Enum.Parse(typeof(User.State), reader.GetString("active"));
                     user.Kills = reader.GetInt32("kills");
                     user.Deaths = reader.GetInt32("deaths");
                     user.RegisterDate = reader.GetInt64("register_date");

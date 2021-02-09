@@ -1,9 +1,6 @@
 ﻿using Material.Redis.Dao;
 using Material.Redis.Dao.Interface;
 using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Material.Redis
 {
@@ -11,7 +8,7 @@ namespace Material.Redis
     {
         private ConnectionMultiplexer redis;//连接到redis
         public IUserDao userDao;
-        public ISkillCardDao coreDao;
+        public ISkillCardDao skillCardDao;
         public ICardRepositoryDao cardRepositoryDao;
         public IFriendDao friendDao;
         public IDatabase db;

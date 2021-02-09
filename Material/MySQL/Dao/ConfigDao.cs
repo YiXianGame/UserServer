@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Material.MySQL.Dao
 {
-    public class CoreDao : ICoreDao
+    public class ConfigDao : IConfigDao
     {
         string ConnectionString;
-        public CoreDao(string connectionString)
+        public ConfigDao(string connectionString)
         {
             this.ConnectionString = connectionString;
         }
@@ -21,15 +21,16 @@ namespace Material.MySQL.Dao
         }
 
 
-        public async Task<bool> Insert(CoreBase item)
+        public async Task<bool> Insert(Config config)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "INSERT INTO core(category,skill_card_update) VALUES(@category,@skill_card_update)";
+                string sqlcommand = "INSERT INTO config(category,skill_card_update,max_buff) VALUES(@category,@skill_card_update,@max_buff)";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
-                parameters.Add(new MySqlParameter("@category", item.Category.ToString()));
-                parameters.Add(new MySqlParameter("@skill_card_update", item.SkillCardUpdate));
+                parameters.Add(new MySqlParameter("@category", config.Category.ToString()));
+                parameters.Add(new MySqlParameter("@skill_card_update", config.SkillCardUpdate));
+                parameters.Add(new MySqlParameter("@max_buff", config.MaxBuff));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
                 if (result == 1)
                 {
@@ -42,12 +43,12 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<bool> Delete(CoreBase.ConfigCategory category)
+        public async Task<bool> Delete(Config.ConfigCategory category)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "DELETE FROM core WHERE category=@category";
+                string sqlcommand = "DELETE FROM config WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", category.ToString()));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
@@ -62,15 +63,16 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<bool> Update(CoreBase core)
+        public async Task<bool> Update(Config config)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "UPDATE core SET skill_card_update=@skill_card_update WHERE category=@category";
+                string sqlcommand = "UPDATE config SET skill_card_update=@skill_card_update,max_buff=@max_buff WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
-                parameters.Add(new MySqlParameter("@category", core.Category.ToString()));
-                parameters.Add(new MySqlParameter("@skill_card_update", core.SkillCardUpdate));
+                parameters.Add(new MySqlParameter("@category", config.Category.ToString()));
+                parameters.Add(new MySqlParameter("@skill_card_update", config.SkillCardUpdate));
+                parameters.Add(new MySqlParameter("@max_buff", config.MaxBuff));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
                 if (result == 1)
                 {
@@ -83,23 +85,25 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<CoreBase> Query(CoreBase.ConfigCategory category)
+        public async Task<bool> Query(Config.ConfigCategory category)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "SELECT skill_card_update FROM core WHERE category=@category";
+                string sqlcommand = "SELECT skill_card_update,max_buff FROM config WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", category.ToString()));
+
                 MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, sqlcommand, parameters.ToArray());
                 if (reader.Read())
                 {
-                    CoreBase core = new CoreBase();
-                    core.Category = category;
-                    core.SkillCardUpdate = reader.GetInt64("skill_card_update");
-                    return core;
+                    Config config = new Config();
+                    config.Category = category;
+                    config.SkillCardUpdate = reader.GetInt64("skill_card_update");
+                    config.MaxBuff = reader.GetInt32("max_buff");
+                    return true;
                 }
-                else return null;
+                else return false;
             }
             finally
             {

@@ -22,7 +22,7 @@ namespace Material.MySQL.Dao
         }
 
 
-        public async Task<bool> Insert(CardRepositoryBase item)
+        public async Task<bool> Insert(CardRepository item)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -65,7 +65,7 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<bool> Update(CardRepositoryBase item)
+        public async Task<bool> Update(CardRepository item)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -87,7 +87,7 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<CardRepositoryBase> Query(long owner_id, long item_id)
+        public async Task<CardRepository> Query(long owner_id, long item_id)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -99,10 +99,10 @@ namespace Material.MySQL.Dao
                 MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, sqlcommand, parameters.ToArray());
                 if (reader.Read())
                 {
-                    CardRepositoryBase repository = new CardRepositoryBase();
+                    CardRepository repository = new CardRepository();
                     repository.OwnerId = owner_id;
                     repository.ItemId = item_id;
-                    repository.Category = (CardRepositoryBase.CardRepositoryCategory)Enum.Parse(typeof(CardRepositoryBase.CardRepositoryCategory), reader.GetString("solution"));
+                    repository.Category = (CardRepository.CardRepositoryCategory)Enum.Parse(typeof(CardRepository.CardRepositoryCategory), reader.GetString("solution"));
                     return repository;
                 }
                 else return null;

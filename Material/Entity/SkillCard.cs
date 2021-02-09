@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Material.Entity
 {
     [JsonObject(MemberSerialization.OptOut)]
-    public class SkillCardBase
+    public class SkillCard
     {
 
         #region --Enum--
@@ -29,9 +29,11 @@ namespace Material.Entity
         protected long authorId;
         protected long registerDate;
         protected long attributeUpdate;
-        protected List<BuffBase> auxiliaryBuff = new List<BuffBase>();//状态
-        protected List<BuffBase> enemyBuff = new List<BuffBase>();//状态
+        protected List<Buff> auxiliaryBuff = new List<Buff>();//状态
+        protected List<Buff> enemyBuff = new List<Buff>();//状态
         protected List<SkillCardCategory> category = new List<SkillCardCategory>();
+        List<User> enemy = new List<User>();
+        List<User> auxiliary = new List<User>();
         #endregion
 
         #region --属性--
@@ -49,9 +51,14 @@ namespace Material.Entity
         public long AuthorId { get => authorId; set => authorId = value; }
         public long RegisterDate { get => registerDate; set => registerDate = value; }
         public long AttributeUpdate { get => attributeUpdate; set => attributeUpdate = value; }
-        public List<BuffBase> AuxiliaryBuff { get => auxiliaryBuff; set => auxiliaryBuff = value; }
-        public List<BuffBase> EnemyBuff { get => enemyBuff; set => enemyBuff = value; }
+        public List<Buff> AuxiliaryBuff { get => auxiliaryBuff; set => auxiliaryBuff = value; }
+        public List<Buff> EnemyBuff { get => enemyBuff; set => enemyBuff = value; }
         public List<SkillCardCategory> Category { get => category; set => category = value; }
+
+        [JsonIgnore]
+        public List<User> Enemy { get => enemy; set => enemy = value; }
+        [JsonIgnore]
+        public List<User> Auxiliary { get => auxiliary; set => auxiliary = value; }
         #endregion
     }
 }

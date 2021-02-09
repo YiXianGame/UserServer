@@ -23,14 +23,14 @@ namespace Material.Redis.Dao
                     "auxiliary_mp","enemy_hp","enemy_mp","max_enemy","max_auxiliary","author_id","register_date","update","auxiliary_buff","enemy_buff","category"});
         }
 
-        public async Task<SkillCardBase> Query(long id)
+        public async Task<SkillCard> Query(long id)
         {
             RedisValue[] values = await db.HashGetAsync("SK" + id, new RedisValue[] { "id","name","description","mp","probability","auxiliary_hp",
                     "auxiliary_mp","enemy_hp","enemy_mp","max_enemy","max_auxiliary","author_id","register_date","update","auxiliary_buff","enemy_buff","category" });
-            SkillCardBase skillCard = null;
+            SkillCard skillCard = null;
             if (!values[0].IsNullOrEmpty)
             {
-                skillCard = new SkillCardBase();
+                skillCard = new SkillCard();
                 skillCard.Id = (long)values[0];
                 skillCard.Name = values[1];
                 skillCard.Description = values[2];
@@ -45,14 +45,14 @@ namespace Material.Redis.Dao
                 skillCard.AuthorId = (int)values[11];
                 skillCard.RegisterDate = (int)values[12];
                 skillCard.AttributeUpdate = (int)values[13];
-                skillCard.AuxiliaryBuff = JsonConvert.DeserializeObject<List<BuffBase>>(values[14]);
-                skillCard.EnemyBuff = JsonConvert.DeserializeObject<List<BuffBase>>(values[15]);
-                skillCard.Category = JsonConvert.DeserializeObject<List<SkillCardBase.SkillCardCategory>>(values[16]);
+                skillCard.AuxiliaryBuff = JsonConvert.DeserializeObject<List<Buff>>(values[14]);
+                skillCard.EnemyBuff = JsonConvert.DeserializeObject<List<Buff>>(values[15]);
+                skillCard.Category = JsonConvert.DeserializeObject<List<SkillCard.SkillCardCategory>>(values[16]);
             }
             return skillCard;
         }
 
-        public void Set(SkillCardBase skillCard)
+        public void Set(SkillCard skillCard)
         {
             List<HashEntry> parameters = new List<HashEntry>();
             parameters.Add(new HashEntry("id", skillCard.Id));

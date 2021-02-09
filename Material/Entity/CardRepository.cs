@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Material.Entity
 {
-    public class CardRepositoryBase
+    public class CardRepository
     {
         #region --Enum--
         [JsonConverter(typeof(StringEnumConverter))]

@@ -8,8 +8,8 @@ namespace Material.Redis.Dao.Interface
 {
     public interface ISkillCardDao
     {
-        void Set(SkillCardBase skillCard);
+        void Set(SkillCard skillCard);
         void Delete(long id);
-        Task<SkillCardBase> Query(long id);
+        Task<SkillCard> Query(long id);
     }
 }

@@ -4,7 +4,7 @@ using Newtonsoft.Json.Converters;
 namespace Material.Entity
 {
     [JsonObject(MemberSerialization.OptOut)]
-    public class UserBase
+    public class User
     {
         #region --Enum--
         [JsonConverter(typeof(StringEnumConverter))]

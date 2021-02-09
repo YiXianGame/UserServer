@@ -1,20 +1,22 @@
 ﻿using Material.Entity;
+using Material.MySQL;
+using Material.Redis;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Material.Repository
+namespace Make.Repository
 {
     public class UserRepository
     {
         #region --字段--
-        private Redis.Redis redis;
-        private MySQL.MySQL mySQL;
+        private Redis redis;
+        private MySQL mySQL;
         #endregion
 
         #region --方法--
-        public UserRepository(Redis.Redis redis, MySQL.MySQL mySQL)
+        public UserRepository(Redis redis,MySQL mySQL)
         {
             this.redis = redis;
             this.mySQL = mySQL;
@@ -31,7 +33,7 @@ namespace Material.Repository
                 if (result == -1)
                 {
                     //在Mysql中用ID查询验证一下密码
-                    UserBase user = await mySQL.userDao.Query_AttributeByID(id, true);
+                    User user = await mySQL.userDao.Query_AttributeByID(id, true);
                     if (user == null) return -1;//账户不存在
                     if (user.Password.Equals(password))
                     {
@@ -56,7 +58,7 @@ namespace Material.Repository
                 long result = await mySQL.userDao.Insert(username, nickname, password);
                 if (result != -1)
                 {
-                    UserBase user = await mySQL.userDao.Query_AttributeByID(result);
+                    User user = await mySQL.userDao.Query_AttributeByID(result);
                     redis.userDao.SetAccount(user);
                     return user.Id;
                 }
@@ -65,10 +67,10 @@ namespace Material.Repository
             else return -2;
         }
         //从Mysql缓存到Redis
-        public async Task<UserBase> Cache(long id)
+        public async Task<User> Cache(long id)
         {
             //这里要到了密码，用来同步，但是切记要及时置null
-            UserBase user = await mySQL.userDao.Query_AttributeByID(id, true);
+            User user = await mySQL.userDao.Query_AttributeByID(id, true);
             if (user != null)//Mysql中有此用户的数据
             {
                 redis.userDao.SetAccount(user);
@@ -76,10 +78,10 @@ namespace Material.Repository
             }
             else return null;
         }
-        public async Task<UserBase> Sync_Attribute(long id, long timestamp)
+        public async Task<User> Sync_Attribute(long id, long timestamp)
         {
             //先从Redis里面取更新信息    
-            UserBase user = await redis.userDao.Query_UserAttribute(id);
+            User user = await redis.userDao.Query_UserAttribute(id);
             if (user == null)//Redis不存在该用户
             {
                 user = await Cache(id);//缓存该用户
@@ -90,9 +92,9 @@ namespace Material.Repository
             }
             else return null;
         }
-        public async Task<UserBase> Query_AttributeById(long id)
+        public async Task<User> Query_AttributeById(long id)
         {
-            UserBase user = await redis.userDao.Query_UserAttribute(id);
+            User user = await redis.userDao.Query_UserAttribute(id);
             if (user == null)
             {
                 user = await Cache(id);

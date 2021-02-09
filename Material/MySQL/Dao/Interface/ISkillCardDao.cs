@@ -8,9 +8,9 @@ namespace Material.MySQL.Dao.Interface
 {
     public interface ISkillCArdDao
     {
-        Task<long> Insert(SkillCardBase skillCard);
-        Task<bool> Update(SkillCardBase skillCard);
+        Task<long> Insert(SkillCard skillCard);
+        Task<bool> Update(SkillCard skillCard);
         Task<bool> Delete(long id);
-        Task<SkillCardBase> Query(long id);
+        Task<SkillCard> Query(long id);
     }
 }

@@ -1,36 +1,33 @@
-﻿using System;
-using System.Threading.Tasks;
-using Material.Entity;
-using Material.ExceptionModel;
-using MySql.Data.MySqlClient;
+﻿using Make.Repository;
+using Material.MySQL;
+using Material.Redis;
 
-namespace Material.Repository
+namespace Make.Model
 {
-
     public class Repository
     {
         #region --字段--
-        private Redis.Redis redis;
-        private MySQL.MySQL mySQL;
+        private Redis redis;
+        private MySQL mySQL;
         private UserRepository userRepository;
         private SkillCardRepository skillCardRepository;
-        private CoreRepository coreRepository;
+        private ConfigRepository configRepository;
         #endregion
 
         #region --属性--
         public UserRepository UserRepository { get => userRepository; set => userRepository = value; }
         public SkillCardRepository SkillCardRepository { get => skillCardRepository; set => skillCardRepository = value; }
-        public CoreRepository CoreRepository { get => coreRepository; set => coreRepository = value; }
+        public ConfigRepository ConfigRepository { get => configRepository; set => configRepository = value; }
         #endregion
 
         #region --方法--
-        public Repository(Redis.Redis redis, MySQL.MySQL mySQL)
+        public Repository(Redis redis, MySQL mySQL)
         {
             this.redis = redis;
             this.mySQL = mySQL;
             UserRepository = new UserRepository(redis, mySQL);
             SkillCardRepository = new SkillCardRepository(redis, mySQL);
-            CoreRepository = new CoreRepository(redis, mySQL);
+            ConfigRepository = new ConfigRepository(redis, mySQL);
         }
         #endregion
     }
