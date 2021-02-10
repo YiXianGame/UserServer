@@ -10,17 +10,19 @@ namespace Material.RPC
         public object Result = null;
         public Error Error = null;
         public readonly string Id = null;
+        public string ResultType;
         public ClientResponseModel(string jsonrpc,string id)
         {
             JsonRpc = jsonrpc;
             Id = id;
         }
-        public ClientResponseModel(string jsonrpc, object result, Error error, string id)
+        public ClientResponseModel(string jsonrpc, string result,string resultType, Error error, string id)
         {
             JsonRpc = jsonrpc;
             Result = result;
             Error = error;
             Id = id;
+            ResultType = resultType;
         }
         public override string ToString()
         {

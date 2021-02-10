@@ -10,10 +10,10 @@ namespace Material.RPC
     {
         public readonly string JsonRpc;
         public readonly string MethodId;
-        public readonly object[] Params;
+        public readonly string[] Params;
         public readonly string Service;
 
-        public ServerRequestModel(string jsonrpc,string service,string methodid, object[] @params)
+        public ServerRequestModel(string jsonrpc,string service,string methodid, string[] @params)
         {
             JsonRpc = jsonrpc;
             MethodId = methodid;

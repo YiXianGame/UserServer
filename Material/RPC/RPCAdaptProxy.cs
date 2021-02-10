@@ -18,10 +18,11 @@ namespace Material.RPC
         private RPCType type;
 
         public Dictionary<string, MethodInfo> Methods { get => methods; set => methods = value; }
+        public RPCType Type { get => type; set => type = value; }
 
         public void Register<T>(RPCType type)
         {
-            this.type = type;
+            this.Type = type;
             StringBuilder methodid = new StringBuilder();
             foreach (MethodInfo method in typeof(T).GetMethods())
             {
@@ -50,13 +51,13 @@ namespace Material.RPC
         {
             String[] param_id = methodId.Split('-');
             if (param_id.Length > 1) {
-                for (int i = 1, j = 1; i < param_id.Length; i++,j++)
+                for (int i = 1, j = 1; i < param_id.Length && j < parameters.Length; i++,j++)
                 {
-                    if (type != null)
+                    if (Type != null)
                     {
-                        if (type.TypeConvert.TryGetValue(param_id[i], out RPCType.ConvertDelegage convert))
+                        if (Type.TypeConvert.TryGetValue(param_id[i], out RPCType.ConvertDelegage convert))
                         {
-                            parameters[j] = convert(parameters[j]);
+                            parameters[j] = convert((string)parameters[j]);
                         }
                         else throw new RPCException($"RPC中的{param_id[i]}类型转换器在TypeConvert字典中尚未被注册");
                     }

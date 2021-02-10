@@ -59,7 +59,7 @@ namespace Material.TCP_Async_Event
                         ClientRequestModel request = JsonConvert.DeserializeObject<ClientRequestModel>(content.GetString(0,content.WriterIndex, Encoding.UTF8));
                         content.ResetWriterIndex();
                         if(!RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, hostname, port), out RPCAdaptProxy proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
-                        {
+                        {   
 #if DEBUG
                             Console.WriteLine("------------------未找到该方法--------------------");
                             Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客]\n{request}");
@@ -78,7 +78,9 @@ namespace Material.TCP_Async_Event
                                 Console.WriteLine("--------------------------------------------------");
 #endif
                                 request.Params[0] = this;
-                                Send(new ClientResponseModel("2.0", method.Invoke(null, request.Params), new Error(), request.Id));
+                                object result = method.Invoke(null, request.Params);
+                                proxy.Type.TypeToAbstract.TryGetValue(result.GetType(), out string type);
+                                Send(new ClientResponseModel("2.0",JsonConvert.SerializeObject(result),type, new Error(), request.Id));
                             }
                             else
                             {
@@ -88,11 +90,7 @@ namespace Material.TCP_Async_Event
                                 Console.WriteLine("--------------------------------------------------");
 #endif
                                 request.Params[0] = this;
-                                //也可以直接调用，看实际情况，是打算开Task处理还是就在接收线程中处理，前者节约接收信息的时间、一条线程并发处理消息，后者节约资源
-                                //method.Invoke(null, request.Params);
-                                Task.Run(() => {
-                                    method.Invoke(null, request.Params);
-                                });
+                                method.Invoke(null, request.Params);
                             }
                         }
                         readerIndex = needRemain + readerIndex;

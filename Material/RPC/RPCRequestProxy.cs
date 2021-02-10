@@ -29,16 +29,16 @@ namespace Material.RPC
             //这里要连接字符串，发现StringBuilder效率高一些.
             StringBuilder methodid = new StringBuilder(targetMethod.Name);
             ParameterInfo[] parameters = targetMethod.GetParameters();
-            object[] obj = null;
+            string[] obj = null;
             if (parameters.Length > 1)
             {
-                obj = new object[parameters.Length - 1];
+                obj = new string[parameters.Length - 1];
                 for (int i = 1; i < parameters.Length; i++)
                 {
                     try
                     {
                         methodid.Append("-" + type.TypeToAbstract[parameters[i].ParameterType]);
-                        obj[i - 1] = args[i];
+                        obj[i - 1] = JsonConvert.SerializeObject(args[i]);
                     }
                     catch (Exception)
                     {

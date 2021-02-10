@@ -2,6 +2,7 @@
 using Material.Entity;
 using Material.TCP_Async_Event;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Make.RPC.Server
@@ -32,5 +33,6 @@ namespace Make.RPC.Server
             Task<User> task = Core.Repository.UserRepository.Query_AttributeById(id);
             return null;
         }
+
     }
 }

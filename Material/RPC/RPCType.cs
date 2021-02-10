@@ -9,9 +9,8 @@ namespace Material.RPC
 {
     public class RPCType
     {
-        public delegate object ConvertDelegage(object obj);
+        public delegate object ConvertDelegage(string obj);
         public Dictionary<Type, string> TypeToAbstract { get; set; } = new Dictionary<Type, string>();
-        public Dictionary<string,Type> AbstractToType { get; set; } = new Dictionary<string,Type>();
         public Dictionary<string, ConvertDelegage> TypeConvert { get; set; } = new Dictionary<string, ConvertDelegage>();
 
         public RPCType()
@@ -23,12 +22,11 @@ namespace Material.RPC
             try
             {
                 TypeToAbstract.Add(typeof(T), typeName);
-                AbstractToType.Add(typeName, typeof(T));
-                TypeConvert.Add(typeName, obj=>Convert.ChangeType(obj,typeof(T)));
+                TypeConvert.Add(typeName, obj=>JsonConvert.DeserializeObject<T>(obj));
             }
             catch (Exception)
             {
-                if (AbstractToType.ContainsKey(typeName) || TypeConvert.ContainsKey(typeName) || TypeToAbstract.ContainsKey(typeof(T))) Console.WriteLine($"注册类型:{typeof(T)}转{typeName}发生异常");
+                if (TypeConvert.ContainsKey(typeName) || TypeToAbstract.ContainsKey(typeof(T))) Console.WriteLine($"注册类型:{typeof(T)}转{typeName}发生异常");
             }
         }
         public void Add<T>(string typeName, ConvertDelegage convert)
@@ -36,12 +34,11 @@ namespace Material.RPC
             try
             {
                 TypeToAbstract.Add(typeof(T), typeName);
-                AbstractToType.Add(typeName, typeof(T));
                 TypeConvert.Add(typeName, convert);
             }
             catch (Exception)
             {
-                if (AbstractToType.ContainsKey(typeName) || TypeConvert.ContainsKey(typeName) || TypeToAbstract.ContainsKey(typeof(T))) Console.WriteLine($"注册类型:{typeof(T)}转{typeName}发生异常");
+                if ( TypeConvert.ContainsKey(typeName) || TypeToAbstract.ContainsKey(typeof(T))) Console.WriteLine($"注册类型:{typeof(T)}转{typeName}发生异常");
             }
         }
     }

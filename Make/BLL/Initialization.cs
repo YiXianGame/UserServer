@@ -20,11 +20,12 @@ namespace Make.BLL
             type.Add<string>("string");
             type.Add<bool>("bool");
             type.Add<long>("long");
-            type.Add<User>("user", obj => ((JObject)obj).ToObject<User>());
-            type.Add<SkillCard>("skillCard", obj => ((JObject)obj).ToObject<User>());
-            type.Add<List<SkillCard>>("skillCards", obj => ((JObject)obj).ToObject<List<SkillCard>>());
+            type.Add<User>("user");
+            type.Add<SkillCard>("skillCard");
+            type.Add<List<SkillCard>>("skillcards");
             //适配远程客户端服务
             RPCAdaptFactory.Register<UserServer>("UserServer", "192.168.0.105", "28015", type);
+            RPCAdaptFactory.Register<SkillCardServer>("SkillCardServer", "192.168.0.105", "28015", type);
             //注册远程服务
             Core.UserRequest = RPCRequestProxyFactory.Register<UserClient>("UserClient", "192.168.0.105", "28015", type);
             Redis redis = new Redis("127.0.0.1:6379");
@@ -34,11 +35,6 @@ namespace Make.BLL
             CoreInit(Config.ConfigCategory.StandardServer);
             SkillCardInit();
             AdventuresInit();
-            if (typeof(List<SkillCard>).Equals(typeof(List<SkillCard>)))
-            {
-                Console.WriteLine("相同");
-            }
-            else Console.WriteLine("不相同");
         }
 
         private async void CoreInit(Config.ConfigCategory category)
