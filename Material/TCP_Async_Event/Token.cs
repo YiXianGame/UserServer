@@ -79,7 +79,8 @@ namespace Material.TCP_Async_Event
 #endif
                                 request.Params[0] = this;
                                 object result = method.Invoke(null, request.Params);
-                                proxy.Type.TypeToAbstract.TryGetValue(result.GetType(), out string type);
+                                string type = "null";
+                                if(result!=null)proxy.Type.TypeToAbstract.TryGetValue(result.GetType(),out type);
                                 Send(new ClientResponseModel("2.0",JsonConvert.SerializeObject(result),type, new Error(), request.Id));
                             }
                             else

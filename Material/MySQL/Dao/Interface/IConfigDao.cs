@@ -12,6 +12,6 @@ namespace Material.MySQL.Dao.Interface
         Task<bool> Insert(Config config);
         Task<bool> Delete(Config.ConfigCategory category);
         Task<bool> Update(Config config);
-        Task<bool> Query(Config.ConfigCategory category);
+        Task<Config> Query(Config.ConfigCategory category);
     }
 }

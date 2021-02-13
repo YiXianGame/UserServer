@@ -57,6 +57,10 @@ namespace Make.Repository
             }
             else return skillCard;
         }
+        public async Task<List<SkillCard>> Query_All() 
+        {
+            return await mySQL.skillCardDao.Query_All();
+        }
         public async Task<bool> Delete(long id)
         {
             bool result = await mySQL.skillCardDao.Delete(id);

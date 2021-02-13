@@ -29,7 +29,7 @@ namespace Make.Repository
         {
             return await mySQL.coreDao.Update(config);
         }
-        public async Task<bool> Query(Config.ConfigCategory category)
+        public async Task<Config> Query(Config.ConfigCategory category)
         {
             return await mySQL.coreDao.Query(category);
         }

@@ -7,8 +7,8 @@ using System.Text;
 
 namespace Make.RPC.Request
 {
-    public interface UserClient
+    public interface SkillCardRequest
     {
-        public void AddHp(Token token, User user);
+        public void SyncSkillCardUpdate(Token token, long timestamp);
     }
 }

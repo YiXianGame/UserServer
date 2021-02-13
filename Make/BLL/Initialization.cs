@@ -1,11 +1,9 @@
-﻿using Make.Model;
+﻿using Make.RPC.Adapt;
 using Make.RPC.Request;
-using Make.RPC.Server;
 using Material.Entity;
 using Material.MySQL;
 using Material.Redis;
 using Material.RPC;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -24,10 +22,11 @@ namespace Make.BLL
             type.Add<SkillCard>("skillCard");
             type.Add<List<SkillCard>>("skillcards");
             //适配远程客户端服务
-            RPCAdaptFactory.Register<UserServer>("UserServer", "192.168.0.105", "28015", type);
-            RPCAdaptFactory.Register<SkillCardServer>("SkillCardServer", "192.168.0.105", "28015", type);
+            RPCAdaptFactory.Register<UserAdapt>("UserServer", "192.168.0.105", "28015", type);
+            RPCAdaptFactory.Register<SkillCardAdapt>("SkillCardServer", "192.168.0.105", "28015", type);
             //注册远程服务
-            Core.UserRequest = RPCRequestProxyFactory.Register<UserClient>("UserClient", "192.168.0.105", "28015", type);
+            Core.UserClient = RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.0.105", "28015", type);
+            Core.SkillCardClient = RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.0.105", "28015", type);
             Redis redis = new Redis("127.0.0.1:6379");
             MySQL mySQL = new MySQL("127.0.0.1", "3306", "yixian", "root", "root");
             Model.Repository repository = new Model.Repository(redis, mySQL);
@@ -41,19 +40,20 @@ namespace Make.BLL
         {
             Console.WriteLine("Core Loading....");
             //全局静态，查询以后会将Core静态属性全部设置好.
-            bool result = await Core.Repository.ConfigRepository.Query(category);
+            Config config= await Core.Repository.ConfigRepository.Query(category);
             //如果没找到，就执行默认配置
-            if (!result)
+            if (config == null)
             {
                 Core.Config = new Config();
                 Core.Config.Category = category;
                 Core.Config.SkillCardUpdate = 0;
                 Core.Config.MaxBuff = 8;
-                if(!(await Core.Repository.ConfigRepository.Insert(Core.Config)))
+                if (!(await Core.Repository.ConfigRepository.Insert(Core.Config)))
                 {
                     Console.WriteLine("Core Load Fail!");
                 }
             }
+            else Core.Config = config;
             Console.WriteLine("Core Load Sucess!");
         }
 
@@ -112,6 +112,14 @@ namespace Make.BLL
                         Console.WriteLine("Core Load Fail!");
                         break;
                     }
+                }
+            }
+            else
+            {
+                List<SkillCard> skillCards = await Core.Repository.SkillCardRepository.Query_All();
+                foreach(SkillCard item in skillCards)
+                {
+                    Core.SkillCardByID.Add(item.Id, item);
                 }
             }
             Console.WriteLine("SkillCard Load Sucess!");

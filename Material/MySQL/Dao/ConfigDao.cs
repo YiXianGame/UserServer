@@ -85,7 +85,7 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<bool> Query(Config.ConfigCategory category)
+        public async Task<Config> Query(Config.ConfigCategory category)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -101,9 +101,9 @@ namespace Material.MySQL.Dao
                     config.Category = category;
                     config.SkillCardUpdate = reader.GetInt64("skill_card_update");
                     config.MaxBuff = reader.GetInt32("max_buff");
-                    return true;
+                    return config;
                 }
-                else return false;
+                else return null;
             }
             finally
             {

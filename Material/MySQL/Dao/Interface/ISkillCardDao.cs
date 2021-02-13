@@ -12,5 +12,7 @@ namespace Material.MySQL.Dao.Interface
         Task<bool> Update(SkillCard skillCard);
         Task<bool> Delete(long id);
         Task<SkillCard> Query(long id);
+
+        Task<List<SkillCard>> Query_All();
     }
 }

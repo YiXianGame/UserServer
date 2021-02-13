@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Make.RPC.Server
+namespace Make.RPC.Adapt
 {
-    public class UserServer
+    public class UserAdapt
     {
         public static long RegisterUser(Token token, string username, string nickname, string password)
         {
