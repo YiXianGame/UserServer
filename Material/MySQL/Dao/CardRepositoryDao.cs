@@ -22,7 +22,7 @@ namespace Material.MySQL.Dao
         }
 
 
-        public async Task<bool> Insert(CardRepository item)
+        public async Task<bool> Insert(CardItem item)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -33,7 +33,7 @@ namespace Material.MySQL.Dao
                 parameters.Add(new MySqlParameter("@item_id", item.ItemId));
                 parameters.Add(new MySqlParameter("@solution", item.Category));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
-                if (result == 1)
+                if (result == 1)    
                 {
                     return true;
                 }
@@ -65,7 +65,7 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<bool> Update(CardRepository item)
+        public async Task<bool> Update(CardItem item)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -87,7 +87,7 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<CardRepository> Query(long owner_id, long item_id)
+        public async Task<CardItem> Query(long owner_id, long item_id)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -99,13 +99,39 @@ namespace Material.MySQL.Dao
                 MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, sqlcommand, parameters.ToArray());
                 if (reader.Read())
                 {
-                    CardRepository repository = new CardRepository();
-                    repository.OwnerId = owner_id;
-                    repository.ItemId = item_id;
-                    repository.Category = (CardRepository.CardRepositoryCategory)Enum.Parse(typeof(CardRepository.CardRepositoryCategory), reader.GetString("solution"));
-                    return repository;
+                    CardItem item = new CardItem();
+                    item.OwnerId = owner_id;
+                    item.ItemId = item_id;
+                    item.Category = (CardItem.CardRepositoryCategory)Enum.Parse(typeof(CardItem.CardRepositoryCategory), reader.GetString("solution"));
+                    return item;
                 }
                 else return null;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        public async Task<List<CardItem>> QueryByUserId(long owner_id)
+        {
+            GetConnection(out MySqlConnection connection);
+            try
+            {
+                string sqlcommand = "SELECT item_id,solution FROM card_repository WHERE owner_id=@owner_id";
+                List<MySqlParameter> parameters = new List<MySqlParameter>();
+                parameters.Add(new MySqlParameter("@owner_id", owner_id));
+                MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, sqlcommand, parameters.ToArray());
+                List<CardItem> list = new List<CardItem>();
+                while (reader.Read())
+                {
+                    CardItem item = new CardItem();
+                    item.OwnerId = owner_id;
+                    item.ItemId = reader.GetInt64("item_id");
+                    item.Category = (CardItem.CardRepositoryCategory)Enum.Parse(typeof(CardItem.CardRepositoryCategory), reader.GetString("solution"));
+                    list.Add(item);
+                }
+                return list;
             }
             finally
             {

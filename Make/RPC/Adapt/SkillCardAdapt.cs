@@ -20,5 +20,16 @@ namespace Make.RPC.Adapt
                 return new List<SkillCard>(Core.SkillCardByID.Values);
             }
         }
+        public static List<SkillCard> Query(List<long> skillCardIds)
+        {
+            List<SkillCard> skillCards = new List<SkillCard>();
+            foreach(long item in skillCardIds)
+            {
+                SkillCard card = Core.Repository.SkillCardRepository.QuerySync(item);
+                skillCards.Add(card);
+            }
+            if (skillCardIds.Count != skillCards.Count) return null;
+            else return skillCards;
+        }
     }
 }

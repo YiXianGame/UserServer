@@ -19,7 +19,7 @@ namespace Material.Redis
             userDao = new UserDao(redis.GetDatabase(0));
             //1-卡库
             skillCardDao = new SkillCardDao(redis.GetDatabase(1));
-            //2-好友
+            //2-仓库
             cardRepositoryDao = new CardRepositoryDao(redis.GetDatabase(2));
             //2-好友
             friendDao = new FriendDao(redis.GetDatabase(3));

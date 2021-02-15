@@ -13,7 +13,7 @@ namespace Material.MySQL
         private const int Conn_Lifetime = 30;//设置连接的生命周期
         public IConfigDao coreDao;
         public IUserDao userDao;
-        public ISkillCArdDao skillCardDao;
+        public ISkillCardDao skillCardDao;
         public ICardRepositoryDao cardRepositoryDao;
         public IFriendDao friendDao;
         private string GetConnString(string ip, string port, string db, string username, string password)

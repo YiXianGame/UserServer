@@ -12,10 +12,14 @@ namespace Material.MySQL.Dao.Interface
         public Task<long> Insert(string username, string nickname, string password);
         public Task<bool> Update_NickName(long id,string nickname);
         public Task<bool> Update_Password(long id, string password);
+        public Task<bool> Update_CardGroups(long id, List<CardGroup> cardGroup, long timestamp);
         public Task<long> Valid(string username, string password);
         public Task<User> Query_AttributeByUsername(string username);
         public Task<User> Query_AttributeByID(long id,bool has_password = false);
 
         public Task<long> Query_IdByUsername(string username);
+
+
+        public Task<long> Query_UserSkillCardUpdate(long id);
     }
 }

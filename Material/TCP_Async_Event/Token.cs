@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Reflection;
 using Material.RPC;
+using Material.Entity;
 
 namespace Material.TCP_Async_Event
 {
@@ -12,8 +13,7 @@ namespace Material.TCP_Async_Event
     {
         #region --User_Cutsom--
 
-        public long Id { get; set; }
-        string key;
+        private long userId;
 
         #endregion
         private SocketAsyncEventArgs eventArgs;
@@ -30,6 +30,9 @@ namespace Material.TCP_Async_Event
         //下面这部分的byte用于接收数据
         private static byte pattern;
         private static byte[] future = new byte[futuresize];
+
+        public long UserId { get => userId; set => userId = value; }
+
         public Token(SocketAsyncEventArgs eventArgs,string hostname,string port)
         {
             this.eventArgs = eventArgs;
@@ -40,6 +43,7 @@ namespace Material.TCP_Async_Event
         public void Init()
         {
             content.ResetWriterIndex();
+            UserId = -1;
         }
 
         public void ProcessData()

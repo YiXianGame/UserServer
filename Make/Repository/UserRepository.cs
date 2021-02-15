@@ -1,6 +1,8 @@
 ﻿using Material.Entity;
+using Material.ExceptionModel;
 using Material.MySQL;
 using Material.Redis;
+using Material.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -81,7 +83,7 @@ namespace Make.Repository
         public async Task<User> Sync_Attribute(long id, long timestamp)
         {
             //先从Redis里面取更新信息    
-            User user = await redis.userDao.Query_UserAttribute(id);
+            User user = await redis.userDao.Query_Attribute(id);
             if (user == null)//Redis不存在该用户
             {
                 user = await Cache(id);//缓存该用户
@@ -92,14 +94,52 @@ namespace Make.Repository
             }
             else return null;
         }
+        public async Task<long> Update_CardGroups(long id, User user)
+        {
+            long timestamp = TimeStamp.Now();
+            bool result = await mySQL.userDao.Update_CardGroups(id, user.CardGroups,timestamp);
+            if (result)
+            {
+                redis.userDao.SetCardGroups(id, user.CardGroups, timestamp);
+                return timestamp;
+            }
+            else return -1;
+
+        }
         public async Task<User> Query_AttributeById(long id)
         {
-            User user = await redis.userDao.Query_UserAttribute(id);
+            User user = await redis.userDao.Query_Attribute(id);
             if (user == null)
             {
                 user = await Cache(id);
             }
             return user;
+        }
+        public async Task<long> Query_SkillCardUpdateById(long id)
+        {
+            long db_timestamp = await redis.userDao.Query_SkillCardUpdate(id);
+            if (db_timestamp == -1)
+            {
+                User user = await Cache(id);
+                if (user == null) throw new UserException(UserException.ErrorCode.DataNotFound, "处理同步用户卡牌数据时，Mysql无法查到数据.");
+                db_timestamp = user.SkillCard_update;
+            }
+            return db_timestamp;
+        }
+        public async Task<List<CardItem>> Sync_UserSkillCards(long id,long timestamp)
+        {
+            long db_timestamp = await redis.userDao.Query_SkillCardUpdate(id);
+            if (db_timestamp == -1)
+            {
+                User user = await Cache(id);
+                if (user == null) throw new UserException( UserException.ErrorCode.DataNotFound,"处理同步用户卡牌数据时，Mysql无法查到数据.");
+                db_timestamp = user.SkillCard_update;
+            }
+            if (db_timestamp != timestamp)
+            {
+                return await mySQL.cardRepositoryDao.QueryByUserId(id);
+            }
+            else return null;
         }
         #endregion
     }

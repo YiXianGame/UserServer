@@ -52,6 +52,35 @@ namespace Material.Redis.Dao
             return skillCard;
         }
 
+        public SkillCard QuerySync(long id)
+        {
+            RedisValue[] values = db.HashGet("SK" + id, new RedisValue[] { "id","name","description","mp","probability","auxiliary_hp",
+                    "auxiliary_mp","enemy_hp","enemy_mp","max_enemy","max_auxiliary","author_id","register_date","update","auxiliary_buff","enemy_buff","category" });
+            SkillCard skillCard = null;
+            if (!values[0].IsNullOrEmpty)
+            {
+                skillCard = new SkillCard();
+                skillCard.Id = (long)values[0];
+                skillCard.Name = values[1];
+                skillCard.Description = values[2];
+                skillCard.Mp = (int)values[3];
+                skillCard.Probability = (int)values[4];
+                skillCard.AuxiliaryHp = (int)values[5];
+                skillCard.AuxiliaryMp = (int)values[6];
+                skillCard.EnemyHp = (int)values[7];
+                skillCard.EnemyMp = (int)values[8];
+                skillCard.MaxEnemy = (int)values[9];
+                skillCard.MaxAuxiliary = (int)values[10];
+                skillCard.AuthorId = (int)values[11];
+                skillCard.RegisterDate = (int)values[12];
+                skillCard.AttributeUpdate = (int)values[13];
+                skillCard.AuxiliaryBuff = JsonConvert.DeserializeObject<List<Buff>>(values[14]);
+                skillCard.EnemyBuff = JsonConvert.DeserializeObject<List<Buff>>(values[15]);
+                skillCard.Category = JsonConvert.DeserializeObject<List<SkillCard.SkillCardCategory>>(values[16]);
+            }
+            return skillCard;
+        }
+
         public void Set(SkillCard skillCard)
         {
             List<HashEntry> parameters = new List<HashEntry>();

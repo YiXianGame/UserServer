@@ -57,6 +57,21 @@ namespace Make.Repository
             }
             else return skillCard;
         }
+        public SkillCard QuerySync(long id)
+        {
+            SkillCard skillCard = redis.skillCardDao.QuerySync(id);
+            if (skillCard == null)
+            {
+                skillCard = mySQL.skillCardDao.QuerySync(id);
+                if (skillCard != null)
+                {
+                    redis.skillCardDao.Set(skillCard);
+                    return skillCard;
+                }
+                else return null;
+            }
+            else return skillCard;
+        }
         public async Task<List<SkillCard>> Query_All() 
         {
             return await mySQL.skillCardDao.Query_All();

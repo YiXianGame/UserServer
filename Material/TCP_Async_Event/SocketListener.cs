@@ -85,6 +85,7 @@ namespace Material.TCP_Async_Event
             e.AcceptSocket = null;
             this.semaphoreAcceptedClients.Release();
             Interlocked.Decrement(ref this.numConnectedSockets);
+            (e.UserToken as Token).Init();
             this.readWritePool.Push(e);
             Console.WriteLine("A client has been disconnected from the server. There are {0} clients connected to the server", this.numConnectedSockets);
         }

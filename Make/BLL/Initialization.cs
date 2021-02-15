@@ -20,7 +20,9 @@ namespace Make.BLL
             type.Add<long>("long");
             type.Add<User>("user");
             type.Add<SkillCard>("skillCard");
-            type.Add<List<SkillCard>>("skillcards");
+            type.Add<List<SkillCard>>("skillCards");
+            type.Add<List<CardItem>>("cardItem");
+            type.Add<List<CardGroup>>("cardGroups");
             //适配远程客户端服务
             RPCAdaptFactory.Register<UserAdapt>("UserServer", "192.168.0.105", "28015", type);
             RPCAdaptFactory.Register<SkillCardAdapt>("SkillCardServer", "192.168.0.105", "28015", type);
@@ -86,7 +88,7 @@ namespace Make.BLL
                     {
                         Buff buff = new Buff();
                         buff.Power = random.Next() % 100;
-                        buff.Category = Material.Entity.Buff.BuffCategory.Freeze;
+                        buff.Category = Buff.BuffCategory.Freeze;
                         buff.Duration = random.Next() % 100;
                         skillCard.AuxiliaryBuff.Add(buff);
                     }
@@ -94,18 +96,15 @@ namespace Make.BLL
                     {
                         Buff buff = new Buff();
                         buff.Power = random.Next() % 100;
-                        buff.Category = Material.Entity.Buff.BuffCategory.Freeze;
+                        buff.Category = Buff.BuffCategory.Freeze;
                         buff.Duration = random.Next() % 100;
                         skillCard.EnemyBuff.Add(buff);
                     }
-                    for (int j = 0; j < random.Next() % 5; j++)
-                    {
-                        if (random.Next() % 2 == 1) skillCard.Category.Add(Material.Entity.SkillCard.SkillCardCategory.Attack);
-                        if (random.Next() % 2 == 1) skillCard.Category.Add(Material.Entity.SkillCard.SkillCardCategory.Cure);
-                        if (random.Next() % 2 == 1) skillCard.Category.Add(Material.Entity.SkillCard.SkillCardCategory.Eternal);
-                        if (random.Next() % 2 == 1) skillCard.Category.Add(Material.Entity.SkillCard.SkillCardCategory.Magic);
-                        if (random.Next() % 2 == 1) skillCard.Category.Add(Material.Entity.SkillCard.SkillCardCategory.Physics);
-                    }
+                    if (random.Next() % 2 == 1) skillCard.Category.Add(SkillCard.SkillCardCategory.Attack);
+                    if (random.Next() % 2 == 1) skillCard.Category.Add(SkillCard.SkillCardCategory.Cure);
+                    if (random.Next() % 2 == 1) skillCard.Category.Add(SkillCard.SkillCardCategory.Eternal);
+                    if (random.Next() % 2 == 1) skillCard.Category.Add(SkillCard.SkillCardCategory.Magic);
+                    if (random.Next() % 2 == 1) skillCard.Category.Add(SkillCard.SkillCardCategory.Physics);
                     long result = await Core.Repository.SkillCardRepository.Insert(skillCard);
                     if (result == -1)
                     {

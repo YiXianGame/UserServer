@@ -11,5 +11,7 @@ namespace Material.Redis.Dao.Interface
         void Set(SkillCard skillCard);
         void Delete(long id);
         Task<SkillCard> Query(long id);
+
+        SkillCard QuerySync(long id);
     }
 }

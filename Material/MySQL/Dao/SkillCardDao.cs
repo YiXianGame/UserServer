@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Material.MySQL.Dao
 {
-    public class SkillCardDao : ISkillCArdDao
+    public class SkillCardDao : ISkillCardDao
     {
         string ConnectionString;
         public SkillCardDao(string connectionString)
@@ -185,6 +185,42 @@ namespace Material.MySQL.Dao
                     skillCards.Add(skillCard);
                 }
                 return skillCards;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        public SkillCard QuerySync(long id)
+        {
+            GetConnection(out MySqlConnection connection);
+            try
+            {
+                MySqlDataReader reader = MySqlHelper.ExecuteReader(connection, $"SELECT * FROM skillcard WHERE id = {id}");
+                if (reader.Read())
+                {
+                    SkillCard skillCard = new SkillCard();
+                    skillCard.Id = reader.GetInt64("id");
+                    skillCard.Name = reader.GetString("name");
+                    skillCard.Description = reader.GetString("description");
+                    skillCard.Mp = reader.GetInt32("mp");
+                    skillCard.Probability = reader.GetInt32("probability");
+                    skillCard.AuxiliaryHp = reader.GetInt32("auxiliary_hp");
+                    skillCard.AuxiliaryMp = reader.GetInt32("auxiliary_mp");
+                    skillCard.EnemyHp = reader.GetInt32("enemy_hp");
+                    skillCard.EnemyMp = reader.GetInt32("enemy_mp");
+                    skillCard.MaxEnemy = reader.GetInt32("max_enemy");
+                    skillCard.MaxAuxiliary = reader.GetInt32("max_auxiliary");
+                    skillCard.AuthorId = reader.GetInt64("author_id");
+                    skillCard.RegisterDate = reader.GetInt64("register_date");
+                    skillCard.AttributeUpdate = reader.GetInt64("attribute_update");
+                    skillCard.AuxiliaryBuff = JsonConvert.DeserializeObject<List<Buff>>(reader.GetString("auxiliary_buff"));
+                    skillCard.EnemyBuff = JsonConvert.DeserializeObject<List<Buff>>(reader.GetString("enemy_buff"));
+                    skillCard.Category = JsonConvert.DeserializeObject<List<SkillCard.SkillCardCategory>>(reader.GetString("category"));
+                    return skillCard;
+                }
+                else return null;
             }
             finally
             {

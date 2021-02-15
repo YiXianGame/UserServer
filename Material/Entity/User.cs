@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.Collections.Generic;
 
 namespace Material.Entity
 {
@@ -13,45 +14,47 @@ namespace Material.Entity
 
         #region --字段--
 
-        protected long id;
+        long id;
 
-        protected string username;
+        string username;
 
-        protected string password;
+        string password;
 
-        protected byte[] headImage;
+        byte[] headImage;
 
-        protected string nickname;
+        string nickname;
 
-        protected int upgrade_num = 0;
+        int upgrade_num = 0;
 
-        protected int create_num = 0;
+        int create_num = 0;
 
-        protected long money = 0;
+        long money = 0;
 
-        protected string personalSignature;
+        string personalSignature;
 
-        protected int battleCount;//战斗场次
+        int battleCount;//战斗场次
 
-        protected long exp;//经验
+        long exp;//经验
 
-        protected int lv = 1;//等级
+        int lv = 1;//等级
 
-        protected string title = "炼气";//称号
+        string title = "炼气";//称号
 
-        protected State active = State.Offline;//玩家当前游戏状态
+        State active = State.Offline;//玩家当前游戏状态
 
-        protected int kills;//击杀数
+        int kills;//击杀数
 
-        protected int deaths;//死亡数
+        int deaths;//死亡数
 
-        protected long registerDate;//注册日期
+        long registerDate;//注册日期
 
-        protected long attribute_update;//个人信息更新日期
+        long attribute_update;//个人信息更新日期
 
-        protected long skillCard_update;//卡牌更新日期
+        long skillCard_update;//卡牌更新日期
 
-        protected long headImage_update;//头像更新日期
+        long headImage_update;//头像更新日期
+
+        List<CardGroup> cardGroups;//技能卡组
 
         #endregion
 
@@ -78,6 +81,7 @@ namespace Material.Entity
         public long Attribute_update { get => attribute_update; set => attribute_update = value; }
         public long SkillCard_update { get => skillCard_update; set => skillCard_update = value; }
         public long HeadImage_update { get => headImage_update; set => headImage_update = value; }
+        public List<CardGroup> CardGroups { get => cardGroups; set => cardGroups = value; }
         #endregion
     }
 }
