@@ -11,12 +11,12 @@ namespace Material.Entity
     {
         #region --字段--
         string name;
-        List<Tuple<long, string>> cards = new List<Tuple<long, string>>();
+        List<long> cards = new List<long>();
         #endregion
 
         #region --属性--
         public string Name { get => name; set => name = value; }
-        public List<Tuple<long, string>> Cards { get => cards; set => cards = value; }
+        public List<long> Cards { get => cards; set => cards = value; }
         #endregion
     }
 }

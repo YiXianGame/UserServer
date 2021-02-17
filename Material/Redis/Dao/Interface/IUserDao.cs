@@ -16,5 +16,6 @@ namespace Material.Redis.Dao.Interface
 
         public Task<long> Query_SkillCardUpdate(long id);
 
+        public Task<long> Query_FriendUpdate(long id);
     }
 }

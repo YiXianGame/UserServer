@@ -94,6 +94,20 @@ namespace Make.Repository
             }
             else return null;
         }
+        public async Task<List<Friend>> Sync_Friend(long id, long timestamp)
+        {
+            //先从Redis里面取更新信息    
+            User user = await redis.userDao.Query_Attribute(id);
+            if (user == null)//Redis不存在该用户
+            {
+                user = await Cache(id);//缓存该用户
+            }
+            if (user.Friend_update != timestamp)//说明需要更新了
+            {
+                return await mySQL.friendDao.QueryAllById(id);
+            }
+            else return null;
+        }
         public async Task<long> Update_CardGroups(long id, User user)
         {
             long timestamp = TimeStamp.Now();
@@ -123,6 +137,17 @@ namespace Make.Repository
                 User user = await Cache(id);
                 if (user == null) throw new UserException(UserException.ErrorCode.DataNotFound, "处理同步用户卡牌数据时，Mysql无法查到数据.");
                 db_timestamp = user.SkillCard_update;
+            }
+            return db_timestamp;
+        }
+        public async Task<long> Query_FriendUpdateById(long id)
+        {
+            long db_timestamp = await redis.userDao.Query_SkillCardUpdate(id);
+            if (db_timestamp == -1)
+            {
+                User user = await Cache(id);
+                if (user == null) throw new UserException(UserException.ErrorCode.DataNotFound, "处理同步用户好友数据时，Mysql无法查到数据.");
+                db_timestamp = user.Friend_update;
             }
             return db_timestamp;
         }

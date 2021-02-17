@@ -10,6 +10,9 @@ namespace Make.RPC.Request
     public interface UserRequest
     {
         public void AddHp(Token token, User user);
-        public void SyncSkillCardUpdate(Token token, long timestamp);
+        public void SetSkillCardUpdate(Token token, long timestamp);
+
+        public void SetFriendUpdate(Token token, long timestamp);
+
     }
 }

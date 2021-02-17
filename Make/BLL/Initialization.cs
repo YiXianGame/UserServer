@@ -23,6 +23,8 @@ namespace Make.BLL
             type.Add<List<SkillCard>>("skillCards");
             type.Add<List<CardItem>>("cardItem");
             type.Add<List<CardGroup>>("cardGroups");
+            type.Add<List<Friend>>("friends");
+            type.Add<List<User>>("users");
             //适配远程客户端服务
             RPCAdaptFactory.Register<UserAdapt>("UserServer", "192.168.0.105", "28015", type);
             RPCAdaptFactory.Register<SkillCardAdapt>("SkillCardServer", "192.168.0.105", "28015", type);

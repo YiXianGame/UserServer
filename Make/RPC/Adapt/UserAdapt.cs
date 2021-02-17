@@ -22,10 +22,32 @@ namespace Make.RPC.Adapt
             token.UserId = task.Result;
             return token.UserId;
         }
-        public static User Sync_UserAttribute(Token token, long date)
+        public static User Sync_Attribute(Token token, long date)
         {
             Task<User> task = Core.Repository.UserRepository.Sync_Attribute(token.UserId, date);
             task.Wait();
+            return task.Result;
+        }
+        public static List<User> Sync_Attribute(Token token, List<User> dates)
+        {
+            List<User> users = new List<User>();
+            foreach(User item in dates)
+            {
+                Task<User> task = Core.Repository.UserRepository.Sync_Attribute(item.Id,item.Attribute_update);
+                task.Wait();
+                users.Add(task.Result);
+            }
+            return users;
+        }
+        public static List<Friend> Sync_Friend(Token token, long date)
+        {
+            Task<List<Friend>> task = Core.Repository.UserRepository.Sync_Friend(token.UserId, date);
+            task.Wait();
+
+            Task<long> update_task = Core.Repository.UserRepository.Query_FriendUpdateById(token.UserId);
+            update_task.Wait();
+            Core.UserClient.SetFriendUpdate(token, update_task.Result);
+
             return task.Result;
         }
         public static long Update_CardGroups(Token token, User user)
@@ -40,14 +62,16 @@ namespace Make.RPC.Adapt
             task.Wait();
             return task.Result;
         }
-        public static List<CardItem> Sync_UserSkillCards(Token token,long id, long date)
+        public static List<CardItem> Sync_SkillCards(Token token,long id, long date)
         {
             Task<List<CardItem>> task = Core.Repository.UserRepository.Sync_UserSkillCards(id, date);
             task.Wait();
+
             Task<long> update_task = Core.Repository.UserRepository.Query_SkillCardUpdateById(id);
             update_task.Wait();
-            if(id == token.UserId)Core.UserClient.SyncSkillCardUpdate(token, update_task.Result);
+            Core.UserClient.SetSkillCardUpdate(token, update_task.Result);
             return task.Result;
+
         }
     }
 }

@@ -6,5 +6,6 @@ namespace Material.Redis.Dao.Interface
 {
     public interface IFriendDao
     {
+
     }
 }

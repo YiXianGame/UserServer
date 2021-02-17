@@ -23,19 +23,19 @@ namespace Make.Repository
         }
         public async Task<bool> Insert(Config config)
         {
-            return await mySQL.coreDao.Insert(config);
+            return await mySQL.configDao.Insert(config);
         }
         public async Task<bool> Update(Config config)
         {
-            return await mySQL.coreDao.Update(config);
+            return await mySQL.configDao.Update(config);
         }
         public async Task<Config> Query(Config.ConfigCategory category)
         {
-            return await mySQL.coreDao.Query(category);
+            return await mySQL.configDao.Query(category);
         }
         public async Task<bool> Delete(Config.ConfigCategory category)
         {
-            return await mySQL.coreDao.Delete(category);
+            return await mySQL.configDao.Delete(category);
         }
         #endregion
 

@@ -47,6 +47,11 @@ namespace Material.RPC
                     service.Register<T>(type);
                     services[key] = service;
                 }
+                catch (RPCException err)
+                {
+                    Console.WriteLine(err.Message + "\n" + err.StackTrace);
+                    Destory(servicename, hostname, port);
+                }
                 catch (Exception err)
                 {
                     Console.WriteLine("发生异常报错,销毁注册");

@@ -11,7 +11,7 @@ namespace Material.MySQL
         private const bool Asyn_Process = true;//设置异步访问数据库
         private const int Conn_Timeout = 15;//设置连接等待时间
         private const int Conn_Lifetime = 30;//设置连接的生命周期
-        public IConfigDao coreDao;
+        public IConfigDao configDao;
         public IUserDao userDao;
         public ISkillCardDao skillCardDao;
         public ICardRepositoryDao cardRepositoryDao;
@@ -31,7 +31,7 @@ namespace Material.MySQL
             userDao = new UserDao(dbConnStr);
             skillCardDao = new SkillCardDao(dbConnStr);
             cardRepositoryDao = new CardRepositoryDao(dbConnStr);
-            coreDao = new ConfigDao(dbConnStr);
+            configDao = new ConfigDao(dbConnStr);
             friendDao = new FriendDao(dbConnStr);
         }
     }

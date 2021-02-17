@@ -46,6 +46,8 @@ namespace Material.Entity
 
         int deaths;//死亡数
 
+        List<CardGroup> cardGroups;//技能卡组
+
         long registerDate;//注册日期
 
         long attribute_update;//个人信息更新日期
@@ -54,7 +56,8 @@ namespace Material.Entity
 
         long headImage_update;//头像更新日期
 
-        List<CardGroup> cardGroups;//技能卡组
+        long friend_update;//好友更新日期
+
 
         #endregion
 
@@ -82,6 +85,7 @@ namespace Material.Entity
         public long SkillCard_update { get => skillCard_update; set => skillCard_update = value; }
         public long HeadImage_update { get => headImage_update; set => headImage_update = value; }
         public List<CardGroup> CardGroups { get => cardGroups; set => cardGroups = value; }
+        public long Friend_update { get => friend_update; set => friend_update = value; }
         #endregion
     }
 }
