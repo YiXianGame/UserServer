@@ -1,18 +1,16 @@
-﻿using Make.MODEL;
+﻿using Make.Model;
 using Material.Entity;
 using Material.TCP_Async_Event;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Make.RPC.Request
 {
     public interface UserRequest
     {
-        public void AddHp(Token token, User user);
-        public void SetSkillCardUpdate(Token token, long timestamp);
+        public void MatchSucess(UserToken token,List<long> users,string hostname,string port,string hash);
+        public void SetSkillCardUpdate(UserToken token, long timestamp);
 
-        public void SetFriendUpdate(Token token, long timestamp);
+        public void SetFriendUpdate(UserToken token, long timestamp);
 
     }
 }

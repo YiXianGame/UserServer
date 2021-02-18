@@ -9,7 +9,7 @@ namespace Material.Entity
     {
         #region --Enum--
         [JsonConverter(typeof(StringEnumConverter))]
-        public enum State { Leisure, Ready, Queue, Gaming, Offline };
+        public enum UserState { Leisure, Ready, Queue, Gaming, Offline };
         #endregion
 
         #region --字段--
@@ -40,7 +40,7 @@ namespace Material.Entity
 
         string title = "炼气";//称号
 
-        State active = State.Offline;//玩家当前游戏状态
+        UserState state = UserState.Offline;//玩家当前游戏状态
 
         int kills;//击杀数
 
@@ -58,7 +58,7 @@ namespace Material.Entity
 
         long friend_update;//好友更新日期
 
-
+        long cardGroups_update;//技能卡组更新日期
         #endregion
 
         #region --属性--
@@ -77,7 +77,7 @@ namespace Material.Entity
         public long Exp { get => exp; set => exp = value; }
         public int Lv { get => lv; set => lv = value; }
         public string Title { get => title; set => title = value; }
-        public State Active { get => active; set => active = value; }
+        public UserState State { get => state; set => state = value; }
         public int Kills { get => kills; set => kills = value; }
         public int Deaths { get => deaths; set => deaths = value; }
         public long RegisterDate { get => registerDate; set => registerDate = value; }
@@ -86,6 +86,7 @@ namespace Material.Entity
         public long HeadImage_update { get => headImage_update; set => headImage_update = value; }
         public List<CardGroup> CardGroups { get => cardGroups; set => cardGroups = value; }
         public long Friend_update { get => friend_update; set => friend_update = value; }
+        public long CardGroups_update { get => cardGroups_update; set => cardGroups_update = value; }
         #endregion
     }
 }

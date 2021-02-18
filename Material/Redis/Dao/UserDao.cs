@@ -20,19 +20,19 @@ namespace Material.Redis.Dao
 
         public void SetAccount(string username, string password, long id,long attribute_update, long skill_card_update, long head_image_update)
         {
-            db.HashSetAsync("UA" + id,new HashEntry[]{ new HashEntry("username",username),new HashEntry("password",password),new HashEntry("head_image_update",head_image_update)  });
+            db.HashSetAsync("UA" + id,new HashEntry[]{ new HashEntry("username",username),new HashEntry("password",password)});
         }
         public void SetAccount(User user)
         {
             db.HashSetAsync("UA" + user.Id, new HashEntry[]{ new HashEntry("username",user.Username),new HashEntry("nickname",user.Nickname),new HashEntry("password",user.Password),
                 new HashEntry("upgrade_num",user.Upgrade_num),new HashEntry("create_num",user.Create_num),new HashEntry("money",user.Money),new HashEntry("personal_signature",user.PersonalSignature),
-                new HashEntry("battle_count",user.BattleCount),new HashEntry("exp",user.Exp),new HashEntry("lv",user.Lv),new HashEntry("title",user.Title),new HashEntry("active",user.Active.ToString()),
+                new HashEntry("battle_count",user.BattleCount),new HashEntry("exp",user.Exp),new HashEntry("lv",user.Lv),new HashEntry("title",user.Title),new HashEntry("state",user.State.ToString()),
                 new HashEntry("kills",user.Kills),new HashEntry("death",user.Deaths),new HashEntry("register_date",user.RegisterDate),new HashEntry("card_groups",JsonConvert.SerializeObject(user.CardGroups)),
-                new HashEntry("attribute_update",user.Attribute_update),new HashEntry("skill_card_update", user.SkillCard_update),new HashEntry("head_image_update",user.HeadImage_update),new HashEntry("friend_update",user.Friend_update) });
+                new HashEntry("attribute_update",user.Attribute_update),new HashEntry("skill_card_update", user.SkillCard_update),new HashEntry("head_image_update",user.HeadImage_update),new HashEntry("friend_update",user.Friend_update),new HashEntry("card_groups_update",user.CardGroups_update)});
         }
         public void SetCardGroups(long id,List<CardGroup> cardGroups,long timestamp)
         {
-            db.HashSetAsync("UA" + id, new HashEntry[]{ new HashEntry("card_groups", JsonConvert.SerializeObject(cardGroups)), new HashEntry("attribute_update", timestamp)});
+            db.HashSetAsync("UA" + id, new HashEntry[]{ new HashEntry("card_groups", JsonConvert.SerializeObject(cardGroups)), new HashEntry("card_groups_update", timestamp)});
         }
         public async Task<long> ValidPerson(long id, string password)
         {
@@ -50,7 +50,7 @@ namespace Material.Redis.Dao
         public async Task<User> Query_Attribute(long id, bool has_password = false)
         {
             RedisValue[] values = await db.HashGetAsync("UA" + id, new RedisValue[] { "username", "nickname","password", "upgrade_num", "create_num", "money", "personal_signature", "battle_count",
-                "exp", "lv", "title","active","kills","deaths","register_date","attribute_update", "skill_card_update" , "head_image_update","card_groups","friend_update" });
+                "exp", "lv", "title","active","kills","deaths","register_date","attribute_update", "skill_card_update" , "head_image_update","card_groups","friend_update","card_groups_update" });
             User user = null;
             if (!values[0].IsNullOrEmpty)
             {
@@ -67,7 +67,7 @@ namespace Material.Redis.Dao
                 user.Exp = (long)values[8];
                 user.Lv = (int)values[9];
                 user.Title = values[10];
-                user.Active = (User.State)Enum.Parse(typeof(User.State),values[11]);
+                user.State = (User.UserState)Enum.Parse(typeof(User.UserState),values[11]);
                 user.Kills = (int)values[12];
                 user.Deaths = (int)values[13];
                 user.RegisterDate = (int)values[14];
@@ -75,6 +75,7 @@ namespace Material.Redis.Dao
                 user.SkillCard_update = (long)values[16];
                 user.HeadImage_update = (long)values[17];
                 user.Friend_update = (long)values[19];
+                user.CardGroups_update = (long)values[20];
                 user.CardGroups = JsonConvert.DeserializeObject<List<CardGroup>>(values[18]);
             }
             return user;
@@ -94,10 +95,36 @@ namespace Material.Redis.Dao
         {
             RedisValue[] values = await db.HashGetAsync("UA" + id, new RedisValue[] { "friend_update" });
             if (!values[0].IsNull)
+
             {
                 return (long)values[0];
             }
             else return -1;
+        }
+
+        public void SetState(long id, User.UserState state, long timestamp)
+        {
+            db.HashSetAsync("UA" + id, new HashEntry[] { new HashEntry("state", state.ToString()), new HashEntry("attribute_update", timestamp) });
+        }
+
+        public async Task<long> Query_CardGroupsUpdate(long id)
+        {
+            RedisValue[] values = await db.HashGetAsync("UA" + id, new RedisValue[] { "card_groups_update" });
+            if (!values[0].IsNull)
+
+            {
+                return (long)values[0];
+            }
+            else return -1;
+        }
+        public async Task<List<CardGroup>> Query_CardGroups(long id)
+        {
+            RedisValue[] values = await db.HashGetAsync("UA" + id, new RedisValue[] { "card_groups" });
+            if (!values[0].IsNull)
+            {
+                return JsonConvert.DeserializeObject<List<CardGroup>>(values[0]);
+            }
+            else return null;
         }
     }
 }

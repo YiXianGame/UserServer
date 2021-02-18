@@ -1,4 +1,5 @@
-﻿using Make.RPC.Adapt;
+﻿using Make.Model;
+using Make.RPC.Adapt;
 using Make.RPC.Request;
 using Material.Entity;
 using Material.MySQL;
@@ -26,16 +27,16 @@ namespace Make.BLL
             type.Add<List<Friend>>("friends");
             type.Add<List<User>>("users");
             //适配远程客户端服务
-            RPCAdaptFactory.Register<UserAdapt>("UserServer", "192.168.0.105", "28015", type);
-            RPCAdaptFactory.Register<SkillCardAdapt>("SkillCardServer", "192.168.0.105", "28015", type);
+            RPCAdaptFactory.Register<UserAdapt>("UserServer", "192.168.0.105", "28015", type,()=>new UserToken());
+            RPCAdaptFactory.Register<SkillCardAdapt>("SkillCardServer", "192.168.0.105", "28015", type, () => new UserToken());
             //注册远程服务
-            Core.UserClient = RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.0.105", "28015", type);
-            Core.SkillCardClient = RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.0.105", "28015", type);
+            Core.UserRequest = RPCRequestProxyFactory<UserToken>.Register<UserRequest>("UserClient", "192.168.0.105", "28015", type);
+            Core.SkillCardRequest = RPCRequestProxyFactory<UserToken>.Register<SkillCardRequest>("SkillCardClient", "192.168.0.105", "28015", type);
             Redis redis = new Redis("127.0.0.1:6379");
             MySQL mySQL = new MySQL("127.0.0.1", "3306", "yixian", "root", "root");
             Model.Repository repository = new Model.Repository(redis, mySQL);
             Core.Repository = repository;
-            CoreInit(Config.ConfigCategory.StandardServer);
+            CoreInit(Config.ConfigCategory.StandardUserServer);
             SkillCardInit();
             AdventuresInit();
         }

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using static Material.Entity.User;
 
 namespace Make.Repository
 {
@@ -94,6 +95,25 @@ namespace Make.Repository
             }
             else return null;
         }
+        public async Task<User> Sync_CardGroups(long id, long timestamp)
+        {
+            //先从Redis里面取更新信息    
+            long update = await redis.userDao.Query_CardGroupsUpdate(id);
+            if (update == -1)//Redis不存在该用户
+            {
+                User user = await Cache(id);//缓存该用户
+                update = user.CardGroups_update;
+            }
+            if (update != timestamp)//说明需要更新了
+            {
+                User user = new User();
+                user.CardGroups_update = timestamp;
+                user.CardGroups = await redis.userDao.Query_CardGroups(id);
+                return user;
+            }
+            else return null;
+        }
+
         public async Task<List<Friend>> Sync_Friend(long id, long timestamp)
         {
             //先从Redis里面取更新信息    
@@ -118,7 +138,17 @@ namespace Make.Repository
                 return timestamp;
             }
             else return -1;
-
+        }
+        public async Task<long> Update_State(long id,UserState state)
+        {
+            long timestamp = TimeStamp.Now();
+            bool result = await mySQL.userDao.Update_State(id, state, timestamp);
+            if (result)
+            {
+                redis.userDao.SetState(id, state, timestamp);
+                return timestamp;
+            }
+            else return -1;
         }
         public async Task<User> Query_AttributeById(long id)
         {
@@ -142,7 +172,7 @@ namespace Make.Repository
         }
         public async Task<long> Query_FriendUpdateById(long id)
         {
-            long db_timestamp = await redis.userDao.Query_SkillCardUpdate(id);
+            long db_timestamp = await redis.userDao.Query_FriendUpdate(id);
             if (db_timestamp == -1)
             {
                 User user = await Cache(id);

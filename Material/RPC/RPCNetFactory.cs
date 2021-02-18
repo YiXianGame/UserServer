@@ -12,17 +12,17 @@ namespace Material.RPC
     /// <summary>
     /// 客户端工厂
     /// </summary>
-    public class RPCServerFactory 
+    public class RPCNetFactory
     {
         private static Dictionary<Tuple<string, string>, SocketListener> socketservers { get; } = new Dictionary<Tuple<string, string>, SocketListener>();
-        
+
         /// <summary>
         /// 获取客户端
         /// </summary>
         /// <param name="serverIp">远程服务IP</param>
         /// <param name="port">远程服务端口</param>
         /// <returns>客户端</returns>
-        public static SocketListener GetServer(Tuple<string, string> key)
+        public static SocketListener GetServer(Tuple<string, string> key,BaseUserToken.GetInstance createMethod)
         {
             SocketListener socketserver;
             socketservers.TryGetValue(key, out socketserver);
@@ -47,7 +47,18 @@ namespace Material.RPC
             }
             return socketserver;
         }
-
+        /// <summary>
+        /// 获取客户端
+        /// </summary>
+        /// <param name="serverIp">远程服务IP</param>
+        /// <param name="port">远程服务端口</param>
+        /// <returns>客户端</returns>
+        public static ConcurrentDictionary<object, BaseUserToken> GetTokens(Tuple<string, string> key)
+        {
+            SocketListener socketserver;
+            socketservers.TryGetValue(key, out socketserver);
+            return socketserver.Tokens;
+        }
         public static void Destory(Tuple<string, string> key)
         {
             SocketListener socketListener;

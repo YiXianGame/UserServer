@@ -1,14 +1,9 @@
-﻿using Make.MODEL;
-using Material.Entity;
-using Material.TCP_Async_Event;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Make.Model;
 
 namespace Make.RPC.Request
 {
     public interface SkillCardRequest
     {
-        public void SyncSkillCardUpdate(Token token, long timestamp);
+        public void SyncSkillCardUpdate(UserToken token, long timestamp);
     }
 }

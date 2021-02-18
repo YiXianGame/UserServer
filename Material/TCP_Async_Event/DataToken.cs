@@ -1,26 +1,23 @@
-﻿using System;
-using System.Text;
-using System.Net.Sockets;
-using System.Threading.Tasks;
+﻿using Material.RPC;
 using Newtonsoft.Json;
+using System;
+using System.Net.Sockets;
 using System.Reflection;
-using Material.RPC;
-using Material.Entity;
+using System.Text;
 
 namespace Material.TCP_Async_Event
 {
-    public sealed class Token
+    public sealed class DataToken
     {
         #region --User_Cutsom--
-
-        private long userId;
-
+        private BaseUserToken userToken;
         #endregion
         private SocketAsyncEventArgs eventArgs;
         private DotNetty.Buffers.IByteBuffer content;
         private int needRemain;
         string hostname;
         string port;
+
         //下面两部分只负责接收部分，发包构造部分并没有使用，修改时请注意！
         //下面这部分用于拆包分析   
         private static int headsize = 32;//头包长度
@@ -31,21 +28,28 @@ namespace Material.TCP_Async_Event
         private static byte pattern;
         private static byte[] future = new byte[futuresize];
 
-        public long UserId { get => userId; set => userId = value; }
+        public BaseUserToken UserToken  { get => userToken; set => userToken = value; }
+        public string Hostname { get => hostname; set => hostname = value; }
+        public string Port { get => port; set => port = value; }
 
-        public Token(SocketAsyncEventArgs eventArgs,string hostname,string port)
+        public DataToken(SocketAsyncEventArgs eventArgs,string hostname,string port,BaseUserToken.GetInstance createMethod)
         {
             this.eventArgs = eventArgs;
             this.content = DotNetty.Buffers.UnpooledByteBufferAllocator.Default.DirectBuffer(eventArgs.Buffer.Length,1024000);
-            this.hostname = hostname;
-            this.port = port;
+            this.Hostname = hostname;
+            this.Port = port;
+            userToken = createMethod();
         }
-        public void Init()
+        public void Clear()
         {
             content.ResetWriterIndex();
-            UserId = -1;
+            userToken.OnClearEvent();
         }
-
+        public void Connect()
+        {
+            content.ResetWriterIndex();
+            userToken.OnConnectEvent();
+        }
         public void ProcessData()
         {
             int writerIndex = eventArgs.BytesTransferred + eventArgs.Offset;
@@ -62,11 +66,11 @@ namespace Material.TCP_Async_Event
                         //从客户端发回来的，只可能是请求，绝对不会是响应，因为服务器绝对不会因为一个客户进行一个线程等待.
                         ClientRequestModel request = JsonConvert.DeserializeObject<ClientRequestModel>(content.GetString(0,content.WriterIndex, Encoding.UTF8));
                         content.ResetWriterIndex();
-                        if(!RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, hostname, port), out RPCAdaptProxy proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
+                        if(!RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, Hostname, Port), out RPCAdaptProxy proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
                         {   
 #if DEBUG
                             Console.WriteLine("------------------未找到该方法--------------------");
-                            Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客]\n{request}");
+                            Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[客]\n{request}");
                             Console.WriteLine("------------------未找到该方法--------------------");
 #endif                      
                         }
@@ -78,20 +82,20 @@ namespace Material.TCP_Async_Event
                             {
 #if DEBUG
                                 Console.WriteLine("--------------------------------------------------");
-                                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客-请求]\n{request}");
+                                Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[客-请求]\n{request}");
                                 Console.WriteLine("--------------------------------------------------");
 #endif
-                                request.Params[0] = this;
+                                request.Params[0] = userToken;
                                 object result = method.Invoke(null, request.Params);
                                 string type = "null";
                                 if(result!=null)proxy.Type.TypeToAbstract.TryGetValue(result.GetType(),out type);
-                                Send(new ClientResponseModel("2.0",JsonConvert.SerializeObject(result),type, new Error(), request.Id));
+                                userToken.Send(new ClientResponseModel("2.0",JsonConvert.SerializeObject(result),type, new Error(), request.Id));
                             }
                             else
                             {
 #if DEBUG
                                 Console.WriteLine("--------------------------------------------------");
-                                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客-指令]\n{request}");
+                                Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[客-指令]\n{request}");
                                 Console.WriteLine("--------------------------------------------------");
 #endif
                                 request.Params[0] = this;
@@ -135,70 +139,6 @@ namespace Material.TCP_Async_Event
                 }
             }
             eventArgs.SetBuffer(0, eventArgs.Buffer.Length);
-        }
-
-
-        public void Send(ServerRequestModel request)
-        {
-            if (eventArgs.AcceptSocket.Connected)
-            {
-#if DEBUG
-                Console.WriteLine("---------------------------------------------------------");
-                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[服-指令]\n{request}");
-                Console.WriteLine("---------------------------------------------------------"); 
-#endif
-                //构造data数据
-                byte[] bodyBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request));
-                //构造表头数据，固定4个字节的长度，表示内容的长度
-                byte[] headerBytes = BitConverter.GetBytes(bodyBytes.Length);
-                //构造消息类型 0 为Respond,1 为Request
-                byte[] pattern = { 0 };
-                //预备未来的一些数据
-                byte[] future = new byte[27];
-                //总计需要
-                byte[] sendBuffer = new byte[headerBytes.Length + pattern.Length + future.Length + bodyBytes.Length];
-                ///拷贝到同一个byte[]数组中
-                Buffer.BlockCopy(headerBytes, 0, sendBuffer, 0, headerBytes.Length);
-                Buffer.BlockCopy(pattern, 0, sendBuffer, headerBytes.Length, pattern.Length);
-                Buffer.BlockCopy(future, 0, sendBuffer, headerBytes.Length + pattern.Length, future.Length);
-                Buffer.BlockCopy(bodyBytes, 0, sendBuffer, headerBytes.Length + pattern.Length + future.Length, bodyBytes.Length);
-                SocketAsyncEventArgs sendEventArgs = new SocketAsyncEventArgs();
-                sendEventArgs.SetBuffer(sendBuffer, 0, sendBuffer.Length);
-                eventArgs.AcceptSocket.SendAsync(sendEventArgs);
-            }
-            else
-            {
-                throw new SocketException((Int32)SocketError.NotConnected);
-            }
-        }
-        public void Send(ClientResponseModel response)
-        {
-            if (eventArgs.AcceptSocket.Connected)
-            {
-#if DEBUG
-                Console.WriteLine("---------------------------------------------------------");
-                Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[客-返回]\n{response}");
-                Console.WriteLine("---------------------------------------------------------"); 
-#endif
-                //构造data数据
-                byte[] bodyBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
-                //构造表头数据，固定4个字节的长度，表示内容的长度
-                byte[] headerBytes = BitConverter.GetBytes(bodyBytes.Length);
-                //构造消息类型 1 为Respond,0 为Request
-                byte[] pattern = { 1 };
-                //预备未来的一些数据
-                byte[] future = new byte[27];
-                //总计需要
-                byte[] sendBuffer = new byte[headerBytes.Length + pattern.Length + future.Length + bodyBytes.Length];
-                ///拷贝到同一个byte[]数组中
-                Buffer.BlockCopy(headerBytes, 0, sendBuffer, 0, headerBytes.Length);
-                Buffer.BlockCopy(pattern, 0, sendBuffer, headerBytes.Length, pattern.Length);
-                Buffer.BlockCopy(future, 0, sendBuffer, headerBytes.Length + pattern.Length, future.Length);
-                Buffer.BlockCopy(bodyBytes, 0, sendBuffer, headerBytes.Length + pattern.Length + future.Length, bodyBytes.Length);
-                SocketAsyncEventArgs sendEventArgs = new SocketAsyncEventArgs();
-                sendEventArgs.SetBuffer(sendBuffer, 0, sendBuffer.Length);
-                eventArgs.AcceptSocket.SendAsync(sendEventArgs);
-            }
         }
     }
 }

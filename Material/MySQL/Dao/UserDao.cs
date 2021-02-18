@@ -30,7 +30,7 @@ namespace Material.MySQL.Dao
             long timeStamp = (long)(DateTime.Now - startTime).TotalSeconds; // 相差秒数
             try
             {
-                int result = await MySqlHelper.ExecuteNonQueryAsync(connection, $"INSERT INTO user(username,nickname,password,register_date,attribute_update,skill_card_update,friend_update,head_image_update,active,card_groups) VALUES ('{username}','{nickname}','{password}','{timeStamp}','{timeStamp}','{timeStamp}','{timeStamp}','{timeStamp}','{User.State.Offline}','{""}')");
+                int result = await MySqlHelper.ExecuteNonQueryAsync(connection, $"INSERT INTO user(username,nickname,password,register_date,attribute_update,skill_card_update,friend_update,head_image_update,active,card_groups,card_groups_update) VALUES ('{username}','{nickname}','{password}','{timeStamp}','{timeStamp}','{timeStamp}','{timeStamp}','{timeStamp}','{User.UserState.Offline}','{""}','{timeStamp}')");
                 if (result == 1)
                 {
                     return await Query_LastInsertId(connection);
@@ -48,7 +48,7 @@ namespace Material.MySQL.Dao
             try
             {
                 MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT id,nickname,password,upgrade_num,create_num,money,personal_signature," +
-                    $"battle_count,exp,lv,title,active,kills,deaths,register_date,attribute_update,skill_card_update,head_image_update,card_groups,friend_update FROM user WHERE username='{username}'");
+                    $"battle_count,exp,lv,title,active,kills,deaths,register_date,attribute_update,skill_card_update,head_image_update,card_groups,friend_update,card_groups_update FROM user WHERE username='{username}'");
                 User user = null;
                 if (reader.Read())
                 {   
@@ -65,7 +65,7 @@ namespace Material.MySQL.Dao
                     user.Exp = reader.GetInt64("exp");
                     user.Lv  = reader.GetInt32("lv");
                     user.Title = reader.GetString("title");
-                    user.Active = (User.State)Enum.Parse(typeof(User.State), reader.GetString("active"));
+                    user.State = (User.UserState)Enum.Parse(typeof(User.UserState), reader.GetString("active"));
                     user.Kills = reader.GetInt32("kills");
                     user.Deaths = reader.GetInt32("deaths");
                     user.RegisterDate= reader.GetInt64("register_date");
@@ -73,6 +73,7 @@ namespace Material.MySQL.Dao
                     user.SkillCard_update = reader.GetInt64("skill_card_update");
                     user.HeadImage_update = reader.GetInt64("head_image_update");
                     user.Friend_update = reader.GetInt64("friend_update");
+                    user.CardGroups_update = reader.GetInt64("card_groups_update");
                     user.CardGroups = JsonConvert.DeserializeObject<List<CardGroup>>(reader.GetString("card_groups"));
                 }
                 return user;
@@ -106,7 +107,7 @@ namespace Material.MySQL.Dao
                     user.Exp = reader.GetInt64("exp");
                     user.Lv = reader.GetInt32("lv");
                     user.Title = reader.GetString("title");
-                    user.Active = (User.State)Enum.Parse(typeof(User.State), reader.GetString("active"));
+                    user.State = (User.UserState)Enum.Parse(typeof(User.UserState), reader.GetString("active"));
                     user.Kills = reader.GetInt32("kills");
                     user.Deaths = reader.GetInt32("deaths");
                     user.RegisterDate = reader.GetInt64("register_date");
@@ -114,6 +115,8 @@ namespace Material.MySQL.Dao
                     user.SkillCard_update = reader.GetInt64("skill_card_update");
                     user.HeadImage_update = reader.GetInt64("head_image_update");
                     user.Friend_update = reader.GetInt64("friend_update");
+                    user.CardGroups_update = reader.GetInt64("friend_update");
+                    user.CardGroups_update = reader.GetInt64("card_groups_update");
                     user.CardGroups = JsonConvert.DeserializeObject<List<CardGroup>>(reader.GetString("card_groups"));
                 }
                 return user;
@@ -132,7 +135,7 @@ namespace Material.MySQL.Dao
         }   
         public async Task<bool> Update_CardGroups(long id, List<CardGroup> cardGroup,long timestamp)
         {
-            int result = await MySqlHelper.ExecuteNonQueryAsync(GetConnection(out MySqlConnection connection), $"UPDATE user SET card_groups='{JsonConvert.SerializeObject(cardGroup)}',attribute_update = '{timestamp}' WHERE id='{id}'");
+            int result = await MySqlHelper.ExecuteNonQueryAsync(GetConnection(out MySqlConnection connection), $"UPDATE user SET card_groups='{JsonConvert.SerializeObject(cardGroup)}',card_groups_update = '{timestamp}' WHERE id='{id}'");
             if (result == 1) return true;
             else return false;
         }
@@ -198,23 +201,11 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-
-        public async Task<long> Query_UserSkillCardUpdate(long id)
+        public async Task<bool> Update_State(long id, User.UserState state, long timestamp)
         {
-            GetConnection(out MySqlConnection connection);
-            try
-            {
-                MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, $"SELECT skill_card_update FROM user WHERE id='{id}'");
-                if (reader.Read())
-                {
-                    return reader.GetInt64(0);
-                }
-                else return -1;
-            }
-            finally
-            {
-                connection.Close();
-            }
+            int result = await MySqlHelper.ExecuteNonQueryAsync(GetConnection(out MySqlConnection connection), $"UPDATE user SET state='{state.ToString()}',attribute_update = '{timestamp}' WHERE id='{id}'");
+            if (result == 1) return true;
+            else return false;
         }
     }
 }

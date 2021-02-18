@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 namespace Material.RPC
 {
     public class RPCAdaptFactory
-    {
+    { 
         public static ConcurrentDictionary<Tuple<string, string, string>, RPCAdaptProxy> services { get; } = new ConcurrentDictionary<Tuple<string, string, string>, RPCAdaptProxy>();
 
-        public static void Register<T>(string servicename,string hostname, string port,RPCType type) where T:class
+        public static void Register<R>(string servicename,string hostname, string port,RPCType type,BaseUserToken.GetInstance createMethod) where R:class
         {
             if (string.IsNullOrEmpty(servicename))
             {
@@ -42,9 +42,9 @@ namespace Material.RPC
             {
                 try
                 {
-                    SocketListener socketListener = RPCServerFactory.GetServer(new Tuple<string, string>(hostname, port));
+                    SocketListener socketListener = RPCNetFactory.GetServer(new Tuple<string, string>(hostname, port),createMethod);
                     service = new RPCAdaptProxy();
-                    service.Register<T>(type);
+                    service.Register<R>(type);
                     services[key] = service;
                 }
                 catch (RPCException err)
@@ -63,7 +63,7 @@ namespace Material.RPC
         public static void Destory(string servicename, string hostname, string port)
         {
             services.TryRemove(new Tuple<string, string, string>(servicename,hostname,port), out RPCAdaptProxy value);
-            RPCServerFactory.Destory(new Tuple<string, string>(hostname, port));
+            RPCNetFactory.Destory(new Tuple<string, string>(hostname, port));
         }
     }
 }

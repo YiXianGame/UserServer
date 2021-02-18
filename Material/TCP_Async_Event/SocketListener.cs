@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -6,7 +7,7 @@ using System.Threading;
 namespace Material.TCP_Async_Event
 {
 
-    public sealed class SocketListener : IDisposable
+    public sealed class SocketListener
     {
         public int remain = 0;
 
@@ -27,7 +28,12 @@ namespace Material.TCP_Async_Event
         string hostname;
 
         int port;
-        public SocketListener(string hostname,string port,int numConnections, int bufferSize)
+
+        private ConcurrentDictionary<object, BaseUserToken> tokens = new ConcurrentDictionary<object, BaseUserToken>();
+
+        public ConcurrentDictionary<object, BaseUserToken> Tokens { get => tokens; set => tokens = value; }
+        
+        public SocketListener(string hostname,string port,int numConnections,int bufferSize,BaseUserToken.GetInstance createMethod)
         {
             this.numConnectedSockets = 0;
             this.numConnections = numConnections;
@@ -36,13 +42,12 @@ namespace Material.TCP_Async_Event
             this.readWritePool = new SocketAsyncEventArgsPool(numConnections);
             this.semaphoreAcceptedClients = new Semaphore(numConnections, numConnections);
 
-
             for (int i = 0; i < this.numConnections; i++)
             {
                 SocketAsyncEventArgs receiveEventArg = new SocketAsyncEventArgs();
                 receiveEventArg.Completed += OnReceiveCompleted;
                 receiveEventArg.SetBuffer(new Byte[bufferSize], 0, bufferSize);
-                receiveEventArg.UserToken = new Token(receiveEventArg,hostname,port);
+                receiveEventArg.UserToken = new DataToken(receiveEventArg,hostname,port,createMethod);
                 this.readWritePool.Push(receiveEventArg);
             }
 
@@ -69,7 +74,6 @@ namespace Material.TCP_Async_Event
 
         }
 
-
         private void CloseClientSocket(SocketAsyncEventArgs e)
         {
             try
@@ -84,9 +88,10 @@ namespace Material.TCP_Async_Event
             e.AcceptSocket.Dispose();
             e.AcceptSocket = null;
             this.semaphoreAcceptedClients.Release();
-            Interlocked.Decrement(ref this.numConnectedSockets);
-            (e.UserToken as Token).Init();
+            tokens.TryRemove((e.UserToken as DataToken).UserToken.GetKey(),out BaseUserToken value);
+            (e.UserToken as DataToken).Clear();
             this.readWritePool.Push(e);
+            Interlocked.Decrement(ref this.numConnectedSockets);
             Console.WriteLine("A client has been disconnected from the server. There are {0} clients connected to the server", this.numConnectedSockets);
         }
         private void OnAcceptCompleted(object sender, SocketAsyncEventArgs e)
@@ -108,7 +113,7 @@ namespace Material.TCP_Async_Event
                         // Get the socket for the accepted client connection and put it into the 
                         // ReadEventArg object user token.
                         readEventArgs.AcceptSocket = s;
-                        (readEventArgs.UserToken as Token).Init();
+                        (readEventArgs.UserToken as DataToken).Clear();
                         Interlocked.Increment(ref this.numConnectedSockets);
                         Console.WriteLine("Client connection accepted. There are {0} clients connected to the server",
                             this.numConnectedSockets);
@@ -126,7 +131,7 @@ namespace Material.TCP_Async_Event
             }
             catch (SocketException ex)
             {
-                Token token = e.UserToken as Token;
+                DataToken token = e.UserToken as DataToken;
                 Console.WriteLine("Error when processing data received from {0}:\r\n{1}", e.RemoteEndPoint, ex.ToString());
             }
             catch (Exception ex)
@@ -179,7 +184,7 @@ namespace Material.TCP_Async_Event
                 if (e.SocketError == SocketError.Success)
                 {
 
-                    (e.UserToken as Token).ProcessData();
+                    (e.UserToken as DataToken).ProcessData();
                     if (!e.AcceptSocket.ReceiveAsync(e))
                     {
                         // Read the next block of data sent by client.

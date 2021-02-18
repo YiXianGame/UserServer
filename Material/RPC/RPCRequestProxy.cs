@@ -47,9 +47,9 @@ namespace Material.RPC
                 }
             }
             ServerRequestModel request = new ServerRequestModel("2.0", servicename, methodid.ToString(), obj);
-            if (args[0].GetType() == typeof(Token))
+            if (args[0].GetType() == typeof(BaseUserToken))
             {
-                (args[0] as Token).Send(request);
+                (args[0] as BaseUserToken).Send(request);
             }
             return null;
         }

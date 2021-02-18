@@ -7,12 +7,12 @@ namespace Material.Entity
     {
         #region --Enum--
         [JsonConverter(typeof(StringEnumConverter))]
-        public enum ConfigCategory { LowServer, StandardServer, HighServer, LowUserSystem }
+        public enum ConfigCategory { LowUserServer, StandardUserServer, HighUserServer }
         #endregion
 
         #region --字段--
         private long skillCardUpdate;
-        private ConfigCategory category = ConfigCategory.LowServer;
+        private ConfigCategory category = ConfigCategory.LowUserServer;
         private int maxBuff = 8; //当前状态的最大量
         #endregion
 

@@ -1,4 +1,5 @@
-﻿using Material.Entity;
+﻿using Make.Model;
+using Material.Entity;
 using Material.TCP_Async_Event;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace Make.RPC.Adapt
 {
     public class SkillCardAdapt
     {
-        public static List<SkillCard> Sync(Token token, long timestamp)
+        public static List<SkillCard> Sync(UserToken token, long timestamp)
         {
             if (Core.Config.SkillCardUpdate.Equals(timestamp))
             {
@@ -16,11 +17,11 @@ namespace Make.RPC.Adapt
             }
             else
             {
-                Core.SkillCardClient.SyncSkillCardUpdate(token,Core.Config.SkillCardUpdate);
+                Core.SkillCardRequest.SyncSkillCardUpdate(token,Core.Config.SkillCardUpdate);
                 return new List<SkillCard>(Core.SkillCardByID.Values);
             }
         }
-        public static List<SkillCard> Query(List<long> skillCardIds)
+        public static List<SkillCard> Query(UserToken token, List<long> skillCardIds)
         {
             List<SkillCard> skillCards = new List<SkillCard>();
             foreach(long item in skillCardIds)
