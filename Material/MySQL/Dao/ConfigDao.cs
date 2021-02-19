@@ -1,4 +1,5 @@
 ﻿using Material.Entity;
+using Material.Entity.Config;
 using Material.MySQL.Dao.Interface;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
@@ -21,12 +22,12 @@ namespace Material.MySQL.Dao
         }
 
 
-        public async Task<bool> Insert(Config config)
+        public async Task<bool> Insert(UserServerConfig config)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "INSERT INTO config(category,skill_card_update,max_buff) VALUES(@category,@skill_card_update,@max_buff)";
+                string sqlcommand = "INSERT INTO user_server(category,skill_card_update,max_buff) VALUES(@category,@skill_card_update,@max_buff)";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", config.Category.ToString()));
                 parameters.Add(new MySqlParameter("@skill_card_update", config.SkillCardUpdate));
@@ -43,12 +44,12 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<bool> Delete(Config.ConfigCategory category)
+        public async Task<bool> Delete(UserServerConfig.UserServerCategory category)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "DELETE FROM config WHERE category=@category";
+                string sqlcommand = "DELETE FROM user_server WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", category.ToString()));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
@@ -63,12 +64,12 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<bool> Update(Config config)
+        public async Task<bool> Update(UserServerConfig config)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "UPDATE config SET skill_card_update=@skill_card_update,max_buff=@max_buff WHERE category=@category";
+                string sqlcommand = "UPDATE user_server SET skill_card_update=@skill_card_update,max_buff=@max_buff WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", config.Category.ToString()));
                 parameters.Add(new MySqlParameter("@skill_card_update", config.SkillCardUpdate));
@@ -85,22 +86,49 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<Config> Query(Config.ConfigCategory category)
+        public async Task<UserServerConfig> Query(UserServerConfig.UserServerCategory category)
         {
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "SELECT skill_card_update,max_buff FROM config WHERE category=@category";
+                string sqlcommand = "SELECT skill_card_update,max_buff,player_server_category FROM user_server WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", category.ToString()));
 
                 MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, sqlcommand, parameters.ToArray());
                 if (reader.Read())
                 {
-                    Config config = new Config();
+                    UserServerConfig config = new UserServerConfig();
                     config.Category = category;
                     config.SkillCardUpdate = reader.GetInt64("skill_card_update");
                     config.MaxBuff = reader.GetInt32("max_buff");
+                    config.PlayerServerConfig = await Query(PlayerServerConfig.PlayerServerCategory.StandardPlayerServer);
+                    return config;
+                }
+                else return null;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        public async Task<PlayerServerConfig> Query(PlayerServerConfig.PlayerServerCategory category)
+        {
+            GetConnection(out MySqlConnection connection);
+            try
+            {
+                string sqlcommand = "SELECT ip,port,token FROM player_server WHERE category=@category";
+                List<MySqlParameter> parameters = new List<MySqlParameter>();
+                parameters.Add(new MySqlParameter("@category", category.ToString()));
+
+                MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, sqlcommand, parameters.ToArray());
+                if (reader.Read())
+                {
+                    PlayerServerConfig config = new PlayerServerConfig();
+                    config.Category = category;
+                    config.Ip = reader.GetString("ip");
+                    config.Port = reader.GetString("port");
+                    config.Token = reader.GetString("token");
                     return config;
                 }
                 else return null;
