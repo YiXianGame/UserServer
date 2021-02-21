@@ -1,12 +1,21 @@
-﻿using Material.Entity;
+﻿using Make.Model.GameModel;
+using Material.Entity;
 using System;
 
 namespace Material.Entity.Game
 {
     public class Round_SoloRoom : Room
     {
-        #region --方法--
+        #region --字段--
 
+        #endregion
+
+        #region --方法--
+        public Round_SoloRoom()
+        {
+            min_players = 5;
+            max_players = 5;
+        }
         public override void Action_Stage(Player player, string[] messages)
         {
             throw new NotImplementedException();

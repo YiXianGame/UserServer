@@ -3,9 +3,7 @@ using Material.ExceptionModel;
 using Material.MySQL;
 using Material.Redis;
 using Material.Utils;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using static Material.Entity.User;
 
@@ -19,7 +17,7 @@ namespace Make.Repository
         #endregion
 
         #region --方法--
-        public UserRepository(Redis redis,MySQL mySQL)
+        public UserRepository(Redis redis, MySQL mySQL)
         {
             this.redis = redis;
             this.mySQL = mySQL;
@@ -131,7 +129,7 @@ namespace Make.Repository
         public async Task<long> Update_CardGroups(long id, User user)
         {
             long timestamp = TimeStamp.Now();
-            bool result = await mySQL.userDao.Update_CardGroups(id, user.CardGroups,timestamp);
+            bool result = await mySQL.userDao.Update_CardGroups(id, user.CardGroups, timestamp);
             if (result)
             {
                 redis.userDao.SetCardGroups(id, user.CardGroups, timestamp);
@@ -139,7 +137,7 @@ namespace Make.Repository
             }
             else return -1;
         }
-        public async Task<long> Update_State(long id,UserState state)
+        public async Task<long> Update_State(long id, UserState state)
         {
             long timestamp = TimeStamp.Now();
             bool result = await mySQL.userDao.Update_State(id, state, timestamp);
@@ -181,13 +179,13 @@ namespace Make.Repository
             }
             return db_timestamp;
         }
-        public async Task<List<CardItem>> Sync_UserSkillCards(long id,long timestamp)
+        public async Task<List<CardItem>> Sync_UserSkillCards(long id, long timestamp)
         {
             long db_timestamp = await redis.userDao.Query_SkillCardUpdate(id);
             if (db_timestamp == -1)
             {
                 User user = await Cache(id);
-                if (user == null) throw new UserException( UserException.ErrorCode.DataNotFound,"处理同步用户卡牌数据时，Mysql无法查到数据.");
+                if (user == null) throw new UserException(UserException.ErrorCode.DataNotFound, "处理同步用户卡牌数据时，Mysql无法查到数据.");
                 db_timestamp = user.SkillCard_update;
             }
             if (db_timestamp != timestamp)

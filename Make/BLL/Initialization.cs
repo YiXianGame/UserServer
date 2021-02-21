@@ -4,10 +4,11 @@ using Make.RPCServer.Adapt;
 using Make.RPCServer.Request;
 using Material.Entity;
 using Material.Entity.Config;
+using Material.Entity.Game;
 using Material.MySQL;
 using Material.Redis;
-using Material.RPCClient;
 using Material.RPCServer;
+using Material.RPCServer.TCP_Async_Event;
 using System;
 using System.Collections.Generic;
 
@@ -18,11 +19,23 @@ namespace Make.BLL
         public Initialization()
         {
             Console.WriteLine("Initialization....");
-            CoreInit(UserServerConfig.UserServerCategory.StandardUserServer);
             Redis redis = new Redis("127.0.0.1:6379");
             MySQL mySQL = new MySQL("127.0.0.1", "3306", "yixian", "root", "root");
-            Model.Repository repository = new Model.Repository(redis, mySQL);
-            Core.Repository = repository;
+            Core.Repository = new Model.Repository(redis, mySQL);
+            CoreInit(UserServerConfig.UserServerCategory.StandardUserServer);
+            Random random = new Random();
+
+            for (int i = 0; i < 100000; i++)
+            {
+                List<BaseUserToken> users = new List<BaseUserToken>();
+                for (int j = 0; j < random.Next(1, 5); j++)
+                {
+                    UserToken user = new UserToken();
+                    users.Add(user);
+                }
+                Team team = new Team(users, random.Next(1, 9) + random.NextDouble());
+                Core.SoloMatchSystem.Enter(team);
+            }
             #region --RPCServer--
             Material.RPCServer.RPCType serverType = new Material.RPCServer.RPCType();
             serverType.Add<int>("int");
@@ -31,6 +44,7 @@ namespace Make.BLL
             serverType.Add<long>("long");
             serverType.Add<User>("user");
             serverType.Add<SkillCard>("skillCard");
+            serverType.Add<List<long>>("longs");
             serverType.Add<List<SkillCard>>("skillCards");
             serverType.Add<List<CardItem>>("cardItem");
             serverType.Add<List<CardGroup>>("cardGroups");
@@ -48,22 +62,23 @@ namespace Make.BLL
 
             #region --RPCClient--
             Material.RPCClient.RPCType clientType = new Material.RPCClient.RPCType();
-            serverType.Add<int>("int");
-            serverType.Add<string>("string");
-            serverType.Add<bool>("bool");
-            serverType.Add<long>("long");
-            serverType.Add<User>("user");
-            serverType.Add<SkillCard>("skillCard");
-            serverType.Add<List<SkillCard>>("skillCards");
-            serverType.Add<List<CardItem>>("cardItem");
-            serverType.Add<List<CardGroup>>("cardGroups");
-            serverType.Add<List<Friend>>("friends");
-            serverType.Add<List<User>>("users");
+            clientType.Add<int>("int");
+            clientType.Add<string>("string");
+            clientType.Add<bool>("bool");
+            clientType.Add<long>("long");
+            clientType.Add<User>("user");
+            clientType.Add<SkillCard>("skillCard");
+            clientType.Add<List<SkillCard>>("skillCards");
+            clientType.Add<List<CardItem>>("cardItem");
+            clientType.Add<List<CardGroup>>("cardGroups");
+            clientType.Add<List<Friend>>("friends");
+            clientType.Add<List<User>>("users");
             //注册Client远程服务
             Core.PlayerServerRequest = Material.RPCClient.RPCRequestProxyFactory.Register<PlayerServerRequest>("PlayerServer", "192.168.0.105", "28016", clientType);
             //启动Client服务
-            RPCNetClientFactory.StartClient("192.168.0.105", "28015");
+            //RPCNetClientFactory.StartClient("192.168.0.105", "28015");
             #endregion
+
             SkillCardInit();
             AdventuresInit();
             Console.WriteLine("Initialization Sucess!");
@@ -73,7 +88,7 @@ namespace Make.BLL
         {
             Console.WriteLine("Core Loading....");
             //全局静态，查询以后会将Core静态属性全部设置好.
-            UserServerConfig config= await Core.Repository.ConfigRepository.Query(category);
+            UserServerConfig config = await Core.Repository.ConfigRepository.Query(category);
             //如果没找到，就执行默认配置
             if (config == null)
             {
@@ -81,6 +96,7 @@ namespace Make.BLL
                 Core.Config.Category = category;
                 Core.Config.SkillCardUpdate = 0;
                 Core.Config.MaxBuff = 8;
+                Core.Config.PlayerServerConfig = new PlayerServerConfig();
                 Core.Config.PlayerServerConfig.Category = PlayerServerConfig.PlayerServerCategory.StandardPlayerServer;
                 if (!(await Core.Repository.ConfigRepository.Insert(Core.Config)))
                 {
@@ -110,12 +126,12 @@ namespace Make.BLL
                     SkillCard skillCard = new SkillCard();
                     skillCard.Name = $"第{i}张卡牌";
                     skillCard.AuthorId = 839336369;
-                    skillCard.AuxiliaryHp = random.Next()%100;
-                    skillCard.AuxiliaryMp = random.Next()%100;
+                    skillCard.AuxiliaryHp = random.Next() % 100;
+                    skillCard.AuxiliaryMp = random.Next() % 100;
                     skillCard.Description = "这是一段描述";
-                    skillCard.EnemyHp = random.Next()%100;
-                    skillCard.EnemyMp = random.Next()%100;
-                    skillCard.MaxAuxiliary = random.Next()%5;
+                    skillCard.EnemyHp = random.Next() % 100;
+                    skillCard.EnemyMp = random.Next() % 100;
+                    skillCard.MaxAuxiliary = random.Next() % 5;
                     skillCard.MaxEnemy = random.Next() % 5;
                     skillCard.Mp = random.Next() % 100;
                     skillCard.Probability = random.Next() % 100;
@@ -153,7 +169,7 @@ namespace Make.BLL
             else
             {
                 List<SkillCard> skillCards = await Core.Repository.SkillCardRepository.Query_All();
-                foreach(SkillCard item in skillCards)
+                foreach (SkillCard item in skillCards)
                 {
                     Core.SkillCardByID.Add(item.Id, item);
                 }

@@ -1,9 +1,6 @@
 ﻿using Material.Entity;
 using Material.MySQL;
 using Material.Redis;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Make.Repository
@@ -35,7 +32,7 @@ namespace Make.Repository
         }
         public async Task<bool> Delete(long user_1, long user_2)
         {
-            return await mySQL.friendDao.Delete(user_1,user_2);
+            return await mySQL.friendDao.Delete(user_1, user_2);
         }
         #endregion
     }

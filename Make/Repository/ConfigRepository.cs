@@ -1,10 +1,6 @@
-﻿using Material.Entity;
-using Material.Entity.Config;
+﻿using Material.Entity.Config;
 using Material.MySQL;
 using Material.Redis;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Make.Repository

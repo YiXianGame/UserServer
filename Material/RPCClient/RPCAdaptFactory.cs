@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Material.RPCClient.TCP_Async_Event;
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 
@@ -52,7 +53,6 @@ namespace Material.RPCClient
         public static void Destory(string servicename, string hostname, string port)
         {
             services.Remove(new Tuple<string, string, string>(servicename,hostname,port), out RPCAdaptProxy value);
-            RPCNetClientFactory.Destory(new Tuple<string, string>(hostname, port));
         }
     }
 }

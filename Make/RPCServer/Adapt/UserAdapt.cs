@@ -19,7 +19,7 @@ namespace Make.RPCServer.Adapt
         {
             Task<long> task = Core.Repository.UserRepository.Login(id, username, password);
             task.Wait();
-            if(task.Result!=-1 && task.Result != -2)
+            if (task.Result != -1 && task.Result != -2)
             {
                 token.UserId = task.Result;
                 if (!token.AddIntoTokens())
@@ -50,9 +50,9 @@ namespace Make.RPCServer.Adapt
         public static List<User> Sync_Attribute(UserToken token, List<User> dates)
         {
             List<User> users = new List<User>();
-            foreach(User item in dates)
+            foreach (User item in dates)
             {
-                Task<User> task = Core.Repository.UserRepository.Sync_Attribute(item.Id,item.Attribute_update);
+                Task<User> task = Core.Repository.UserRepository.Sync_Attribute(item.Id, item.Attribute_update);
                 task.Wait();
                 users.Add(task.Result);
             }
@@ -65,7 +65,7 @@ namespace Make.RPCServer.Adapt
 
             Task<long> update_task = Core.Repository.UserRepository.Query_FriendUpdateById(token.UserId);
             update_task.Wait();
-            if(task.Result!=null)Core.UserRequest.SetFriendUpdate(token, update_task.Result);
+            if (task.Result != null) Core.UserRequest.SetFriendUpdate(token, update_task.Result);
             return task.Result;
         }
         public static long Update_CardGroups(UserToken token, User user)
@@ -80,7 +80,7 @@ namespace Make.RPCServer.Adapt
             task.Wait();
             return task.Result;
         }
-        public static List<CardItem> Sync_SkillCards(UserToken token,long id, long date)
+        public static List<CardItem> Sync_SkillCards(UserToken token, long id, long date)
         {
             Task<List<CardItem>> task = Core.Repository.UserRepository.Sync_UserSkillCards(id, date);
             task.Wait();
@@ -100,14 +100,15 @@ namespace Make.RPCServer.Adapt
             else return false;
         }
 
-        public static bool StartMatch(UserToken token, long id,string roomType)
+        public static bool StartMatch(UserToken token, long id, string roomType)
         {
             if (token.GetToken(id, out UserToken value))
             {
                 Room.RoomType type = (Room.RoomType)Enum.Parse(typeof(Room.RoomType), roomType);
-                if(type == Room.RoomType.Solo)
+                if (type == Room.RoomType.Solo)
                 {
-                    return Core.SoloMatchSystem.Enter(token);
+                    //return Core.SoloMatchSystem.Enter(token);
+                    return true;
                 }
                 else return false;
             }

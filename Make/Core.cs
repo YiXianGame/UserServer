@@ -3,7 +3,7 @@ using Make.RPCClient.Request;
 using Make.RPCServer.Request;
 using Material.Entity;
 using Material.Entity.Config;
-using System.Collections.Concurrent;
+using Material.Entity.Game;
 using System.Collections.Generic;
 
 namespace Make
@@ -17,7 +17,7 @@ namespace Make
         private static UserRequest userRequest;
         private static PlayerServerRequest playerServerRequest;
         private static SkillCardRequest skillCardClient;
-        private static MatchSystem soloMatchSystem = new MatchSystem(2);
+        private static MatchSystem<Round_SoloRoom> soloMatchSystem = new MatchSystem<Round_SoloRoom>();
 
         #endregion
 
@@ -26,10 +26,10 @@ namespace Make
         public static Model.Repository Repository { get => repository; set => repository = value; }
         public static UserRequest UserRequest { get => userRequest; set => userRequest = value; }
 
-        public static SkillCardRequest SkillCardRequest{ get => skillCardClient; set => skillCardClient = value; }
+        public static SkillCardRequest SkillCardRequest { get => skillCardClient; set => skillCardClient = value; }
         public static UserServerConfig Config { get => config; set => config = value; }
         public static PlayerServerRequest PlayerServerRequest { get => playerServerRequest; set => playerServerRequest = value; }
-        public static MatchSystem SoloMatchSystem { get => soloMatchSystem; set => soloMatchSystem = value; }
+        public static MatchSystem<Round_SoloRoom> SoloMatchSystem { get => soloMatchSystem; set => soloMatchSystem = value; }
 
 
         #endregion

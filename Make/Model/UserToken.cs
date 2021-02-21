@@ -1,23 +1,18 @@
-﻿using Make.Model.GameModel;
-using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Text;
+﻿using Material.Entity;
 using Material.RPCServer.TCP_Async_Event;
-using System.Collections.Concurrent;
 
 namespace Make.Model
 {
     public class UserToken : BaseUserToken
     {
         #region --字段--
-        private long userId=-1;
-
+        private long userId = -1;
+        private Team team;
         #endregion
 
         #region --属性--
         public long UserId { get => userId; set => userId = value; }
-        
+
         #endregion
 
         #region --重写方法--
@@ -29,7 +24,7 @@ namespace Make.Model
         {
             return userId;
         }
-        public bool GetToken(long id,out UserToken value)
+        public bool GetToken(long id, out UserToken value)
         {
             return GetToken(id, out value);
         }

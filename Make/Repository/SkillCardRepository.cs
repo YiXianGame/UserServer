@@ -1,9 +1,7 @@
 ﻿using Material.Entity;
 using Material.MySQL;
 using Material.Redis;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Make.Repository
@@ -72,7 +70,7 @@ namespace Make.Repository
             }
             else return skillCard;
         }
-        public async Task<List<SkillCard>> Query_All() 
+        public async Task<List<SkillCard>> Query_All()
         {
             return await mySQL.skillCardDao.Query_All();
         }

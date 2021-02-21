@@ -12,6 +12,7 @@ namespace Make.Model
         private UserRepository userRepository;
         private SkillCardRepository skillCardRepository;
         private ConfigRepository configRepository;
+
         #endregion
 
         #region --属性--

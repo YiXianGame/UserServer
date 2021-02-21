@@ -1,8 +1,6 @@
 ﻿using Make.Model;
 using Material.Entity;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Make.RPCServer.Adapt
 {
@@ -16,14 +14,14 @@ namespace Make.RPCServer.Adapt
             }
             else
             {
-                Core.SkillCardRequest.SyncSkillCardUpdate(token,Core.Config.SkillCardUpdate);
+                Core.SkillCardRequest.SyncSkillCardUpdate(token, Core.Config.SkillCardUpdate);
                 return new List<SkillCard>(Core.SkillCardByID.Values);
             }
         }
         public static List<SkillCard> Query(UserToken token, List<long> skillCardIds)
         {
             List<SkillCard> skillCards = new List<SkillCard>();
-            foreach(long item in skillCardIds)
+            foreach (long item in skillCardIds)
             {
                 SkillCard card = Core.Repository.SkillCardRepository.QuerySync(item);
                 skillCards.Add(card);
