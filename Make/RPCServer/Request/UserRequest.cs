@@ -5,7 +5,7 @@ namespace Make.RPCServer.Request
 {
     public interface UserRequest
     {
-        public void MatchSucess(BaseUserToken token, List<long> users, string hostname, string port, string hash);
+        public void MatchSucess(BaseUserToken token, List<long> group_1,List<long> group_2,int idx,string hostname, string port, string hash);
         public void SetSkillCardUpdate(BaseUserToken token, long timestamp);
 
         public void SetFriendUpdate(BaseUserToken token, long timestamp);

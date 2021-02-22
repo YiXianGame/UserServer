@@ -5,6 +5,7 @@ using Make.RPCServer.Request;
 using Material.Entity;
 using Material.Entity.Config;
 using Material.Entity.Game;
+using Material.Interface;
 using Material.MySQL;
 using Material.Redis;
 using Material.RPCServer;
@@ -23,22 +24,9 @@ namespace Make.BLL
             MySQL mySQL = new MySQL("127.0.0.1", "3306", "yixian", "root", "root");
             Core.Repository = new Model.Repository(redis, mySQL);
             CoreInit(UserServerConfig.UserServerCategory.StandardUserServer);
-            Random random = new Random();
+            Core.SoloMatchSystem.MatchSucessEvent += MatchSystemHelper.SoloMatchSystem_MatchSucessEvent;
+            Core.SoloGroupMatchSystem.MatchSucessEvent += MatchSystemHelper.SoloGroupMatchSystem_MatchSucessEvent;
 
-            for (int i = 0; i < 1000000; i++)
-            {
-                List<BaseUserToken> users = new List<BaseUserToken>();
-                for (int j = 0; j < random.Next(1,5); j++)
-                {
-                    UserToken user = new UserToken();
-                    users.Add(user);
-                }
-                Team team = new Team(users, random.Next(1, 9));
-                Core.SoloMatchSystem.Add(team);
-            }
-            Core.SoloMatchSystem.MatchSucessEvent += SoloMatchSystem_MatchSucessEvent;
-            Core.SoloGroupMatchSystem.MatchSucessEvent += SoloGroupMatchSystem_MatchSucessEvent;
-            Core.SoloMatchSystem.Start();
             #region --RPCServer--
             Material.RPCServer.RPCType serverType = new Material.RPCServer.RPCType();
             serverType.Add<int>("int");
@@ -81,25 +69,26 @@ namespace Make.BLL
             //启动Client服务
             //RPCNetClientFactory.StartClient("192.168.0.105", "28015");
             #endregion
-
+            Random random = new Random();
+            for (int i = 0; i < 100000; i++)
+            {
+                Squad squad = new Squad();
+                for (int j = 0; j < random.Next(1, 5); j++)
+                {
+                    UserToken user = new UserToken();
+                    user.Rank = random.Next(1, 9);
+                    user.AverageRank = user.Rank;
+                    user.Count = 1;
+                    user.StartMatchTime = Material.Utils.TimeStamp.Now();
+                    squad.Add(user);
+                }
+                Core.SoloMatchSystem.Add(squad);
+            }
+            Core.SoloMatchSystem.Start();
             SkillCardInit();
             AdventuresInit();
             Console.WriteLine("Initialization Sucess!");
         }
-
-        private void SoloGroupMatchSystem_MatchSucessEvent(List<TeamGroup<TeamGroup<Team>>> teamGroups)
-        {
-            int a = 2;
-        }
-
-        private void SoloMatchSystem_MatchSucessEvent(List<TeamGroup<Team>> teamGroups)
-        {
-            Console.WriteLine("组队成功，开始进行队伍对抗配对！");
-            teamGroups.ForEach((value) => { value.SumRank = value.AverageRank; value.Count = 1; });
-            Core.SoloGroupMatchSystem.Add(teamGroups);
-            Core.SoloGroupMatchSystem.Start();
-        }
-
         private async void CoreInit(UserServerConfig.UserServerCategory category)
         {
             Console.WriteLine("Core Loading....");
