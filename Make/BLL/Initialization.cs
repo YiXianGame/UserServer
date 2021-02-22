@@ -24,7 +24,7 @@ namespace Make.BLL
             MySQL mySQL = new MySQL("127.0.0.1", "3306", "yixian", "root", "root");
             Core.Repository = new Model.Repository(redis, mySQL);
             CoreInit(UserServerConfig.UserServerCategory.StandardUserServer);
-            Core.SoloMatchSystem.MatchSucessEvent += MatchSystemHelper.SoloMatchSystem_MatchSucessEvent;
+            Core.SoloMatchSystem.MatchPiplineEvent += Core.SoloGroupMatchSystem.PiplineEnter;
             Core.SoloGroupMatchSystem.MatchSucessEvent += MatchSystemHelper.SoloGroupMatchSystem_MatchSucessEvent;
 
             #region --RPCServer--
@@ -70,10 +70,10 @@ namespace Make.BLL
             //RPCNetClientFactory.StartClient("192.168.0.105", "28015");
             #endregion
             Random random = new Random();
-            for (int i = 0; i < 100000; i++)
+            for (int i = 0; i < 1000000; i++)
             {
                 Squad squad = new Squad();
-                for (int j = 0; j < random.Next(1, 5); j++)
+                for (int j = 0; j < random.Next(1, 4); j++)
                 {
                     UserToken user = new UserToken();
                     user.Rank = random.Next(1, 9);
@@ -82,7 +82,7 @@ namespace Make.BLL
                     user.StartMatchTime = Material.Utils.TimeStamp.Now();
                     squad.Add(user);
                 }
-                Core.SoloMatchSystem.Add(squad);
+                Core.SoloMatchSystem.Enter(squad);
             }
             Core.SoloMatchSystem.Start();
             SkillCardInit();

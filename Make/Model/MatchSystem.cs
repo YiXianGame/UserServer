@@ -13,21 +13,36 @@ namespace Make.Model
 {
     public class MatchSystem<T,R> where T:IMatchSystemTeam<R>,new() where R:IMatchSystemItem
     {
-        //将所有组进行对抗配对
-        //参考 https://blog.csdn.net/best789248/article/details/78429538
-        //优化内容：
-        //1.泛型处理,达成了嵌套的目的，在游戏本例中，首先进行5人组的小队组团配置，之后在进行团对抗配对，这两个过程可以用嵌套匹配达到需求。
-        //2.原博客N方嵌套整理顺序数据，计算时间等，现在采用链表式，时间顺序加锁Add本身就保证了时序。
-        //3.全部都是动态维护，不存在计算时重新整理生成，节约了空间与时间，且是稳定排序遍历，所有的操作都是O(1)级操作
-        //4.保留Rank总和，避免精度丢失问题，且嵌套的每一层都将进行多次战力数据对比。
-        //5.采用深度搜索算法,匹配数量支持下限与上限.
-        
+        /*  将所有组进行对抗配对
+         *  参考 https://blog.csdn.net/best789248/article/details/78429538
+         *  优化内容：
+         *  1.泛型处理,达成了嵌套的目的，在游戏本例中，首先进行5人组的小队组团配置，之后在进行团对抗配对，这两个过程可以用嵌套匹配达到需求。
+         *  2.原博客N方嵌套整理顺序数据，计算时间等，现在采用链表式，时间顺序加锁Add本身就保证了时序。
+         *  3.全部都是动态维护，不存在计算时重新整理生成，节约了空间与时间，且是稳定排序遍历，所有的操作都是O(1)级操作
+         *  4.保留Rank总和，避免精度丢失问题，且嵌套的每一层都将进行多次战力数据对比。
+         *  5.采用深度搜索算法,支持自定义匹配人数，匹配数量支持下限与上限.
+         *  6.基于嵌套写法和事件系统可以进行Pipline通道流
+         * 
+         *  实例化: 
+         *  MatchSystem<Team,Squad> soloMatchSystem = new MatchSystem<Team, Squad>(6,6);
+         *  MatchSystem<TeamGroup,Team> soloGroupMatchSystem = new MatchSystem<TeamGroup, Team>(12,12);
+         *  泛型第一个为父亲容器，第二个为容器子项
+         * 
+         *  通道流：A.MatchSystem.MatchPiplineEvent += B.GroupMatchSystem.PiplineEnter;
+         *  此通道流将从A流向B，B无需增加时间轮询.
+         *  
+         *  2021.2.22 代码性能实测 1-4人 5人队10人组,Rank全匹配: 100W 3000ms 
+         *            满足测试服的匹配需求绰绰有余.
+         */
+
         #region --委托--
+        public delegate bool MatchPiplineDelegate(List<T> teamGroups);
         public delegate void MatchSucessDelegate(List<T> teamGroups);
         public delegate void MatchFailDelegate(T team);
         #endregion
 
         #region --事件--
+        public event MatchPiplineDelegate MatchPiplineEvent;
         public event MatchSucessDelegate MatchSucessEvent;
         public event MatchFailDelegate MatchFailEvent;
         #endregion
@@ -54,25 +69,54 @@ namespace Make.Model
             //timer = new Timer(new TimerCallback(MatchProcess), null, 0, 5000);
             MatchProcess(null);
         }
-        public bool Add(R team)
+        public bool Enter(R item)
         {
             lock (teamsPool)
             {
-                if (!teamsPool.TryGetValue(team.Count, out Dictionary<int, LinkedList<R>> rankTeams))
+                if (!teamsPool.TryGetValue(item.Count, out Dictionary<int, LinkedList<R>> rankTeams))
                 {
                     rankTeams = new Dictionary<int, LinkedList<R>>();
-                    if (!teamsPool.TryAdd(team.Count, rankTeams))return false;
+                    if (!teamsPool.TryAdd(item.Count, rankTeams))return false;
                 }
-                if (!rankTeams.TryGetValue(team.AverageRank, out LinkedList<R> timeTeams))
+                if (!rankTeams.TryGetValue(item.AverageRank, out LinkedList<R> timeTeams))
                 {
                     timeTeams = new LinkedList<R>();
-                    if (!rankTeams.TryAdd(team.AverageRank,timeTeams))return false;
+                    if (!rankTeams.TryAdd(item.AverageRank,timeTeams))return false;
                 }
-                timeTeams.AddLast(team);
+                timeTeams.AddLast(item);
                 return true;
             }
         }
-
+        public bool Enter(List<R> teams)
+        {
+            lock (teamsPool)
+            {
+                foreach(R item in teams)
+                {
+                    if (!teamsPool.TryGetValue(item.Count, out Dictionary<int, LinkedList<R>> rankTeams))
+                    {
+                        rankTeams = new Dictionary<int, LinkedList<R>>();
+                        if (!teamsPool.TryAdd(item.Count, rankTeams)) return false;
+                    }
+                    if (!rankTeams.TryGetValue(item.AverageRank, out LinkedList<R> timeTeams))
+                    {
+                        timeTeams = new LinkedList<R>();
+                        if (!rankTeams.TryAdd(item.AverageRank, timeTeams)) return false;
+                    }
+                    timeTeams.AddLast(item);
+                }
+                return true;
+            }
+        }
+        public bool PiplineEnter(List<R> teams)
+        {
+            if (Enter(teams))
+            {
+                MatchProcess(null);
+                return true;
+            }
+            else return false;
+        }
         public void MatchProcess(object sender)
         { 
             Console.WriteLine($"{typeof(T)}获取匹配锁中");
@@ -217,6 +261,7 @@ namespace Make.Model
                 long end = Material.Utils.TimeStamp.Now();
                 Console.WriteLine($"{typeof(T)}-总耗时:{end - startTime}毫秒");
                 if(MatchSucessEvent!=null)MatchSucessEvent(sucessPool);
+                if (MatchPiplineEvent != null) MatchPiplineEvent(sucessPool);
                 sucessPool = null;
             }
         }

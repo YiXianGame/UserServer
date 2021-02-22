@@ -57,13 +57,5 @@ namespace Make.BLL
             }
         }
 
-        public static void SoloMatchSystem_MatchSucessEvent(List<Team> teamGroups)
-        {
-            foreach (Team team in teamGroups)
-            {
-                Core.SoloGroupMatchSystem.Add(team);
-            }
-            Core.SoloGroupMatchSystem.Start();
-        }
     }
 }

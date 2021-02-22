@@ -17,8 +17,8 @@ namespace Make
         private static UserRequest userRequest;
         private static PlayerServerRequest playerServerRequest;
         private static SkillCardRequest skillCardClient;
-        private static MatchSystem<Team,Squad> soloMatchSystem = new MatchSystem<Team, Squad>(6,6);
-        private static MatchSystem<TeamGroup,Team> soloGroupMatchSystem = new MatchSystem<TeamGroup, Team>(12,12);
+        private static MatchSystem<Team,Squad> soloMatchSystem = new MatchSystem<Team, Squad>(5,5);
+        private static MatchSystem<TeamGroup,Team> soloGroupMatchSystem = new MatchSystem<TeamGroup, Team>(10,10);
         #endregion
 
         #region --属性--
