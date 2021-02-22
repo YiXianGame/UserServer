@@ -39,7 +39,6 @@ namespace Material.RPCServer.TCP_Async_Event
             } 
         }
         #endregion
-
         #region --方法--
         internal void Send(ServerRequestModel request)
         {

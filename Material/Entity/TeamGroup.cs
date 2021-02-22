@@ -1,61 +1,47 @@
-﻿using System;
+﻿using Material.Interface;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Material.Entity
 {
-    public class TeamGroup : IComparable<TeamGroup>
+    public class TeamGroup<T>:IMatchSystemItem where T:IMatchSystemItem
     {
-        private HashSet<Team> teams = new HashSet<Team>();
-        private int count;
-        private double rank;
+        private HashSet<T> teams = new HashSet<T>();
+        private int sumRank;//队伍平均分数
+        private long startMatchTime;//开始匹配时间
         private int averageRank;
-        private double averageWaitTime;
-        private bool isCheck = false;
-        public HashSet<Team> Teams { get => teams; set => teams = value; }
-        public int Count { get => count; set => count = value; }
-        public int AverageRank { get => averageRank; set => averageRank = value; }
-        public double AverageWaitTime { get => averageWaitTime; set => averageWaitTime = value; }
-        public bool IsCheck { get => isCheck; set => isCheck = value; }
-
-        public void RefreshAverageWaitTime(long now)
+        private int count;
+        public HashSet<T> Teams { get => teams; set => teams = value; }
+        public TeamGroup()
         {
-            long wait = 0;
-            foreach (Team team in teams)
-            {
-                wait += (now - team.StartMatchTime);
-            }
-            averageWaitTime = wait / count;
+            this.startMatchTime = Utils.TimeStamp.Now();
         }
-        public void Add(Team team)
+        public void Add(T team)
         {
             if (teams.Add(team))
             {
-                count += team.Users.Count;
-                rank += team.AverageRank;
-                AverageRank = count > 0 ? (int)(rank / count) : 0;
-                team.IsCheck = true;
+                sumRank += team.SumRank;
+                count += team.Count;
+                averageRank = count > 0 ? (int)(sumRank / count) : 0;
             }
         }
 
-        public void Remove(Team team)
+        public void Remove(T team)
         {
             if (teams.Remove(team))
             {
-                count -= team.Users.Count;
-                rank -= team.AverageRank;
-                AverageRank = count > 0 ? (int)(rank / count) : 0 ;
-                team.IsCheck = false;
+                sumRank -= team.SumRank;
+                count -= team.Count;
+                averageRank = count > 0 ? (int)(sumRank / count) : 0;
             }
         }
 
-        public int CompareTo([AllowNull] TeamGroup other)
-        {
-            if (other == null) return -1;
-            else if (this == other) return 0;
-            else if (averageWaitTime >= other.averageWaitTime) return -1;
-            else return 1;
-        }
+        public long StartMatchTime { get => startMatchTime; set => startMatchTime = value; }
+        public int Count { get => count; set => count = value; }
+        public int SumRank { get => sumRank; set => sumRank = value; }
+        public int AverageRank { get => averageRank; set => averageRank = value; }
+
     }
 }

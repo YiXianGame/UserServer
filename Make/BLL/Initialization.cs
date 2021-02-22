@@ -25,17 +25,20 @@ namespace Make.BLL
             CoreInit(UserServerConfig.UserServerCategory.StandardUserServer);
             Random random = new Random();
 
-            for (int i = 0; i < 100000; i++)
+            for (int i = 0; i < 1000000; i++)
             {
                 List<BaseUserToken> users = new List<BaseUserToken>();
-                for (int j = 0; j < random.Next(1, 5); j++)
+                for (int j = 0; j < random.Next(1,5); j++)
                 {
                     UserToken user = new UserToken();
                     users.Add(user);
                 }
-                Team team = new Team(users, random.Next(1, 9) + random.NextDouble());
-                Core.SoloMatchSystem.Enter(team);
+                Team team = new Team(users, random.Next(1, 9));
+                Core.SoloMatchSystem.Add(team);
             }
+            Core.SoloMatchSystem.MatchSucessEvent += SoloMatchSystem_MatchSucessEvent;
+            Core.SoloGroupMatchSystem.MatchSucessEvent += SoloGroupMatchSystem_MatchSucessEvent;
+            Core.SoloMatchSystem.Start();
             #region --RPCServer--
             Material.RPCServer.RPCType serverType = new Material.RPCServer.RPCType();
             serverType.Add<int>("int");
@@ -82,6 +85,19 @@ namespace Make.BLL
             SkillCardInit();
             AdventuresInit();
             Console.WriteLine("Initialization Sucess!");
+        }
+
+        private void SoloGroupMatchSystem_MatchSucessEvent(List<TeamGroup<TeamGroup<Team>>> teamGroups)
+        {
+            int a = 2;
+        }
+
+        private void SoloMatchSystem_MatchSucessEvent(List<TeamGroup<Team>> teamGroups)
+        {
+            Console.WriteLine("组队成功，开始进行队伍对抗配对！");
+            teamGroups.ForEach((value) => { value.SumRank = value.AverageRank; value.Count = 1; });
+            Core.SoloGroupMatchSystem.Add(teamGroups);
+            Core.SoloGroupMatchSystem.Start();
         }
 
         private async void CoreInit(UserServerConfig.UserServerCategory category)

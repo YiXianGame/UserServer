@@ -17,8 +17,8 @@ namespace Make
         private static UserRequest userRequest;
         private static PlayerServerRequest playerServerRequest;
         private static SkillCardRequest skillCardClient;
-        private static MatchSystem<Round_SoloRoom> soloMatchSystem = new MatchSystem<Round_SoloRoom>();
-
+        private static MatchSystem<Team> soloMatchSystem = new MatchSystem<Team>(5,5);
+        private static MatchSystem<TeamGroup<Team>> soloGroupMatchSystem = new MatchSystem<TeamGroup<Team>>(2,2);
         #endregion
 
         #region --属性--
@@ -29,8 +29,8 @@ namespace Make
         public static SkillCardRequest SkillCardRequest { get => skillCardClient; set => skillCardClient = value; }
         public static UserServerConfig Config { get => config; set => config = value; }
         public static PlayerServerRequest PlayerServerRequest { get => playerServerRequest; set => playerServerRequest = value; }
-        public static MatchSystem<Round_SoloRoom> SoloMatchSystem { get => soloMatchSystem; set => soloMatchSystem = value; }
-
+        public static MatchSystem<Team> SoloMatchSystem { get => soloMatchSystem; set => soloMatchSystem = value; }
+        public static MatchSystem<TeamGroup<Team>> SoloGroupMatchSystem { get => soloGroupMatchSystem; set => soloGroupMatchSystem = value; }
 
         #endregion
 

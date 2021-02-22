@@ -1,4 +1,5 @@
-﻿using Material.RPCServer.TCP_Async_Event;
+﻿using Material.Interface;
+using Material.RPCServer.TCP_Async_Event;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -6,36 +7,25 @@ using System.Text;
 
 namespace Material.Entity
 {
-    public class Team:IComparable<Team>
+    public class Team:IMatchSystemItem
     {
         private List<BaseUserToken> users;
-        private double averageRank;//队伍平均分数
+        private int sumRank;//队伍平均分数
         private long startMatchTime;//开始匹配时间
-        private bool isCheck;
-        static Random random = new Random();
-        public Team(List<BaseUserToken> users,double averageRank)
+        private int averageRank;
+        private int count;
+        public Team(List<BaseUserToken> users,int sumRank)
         {
             this.users = users;
-            this.averageRank = averageRank;
             this.startMatchTime = Utils.TimeStamp.Now();
+            this.sumRank = sumRank;
+            this.count = users.Count;
+            AverageRank = users.Count > 0 ? (int)(sumRank / users.Count) : 0;
         }
-
-        public double AverageRank { get => averageRank; set => averageRank = value; }
-        public long StartMatchTime { get => startMatchTime; set => startMatchTime = value; }
         public List<BaseUserToken> Users { get => users; set => users = value; }
-        public bool IsCheck { get => isCheck; set => isCheck = value; }
-
-        public int CompareTo([AllowNull] Team other)
-        {
-            if (other == null) return -1;
-            else if (this == other) return 0;
-            else if (startMatchTime <= other.startMatchTime) return -1;
-            else if (startMatchTime > other.startMatchTime) return 1;
-            else
-            {
-                if (averageRank < other.averageRank) return -1;
-                else return 1;
-            }
-        }
+        public long StartMatchTime { get => startMatchTime; set => startMatchTime = value; }
+        public int Count { get => count; set => count = value; }
+        public int SumRank { get => sumRank; set => sumRank = value; }
+        public int AverageRank { get => averageRank; set => averageRank = value; }
     }
 }
