@@ -38,9 +38,10 @@ namespace Material.RPCServer
                     }   
                     socketservers[key] = socketserver;
                 }
-                catch (SocketException err)
+                catch (SocketException e)
                 {
                     Console.WriteLine("发生异常报错,销毁注册");
+                    Console.WriteLine(e.Message + "\n" + e.StackTrace);
                     socketserver.Dispose();
                 }
             }

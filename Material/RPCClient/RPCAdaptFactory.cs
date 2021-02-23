@@ -42,9 +42,9 @@ namespace Material.RPCClient
                     service.Register<T>(type);
                     services[key] = service;
                 }
-                catch (SocketException err)
+                catch (SocketException e)
                 {
-                    Console.WriteLine("发生异常报错,销毁注册");
+                    Console.WriteLine("发生异常报错,销毁注册\n" + e.StackTrace);
                     Destory(servicename, hostname, port);
                 }
             }

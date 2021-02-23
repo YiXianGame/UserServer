@@ -1,9 +1,10 @@
-﻿using Material.RPCServer.TCP_Async_Event;
+﻿using Material.Entity;
+using Material.RPCServer.TCP_Async_Event;
 
 namespace Make.RPCServer.Request
 {
     public interface SkillCardRequest
     {
-        public void SyncSkillCardUpdate(BaseUserToken token, long timestamp);
+        public void SyncSkillCardUpdate(User user, long timestamp);
     }
 }

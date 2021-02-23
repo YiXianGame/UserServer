@@ -1,5 +1,6 @@
 ﻿using Make.Model;
 using Material.Entity;
+using Material.Entity.Match;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,21 +9,21 @@ namespace Make.BLL
 {
     public class MatchSystemHelper
     {
-        public static void SoloGroupMatchSystem_MatchSucessEvent(List<TeamGroup> teamGroups)
+        public async static void SoloGroupMatchSystem_MatchSuccessEvent(List<TeamGroup> teamGroups)
         {
             foreach(TeamGroup teams in teamGroups)
             {
                 if (teams.Items.Count == 2)
                 {
-                    List<List<long>> result = new List<List<long>>(2);
+                    List<List<User>> result = new List<List<User>>(2);
                     foreach (Team team in teams.Items)
                     {
-                        List<long> users = new List<long>();
+                        List<User> users = new List<User>();
                         foreach (Squad squad in team.Items)
                         {
-                            foreach (UserToken user in squad.Items)
+                            foreach (User user in squad.Items)
                             {
-                                users.Add(user.UserId);
+                                users.Add(await Core.Repository.UserRepository.Query_AttributeById(user.Id));
                             }
                         }
                     }
@@ -31,9 +32,9 @@ namespace Make.BLL
                     {
                         foreach (Squad squad in team.Items)
                         {
-                            foreach (UserToken user in squad.Items)
+                            foreach (User user in squad.Items)
                             {
-                                Core.UserRequest.MatchSucess(user, result[0], result[1], idx, "192.168.0.105", "28016", "这里发一段HASH验证");
+                                Core.UserRequest.MatchSuccess(user, result[0], result[1], idx, "192.168.0.105", "28016", Material.Utils.SecretKey.Generate(10));
                             }
                         }
                         idx++;
@@ -46,7 +47,7 @@ namespace Make.BLL
                     {
                         foreach (Squad squad in team.Items)
                         {
-                            foreach (UserToken user in squad.Items)
+                            foreach (User user in squad.Items)
                             {
                                 Core.UserRequest.CancelMatch(user);
                             }

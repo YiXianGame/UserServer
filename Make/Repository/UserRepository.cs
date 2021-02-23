@@ -5,7 +5,6 @@ using Material.Redis;
 using Material.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static Material.Entity.User;
 
 namespace Make.Repository
 {
@@ -70,7 +69,7 @@ namespace Make.Repository
         //从Mysql缓存到Redis
         public async Task<User> Cache(long id)
         {
-            //这里要到了密码，用来同步，但是切记要及时置null
+            //这里要到了密码!!注意密码的去向，User内部的密码序列化已经忽略。
             User user = await mySQL.userDao.Query_AttributeByID(id, true);
             if (user != null)//Mysql中有此用户的数据
             {
@@ -137,7 +136,7 @@ namespace Make.Repository
             }
             else return -1;
         }
-        public async Task<long> Update_State(long id, UserState state)
+        public async Task<long> Update_State(long id, User.UserState state)
         {
             long timestamp = TimeStamp.Now();
             bool result = await mySQL.userDao.Update_State(id, state, timestamp);

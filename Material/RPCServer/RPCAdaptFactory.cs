@@ -45,18 +45,19 @@ namespace Material.RPCServer
                     service = new RPCAdaptProxy();
                     service.Register<R>(type);
                     services[key] = service;
-                    Console.WriteLine($"{servicename}-{hostname}-{port} Load Sucess!");
+                    Console.WriteLine($"{servicename}-{hostname}-{port} Load Success!");
                 }
-                catch (RPCException err)
+                catch (RPCException e)
                 {
                     Console.WriteLine($"{servicename}-{hostname}-{port} Load Fail!");
-                    Console.WriteLine(err.Message + "\n" + err.StackTrace);
+                    Console.WriteLine(e.Message + "\n" + e.StackTrace);
                     Destory(servicename, hostname, port);
                 }
-                catch (Exception err)
+                catch (Exception e)
                 {
                     Console.WriteLine($"{servicename}-{hostname}-{port} Load Fail!");
                     Console.WriteLine("发生异常报错,销毁注册");
+                    Console.WriteLine(e.Message + "\n" + e.StackTrace);
                     Destory(servicename, hostname, port);
                 }
             }

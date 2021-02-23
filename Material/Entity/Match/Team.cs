@@ -1,8 +1,9 @@
-﻿using Material.Interface;
+﻿using Material.Entity;
+using Material.Interface;
 using Material.RPCServer.TCP_Async_Event;
 using System.Collections.Generic;
 
-namespace Make.Model
+namespace Material.Entity.Match
 {
     public class Team:IMatchSystemTeam<Squad>
     {
@@ -19,22 +20,33 @@ namespace Make.Model
         {
             this.startMatchTime = Material.Utils.TimeStamp.Now();
         }
-        public void Add(Squad item)
+        public bool Add(Squad item)
         {
             items.Add(item);
+            foreach(User user in item.Items)
+            {
+                user.Team = this;
+            }
             rank += item.Rank;
             count += item.Count;
             averageRank = count > 0 ? (int)(rank / count) : 0;
+            return true;
         }
 
-        public void Remove(Squad item)
+        public bool Remove(Squad item)
         {
             if (items.Remove(item))
             {
+                foreach (User user in item.Items)
+                {
+                    user.Team = null;
+                }
                 rank -= item.Rank;
                 count -= item.Count;
                 averageRank = count > 0 ? (int)(rank / count) : 0;
+                return true;
             }
+            else return false;
         }
 
         public ICollection<Squad> Items { get => items; set => items = value; }

@@ -8,7 +8,7 @@ namespace Material.Interface
     {
         public ICollection<T> Items { get; set; }
 
-        public void Add(T item);
-        public void Remove(T item);
+        public bool Add(T item);
+        public bool Remove(T item);
     }
 }

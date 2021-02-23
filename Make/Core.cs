@@ -3,7 +3,7 @@ using Make.RPCClient.Request;
 using Make.RPCServer.Request;
 using Material.Entity;
 using Material.Entity.Config;
-using Material.Entity.Game;
+using Material.Entity.Match;
 using System.Collections.Generic;
 
 namespace Make
@@ -17,8 +17,8 @@ namespace Make
         private static UserRequest userRequest;
         private static PlayerServerRequest playerServerRequest;
         private static SkillCardRequest skillCardClient;
-        private static MatchSystem<Team,Squad> soloMatchSystem = new MatchSystem<Team, Squad>(5,5);
-        private static MatchSystem<TeamGroup,Team> soloGroupMatchSystem = new MatchSystem<TeamGroup, Team>(10,10);
+        private static MatchSystem<Team,Squad> soloMatchSystem = new MatchSystem<Team, Squad>(1,1);
+        private static MatchSystem<TeamGroup,Team> soloGroupMatchSystem = new MatchSystem<TeamGroup, Team>(2,2);
         #endregion
 
         #region --属性--

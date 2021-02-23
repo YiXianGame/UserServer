@@ -70,6 +70,7 @@ namespace Material.RPCClient
             }
             catch(SocketException e)
             {
+                Console.WriteLine("发送请求失败，尝试重连\n" + e.StackTrace);
                 RPCNetClientFactory.GetClient(key).Reconnect();
             }
             return null;

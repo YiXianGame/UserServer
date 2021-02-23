@@ -6,29 +6,24 @@ using Newtonsoft.Json;
 
 namespace Material.RPCServer.TCP_Async_Event
 {
-    public abstract class BaseUserToken 
+    public abstract class BaseUserToken
     {
         #region --委托--
         public delegate BaseUserToken GetInstance();
-        public delegate void ConnectDelegate();
-        public delegate void ClearDelegate();
         #endregion
 
         #region --事件--
-        public event ConnectDelegate ConnectEvent;
-        public event ClearDelegate ClearEvent;
+
         #endregion
 
-        #region --字段
-        string hostname;
-        string port;
+        #region --字段--
+        Tuple<string, string> serverKey;
         SocketAsyncEventArgs eventArgs;
         #endregion
 
         #region --属性--
 
-        public string Hostname { get => hostname; set => hostname = value; }
-        public string Port { get => port; set => port = value; }
+        public Tuple<string, string> ServerKey { get => serverKey; set => serverKey = value; }
         internal SocketAsyncEventArgs EventArgs { get => eventArgs; set => eventArgs = value; }
         public bool Connected
         { 
@@ -39,6 +34,7 @@ namespace Material.RPCServer.TCP_Async_Event
             } 
         }
         #endregion
+
         #region --方法--
         internal void Send(ServerRequestModel request)
         {
@@ -46,7 +42,7 @@ namespace Material.RPCServer.TCP_Async_Event
             {
 #if DEBUG
                 Console.WriteLine("---------------------------------------------------------");
-                Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[服-指令]\n{request}");
+                Console.WriteLine($"{DateTime.Now}::{serverKey.Item1}:{serverKey.Item2}::[服-指令]\n{request}");
                 Console.WriteLine("---------------------------------------------------------");
 #endif
                 //构造data数据
@@ -79,7 +75,7 @@ namespace Material.RPCServer.TCP_Async_Event
             {
 #if DEBUG
                 Console.WriteLine("---------------------------------------------------------");
-                Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[客-返回]\n{response}");
+                Console.WriteLine($"{DateTime.Now}::{serverKey.Item1}:{serverKey.Item2}::[客-返回]\n{response}");
                 Console.WriteLine("---------------------------------------------------------");
 #endif
                 //构造data数据
@@ -102,44 +98,53 @@ namespace Material.RPCServer.TCP_Async_Event
                 EventArgs.AcceptSocket.SendAsync(sendEventArgs);
             }
         }
-
-        public virtual void Init()
-        {
-
-        }
-        public virtual object GetKey()
-        {
-            return -1;
-        }
         public bool AddIntoTokens()
         {
-            return RPCNetServerFactory.GetTokens(new Tuple<string, string>(Hostname,Port)).TryAdd(GetKey(), this);
+            return RPCNetServerFactory.GetTokens(serverKey).TryAdd(Key, this);
         }
         public bool RemoveFromTokens()
         {
-            return RPCNetServerFactory.GetTokens(new Tuple<string, string>(Hostname, Port)).TryRemove(GetKey(),out BaseUserToken value);
+            return RPCNetServerFactory.GetTokens(serverKey).TryRemove(Key, out BaseUserToken value);
         }
         public ConcurrentDictionary<object, BaseUserToken> GetTokens()
         {
-            return RPCNetServerFactory.GetTokens(new Tuple<string, string>(Hostname, Port));
+            return RPCNetServerFactory.GetTokens(serverKey);
         }
-        public bool GetToken(object key,out BaseUserToken value)
+        public bool GetToken<T>(object key,out T value) where T:BaseUserToken
         {
-            return RPCNetServerFactory.GetTokens(new Tuple<string, string>(Hostname, Port)).TryGetValue(key,out value);
+            if (RPCNetServerFactory.GetTokens(serverKey).TryGetValue(key, out BaseUserToken result))
+            {
+                value = (T)result;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
         }
         public static ConcurrentDictionary<object, BaseUserToken> GetTokens(Tuple<string, string> serverkey)
         {
             return RPCNetServerFactory.GetTokens(serverkey);
         }
-        internal void OnConnectEvent()
+
+
+
+        #endregion
+
+        #region --抽象属性--
+        public abstract object Key { get; set; }
+        #endregion
+
+        #region --虚方法--
+        public virtual void OnConnect()
         {
-            Init();
-            ConnectEvent();
+
         }
-        internal void OnClearEvent()
+
+        public virtual void OnDisConnect()
         {
-            Init();
-            ClearEvent();
+
         }
         #endregion
     }

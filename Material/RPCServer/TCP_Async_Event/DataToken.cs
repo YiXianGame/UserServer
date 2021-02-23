@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
+using Material.Entity;
 using Newtonsoft.Json;
 
 namespace Material.RPCServer.TCP_Async_Event
@@ -9,7 +10,7 @@ namespace Material.RPCServer.TCP_Async_Event
     public sealed class DataToken
     {
         #region --User_Cutsom--
-        private BaseUserToken userToken;
+        private BaseUserToken token;
         #endregion
         private SocketAsyncEventArgs eventArgs;
         private DotNetty.Buffers.IByteBuffer content;
@@ -27,27 +28,28 @@ namespace Material.RPCServer.TCP_Async_Event
         private static byte pattern;
         private static byte[] future = new byte[futuresize];
 
-        public BaseUserToken UserToken  { get => userToken; set => userToken = value; }
+        public BaseUserToken Token  { get => token; set => token = value; }
         public string Hostname { get => hostname; set => hostname = value; }
         public string Port { get => port; set => port = value; }
 
-        public DataToken(SocketAsyncEventArgs eventArgs,string hostname,string port,BaseUserToken.GetInstance createMethod)
+        public DataToken(SocketAsyncEventArgs eventArgs,string hostname,string port)
         {
             this.eventArgs = eventArgs;
             this.content = DotNetty.Buffers.UnpooledByteBufferAllocator.Default.DirectBuffer(eventArgs.Buffer.Length,1024000);
             this.Hostname = hostname;
             this.Port = port;
-            userToken = createMethod();
         }
-        public void Clear()
+        public void DisConnect()
         {
             content.ResetWriterIndex();
-            userToken.OnClearEvent();
+            token.OnDisConnect();
+            token = null;
         }
-        public void Connect()
+        public void Connect(BaseUserToken token)
         {
             content.ResetWriterIndex();
-            userToken.OnConnectEvent();
+            this.token = token;
+            token.OnConnect();
         }
         public void ProcessData()
         {
@@ -84,11 +86,11 @@ namespace Material.RPCServer.TCP_Async_Event
                                 Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[客-请求]\n{request}");
                                 Console.WriteLine("--------------------------------------------------");
 #endif
-                                request.Params[0] = userToken;
+                                request.Params[0] = token;
                                 object result = method.Invoke(null, request.Params);
                                 string type = "null";
                                 if(result!=null)proxy.Type.TypeToAbstract.TryGetValue(result.GetType(),out type);
-                                userToken.Send(new ClientResponseModel("2.0",JsonConvert.SerializeObject(result),type, new Error(), request.Id));
+                                token.Send(new ClientResponseModel("2.0",JsonConvert.SerializeObject(result),type, new Error(), request.Id));
                             }
                             else
                             {

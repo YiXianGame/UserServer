@@ -6,7 +6,7 @@ namespace Make.RPCServer.Adapt
 {
     public class SkillCardAdapt
     {
-        public static List<SkillCard> Sync(UserToken token, long timestamp)
+        public static List<SkillCard> Sync(User user, long timestamp)
         {
             if (Core.Config.SkillCardUpdate.Equals(timestamp))
             {
@@ -14,11 +14,11 @@ namespace Make.RPCServer.Adapt
             }
             else
             {
-                Core.SkillCardRequest.SyncSkillCardUpdate(token, Core.Config.SkillCardUpdate);
+                Core.SkillCardRequest.SyncSkillCardUpdate(user, Core.Config.SkillCardUpdate);
                 return new List<SkillCard>(Core.SkillCardByID.Values);
             }
         }
-        public static List<SkillCard> Query(UserToken token, List<long> skillCardIds)
+        public static List<SkillCard> Query(User user, List<long> skillCardIds)
         {
             List<SkillCard> skillCards = new List<SkillCard>();
             foreach (long item in skillCardIds)

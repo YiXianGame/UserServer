@@ -1,7 +1,8 @@
-﻿using Material.Interface;
+﻿using Material.Entity;
+using Material.Interface;
 using System.Collections.Generic;
 
-namespace Make.Model
+namespace Material.Entity.Match
 {
     public class TeamGroup:IMatchSystemTeam<Team>
     {
@@ -14,22 +15,39 @@ namespace Make.Model
         {
             this.startMatchTime = Material.Utils.TimeStamp.Now();
         }
-        public void Add(Team item)
+        public bool Add(Team item)
         {
             items.Add(item);
+            foreach (Squad squad in item.Items)
+            {
+                foreach(User user in squad.Items)
+                {
+                    user.TeamGroup = this;
+                }
+            }
             rank += item.Rank;
             count += item.Count;
             averageRank = count > 0 ? (int)(rank / count) : 0;
+            return true;
         }
 
-        public void Remove(Team item)
+        public bool Remove(Team item)
         {
             if (items.Remove(item))
             {
+                foreach (Squad squad in item.Items)
+                {
+                    foreach (User user in squad.Items)
+                    {
+                        user.TeamGroup = null;
+                    }
+                }
                 rank -= item.Rank;
                 count -= item.Count;
                 averageRank = count > 0 ? (int)(rank / count) : 0;
+                return true;
             }
+            else return false;
         }
 
         public long StartMatchTime { get => startMatchTime; set => startMatchTime = value; }

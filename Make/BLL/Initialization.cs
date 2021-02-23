@@ -4,12 +4,10 @@ using Make.RPCServer.Adapt;
 using Make.RPCServer.Request;
 using Material.Entity;
 using Material.Entity.Config;
-using Material.Entity.Game;
-using Material.Interface;
+using Material.Entity.Match;
 using Material.MySQL;
 using Material.Redis;
 using Material.RPCServer;
-using Material.RPCServer.TCP_Async_Event;
 using System;
 using System.Collections.Generic;
 
@@ -24,8 +22,8 @@ namespace Make.BLL
             MySQL mySQL = new MySQL("127.0.0.1", "3306", "yixian", "root", "root");
             Core.Repository = new Model.Repository(redis, mySQL);
             CoreInit(UserServerConfig.UserServerCategory.StandardUserServer);
-            Core.SoloMatchSystem.MatchPiplineEvent += Core.SoloGroupMatchSystem.PiplineEnter;
-            Core.SoloGroupMatchSystem.MatchSucessEvent += MatchSystemHelper.SoloGroupMatchSystem_MatchSucessEvent;
+            Core.SoloMatchSystem.MatchPiplineOut += Core.SoloGroupMatchSystem.PiplineIn;
+            Core.SoloGroupMatchSystem.MatchSuccessEvent += MatchSystemHelper.SoloGroupMatchSystem_MatchSuccessEvent;
 
             #region --RPCServer--
             Material.RPCServer.RPCType serverType = new Material.RPCServer.RPCType();
@@ -48,7 +46,7 @@ namespace Make.BLL
             Core.UserRequest = Material.RPCServer.RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.0.105", "28015", serverType);
             Core.SkillCardRequest = Material.RPCServer.RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.0.105", "28015", serverType);
             //启动Server服务
-            RPCNetServerFactory.StartServer("192.168.0.105", "28015", () => new UserToken());
+            RPCNetServerFactory.StartServer("192.168.0.105", "28015", () => new User());
             #endregion
 
             #region --RPCClient--
@@ -70,12 +68,12 @@ namespace Make.BLL
             //RPCNetClientFactory.StartClient("192.168.0.105", "28015");
             #endregion
             Random random = new Random();
-            for (int i = 0; i < 1000000; i++)
+            for (int i = 0; i < 1; i++)
             {
-                Squad squad = new Squad();
-                for (int j = 0; j < random.Next(1, 4); j++)
+                Squad squad = new Squad(Material.Utils.SecretKey.Generate(10),Material.Entity.Game.Room.RoomType.Solo);
+                for (int j = 0; j < 1; j++)
                 {
-                    UserToken user = new UserToken();
+                    User user = new User();
                     user.Rank = random.Next(1, 9);
                     user.AverageRank = user.Rank;
                     user.Count = 1;
@@ -84,10 +82,10 @@ namespace Make.BLL
                 }
                 Core.SoloMatchSystem.Enter(squad);
             }
-            Core.SoloMatchSystem.Start();
+            Core.SoloMatchSystem.StartPolling(0,5000);
             SkillCardInit();
             AdventuresInit();
-            Console.WriteLine("Initialization Sucess!");
+            Console.WriteLine("Initialization Success!");
         }
         private async void CoreInit(UserServerConfig.UserServerCategory category)
         {
@@ -114,7 +112,7 @@ namespace Make.BLL
                 }
             }
             else Core.Config = config;
-            Console.WriteLine("Core Load Sucess!");
+            Console.WriteLine("Core Load Success!");
         }
 
         public async void SkillCardInit()
@@ -179,7 +177,7 @@ namespace Make.BLL
                     Core.SkillCardByID.Add(item.Id, item);
                 }
             }
-            Console.WriteLine("SkillCard Load Sucess!");
+            Console.WriteLine("SkillCard Load Success!");
         }
         public void AdventuresInit()
         {

@@ -71,8 +71,9 @@ namespace Material.RPCClient.TCP_Async_Event
                     Reconnect();
                 }
             }
-            catch(SocketException err)
+            catch(SocketException e)
             {
+                Console.WriteLine("连接服务器失败，尝试重连" + e.StackTrace);
                 Reconnect();
             }
         }
@@ -158,9 +159,9 @@ namespace Material.RPCClient.TCP_Async_Event
                         Thread.Sleep(5000);
                     }
                 }
-                catch (SocketException err)
+                catch (SocketException e)
                 {
-                    Debug.WriteLine("重连失败，5秒后重试！");
+                    Debug.WriteLine("重连失败，5秒后重试！" + e.StackTrace);
                     Thread.Sleep(5000);
                 }
             }

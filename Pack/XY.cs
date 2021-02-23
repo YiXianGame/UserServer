@@ -153,7 +153,7 @@
                     string filepath = GeneralControl.Directory + "\\用户\\" + long_num.ToString() + ".json";
                     if (!File.Exists(filepath))
                     {
-                        Make.MODEL.User author = new Make.MODEL.User();
+                        Make.User author = new Make.User();
                         author.Create_num = 0;
                         author.UserName = long_num.ToString();
                         author.Information = "个性签名";

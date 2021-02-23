@@ -30,9 +30,11 @@ namespace Material.RPCServer.TCP_Async_Event
 
         private ConcurrentDictionary<object, BaseUserToken> tokens = new ConcurrentDictionary<object, BaseUserToken>();
 
+        BaseUserToken.GetInstance tokenCreateMethod;
+
         public ConcurrentDictionary<object, BaseUserToken> Tokens { get => tokens; set => tokens = value; }
         
-        public SocketListener(string hostname,string port,int numConnections,int bufferSize,BaseUserToken.GetInstance createMethod)
+        public SocketListener(string hostname,string port,int numConnections,int bufferSize, BaseUserToken.GetInstance createMethod)
         {
             this.numConnectedSockets = 0;
             this.numConnections = numConnections;
@@ -40,13 +42,13 @@ namespace Material.RPCServer.TCP_Async_Event
             this.port = int.Parse(port);
             this.readWritePool = new SocketAsyncEventArgsPool(numConnections);
             this.semaphoreAcceptedClients = new Semaphore(numConnections, numConnections);
-
+            this.tokenCreateMethod = createMethod;
             for (int i = 0; i < this.numConnections; i++)
             {
                 SocketAsyncEventArgs receiveEventArg = new SocketAsyncEventArgs();
                 receiveEventArg.Completed += OnReceiveCompleted;
                 receiveEventArg.SetBuffer(new Byte[bufferSize], 0, bufferSize);
-                receiveEventArg.UserToken = new DataToken(receiveEventArg,hostname,port,createMethod);
+                receiveEventArg.UserToken = new DataToken(receiveEventArg,hostname,port);
                 this.readWritePool.Push(receiveEventArg);
             }
 
@@ -86,8 +88,8 @@ namespace Material.RPCServer.TCP_Async_Event
             e.AcceptSocket.Dispose();
             e.AcceptSocket = null;
             this.semaphoreAcceptedClients.Release();
-            tokens.TryRemove((e.UserToken as DataToken).UserToken.GetKey(),out BaseUserToken value);
-            (e.UserToken as DataToken).Clear();
+            tokens.TryRemove((e.UserToken as DataToken).Token.Key,out BaseUserToken value);
+            (e.UserToken as DataToken).DisConnect();
             this.readWritePool.Push(e);
             Interlocked.Decrement(ref this.numConnectedSockets);
             Console.WriteLine("A client has been disconnected from the server. There are {0} clients connected to the server", this.numConnectedSockets);
@@ -109,9 +111,9 @@ namespace Material.RPCServer.TCP_Async_Event
                     if (readEventArgs != null)
                     {
                         // Get the socket for the accepted client connection and put it into the 
-                        // ReadEventArg object user token.
+                        // ReadEventArg object User user.
                         readEventArgs.AcceptSocket = s;
-                        (readEventArgs.UserToken as DataToken).Clear();
+                        (readEventArgs.UserToken as DataToken).Connect(tokenCreateMethod());
                         Interlocked.Increment(ref this.numConnectedSockets);
                         Console.WriteLine("Client connection accepted. There are {0} clients connected to the server",
                             this.numConnectedSockets);

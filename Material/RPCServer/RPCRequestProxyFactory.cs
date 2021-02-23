@@ -48,7 +48,7 @@ namespace Material.RPCServer
             {
                 request = RPCRequestProxy.Register<R>(servicename,type);
                 requests[key] = request;
-                Console.WriteLine($"{servicename}-{hostname}-{port} Load Sucess!");
+                Console.WriteLine($"{servicename}-{hostname}-{port} Load Success!");
             }
             return request;
         }
