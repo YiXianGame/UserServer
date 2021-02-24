@@ -14,7 +14,6 @@ namespace Material.MySQL.Dao.Interface
         Task<bool> Delete(UserServerConfig.UserServerCategory category);
         Task<bool> Update(UserServerConfig config);
         Task<UserServerConfig> Query(UserServerConfig.UserServerCategory category);
-
         Task<PlayerServerConfig> Query(PlayerServerConfig.PlayerServerCategory category);
     }
 }

@@ -91,7 +91,7 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "SELECT skill_card_update,max_buff,player_server_category FROM user_server WHERE category=@category";
+                string sqlcommand = "SELECT skill_card_update,max_buff FROM user_server WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", category.ToString()));
 
@@ -102,7 +102,6 @@ namespace Material.MySQL.Dao
                     config.Category = category;
                     config.SkillCardUpdate = reader.GetInt64("skill_card_update");
                     config.MaxBuff = reader.GetInt32("max_buff");
-                    config.PlayerServerConfig = await Query(PlayerServerConfig.PlayerServerCategory.StandardPlayerServer);
                     return config;
                 }
                 else return null;
@@ -117,7 +116,7 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "SELECT ip,port,token FROM player_server WHERE category=@category";
+                string sqlcommand = "SELECT ip,port,secret_key FROM player_server WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", category.ToString()));
 
@@ -128,7 +127,7 @@ namespace Material.MySQL.Dao
                     config.Category = category;
                     config.Ip = reader.GetString("ip");
                     config.Port = reader.GetString("port");
-                    config.Token = reader.GetString("token");
+                    config.SecretKey = reader.GetString("secret_key");
                     return config;
                 }
                 else return null;

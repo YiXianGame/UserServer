@@ -113,7 +113,7 @@ namespace Material.RPCServer.TCP_Async_Event
                         // Get the socket for the accepted client connection and put it into the 
                         // ReadEventArg object User user.
                         readEventArgs.AcceptSocket = s;
-                        (readEventArgs.UserToken as DataToken).Connect(tokenCreateMethod());
+                        (readEventArgs.UserToken as DataToken).Connect(tokenCreateMethod(),s);
                         Interlocked.Increment(ref this.numConnectedSockets);
                         Console.WriteLine("Client connection accepted. There are {0} clients connected to the server",
                             this.numConnectedSockets);

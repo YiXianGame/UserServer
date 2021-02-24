@@ -21,33 +21,34 @@ namespace Make.Repository
             this.redis = redis;
             this.mySQL = mySQL;
         }
-        public async Task<long> Login(long id, string username, string password)
+        public async Task<User> Login(long id, string username, string password)
         {
-            //-1账户不存在 -2密码错误
-            //有ID数据
-            if (id != 0)
+            // null 账户不存在 -2密码错误
+            User user;
+            if (id == 0) user = await mySQL.userDao.Query_AttributeByUsername(username);
+            else
             {
-                //在Redis中验证一下密码的正确性
-                long result = await redis.userDao.ValidPerson(id, password);
+                user = await redis.userDao.Query_User(id, true);
                 //Redis中不存在
-                if (result == -1)
+                if (user == null)
                 {
-                    //在Mysql中用ID查询验证一下密码
-                    User user = await mySQL.userDao.Query_AttributeByID(id, true);
-                    if (user == null) return -1;//账户不存在
-                    if (user.Password.Equals(password))
+                    user = await Cache(id);
+                    //缓存之后还是没有
+                    if (user == null)
                     {
-                        //将账户信息存至Redis
-                        redis.userDao.SetAccount(user);
-                        return user.Id;//返回验证值
+                        return null;//账户不存在
                     }
-                    else return -2;//账户密码错误
                 }
-                else return result;//账户存在,返回验证值
             }
-            else //首次登录，无ID数据
+
+            if (!user.Password.Equals(password))
             {
-                return await mySQL.userDao.Valid(username, password);
+                user.Id = -2;//密码错误
+                return user;
+            }
+            else
+            {
+                return user;
             }
         }
         public async Task<long> Register(string username, string nickname, string password)
@@ -81,12 +82,12 @@ namespace Make.Repository
         public async Task<User> Sync_Attribute(long id, long timestamp)
         {
             //先从Redis里面取更新信息    
-            User user = await redis.userDao.Query_Attribute(id);
+            User user = await redis.userDao.Query_UserAttribute(id);
             if (user == null)//Redis不存在该用户
             {
                 user = await Cache(id);//缓存该用户
             }
-            if (user.Attribute_update != timestamp)//说明需要更新了
+            if (user != null && user.Attribute_update != timestamp)//说明需要更新了
             {
                 return user;
             }
@@ -114,7 +115,7 @@ namespace Make.Repository
         public async Task<List<Friend>> Sync_Friend(long id, long timestamp)
         {
             //先从Redis里面取更新信息    
-            User user = await redis.userDao.Query_Attribute(id);
+            User user = await redis.userDao.Query_User(id);
             if (user == null)//Redis不存在该用户
             {
                 user = await Cache(id);//缓存该用户
@@ -149,21 +150,21 @@ namespace Make.Repository
         }
         public async Task<User> Query_AttributeById(long id)
         {
-            User user = await redis.userDao.Query_Attribute(id);
+            User user = await redis.userDao.Query_User(id);
             if (user == null)
             {
                 user = await Cache(id);
             }
             return user;
         }
-        public async Task<long> Query_SkillCardUpdateById(long id)
+        public async Task<long> Query_CardRepositoryUpdateById(long id)
         {
-            long db_timestamp = await redis.userDao.Query_SkillCardUpdate(id);
+            long db_timestamp = await redis.userDao.Query_CardRepositoryUpdate(id);
             if (db_timestamp == -1)
             {
                 User user = await Cache(id);
                 if (user == null) throw new UserException(UserException.ErrorCode.DataNotFound, "处理同步用户卡牌数据时，Mysql无法查到数据.");
-                db_timestamp = user.SkillCard_update;
+                db_timestamp = user.CardRepository_update;
             }
             return db_timestamp;
         }
@@ -178,14 +179,14 @@ namespace Make.Repository
             }
             return db_timestamp;
         }
-        public async Task<List<CardItem>> Sync_UserSkillCards(long id, long timestamp)
+        public async Task<List<CardItem>> Sync_CardRepository(long id, long timestamp)
         {
-            long db_timestamp = await redis.userDao.Query_SkillCardUpdate(id);
+            long db_timestamp = await redis.userDao.Query_CardRepositoryUpdate(id);
             if (db_timestamp == -1)
             {
                 User user = await Cache(id);
                 if (user == null) throw new UserException(UserException.ErrorCode.DataNotFound, "处理同步用户卡牌数据时，Mysql无法查到数据.");
-                db_timestamp = user.SkillCard_update;
+                db_timestamp = user.CardRepository_update;
             }
             if (db_timestamp != timestamp)
             {

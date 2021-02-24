@@ -21,7 +21,7 @@ namespace Make.BLL
             Redis redis = new Redis("127.0.0.1:6379");
             MySQL mySQL = new MySQL("127.0.0.1", "3306", "yixian", "root", "root");
             Core.Repository = new Model.Repository(redis, mySQL);
-            CoreInit(UserServerConfig.UserServerCategory.StandardUserServer);
+            CoreInit(UserServerConfig.UserServerCategory.StandardServer,PlayerServerConfig.PlayerServerCategory.StandardServer);
             Core.SoloMatchSystem.MatchPiplineOut += Core.SoloGroupMatchSystem.PiplineIn;
             Core.SoloGroupMatchSystem.MatchSuccessEvent += MatchSystemHelper.SoloGroupMatchSystem_MatchSuccessEvent;
 
@@ -87,7 +87,7 @@ namespace Make.BLL
             AdventuresInit();
             Console.WriteLine("Initialization Success!");
         }
-        private async void CoreInit(UserServerConfig.UserServerCategory category)
+        private async void CoreInit(UserServerConfig.UserServerCategory category, PlayerServerConfig.PlayerServerCategory playerServerCategory)
         {
             Console.WriteLine("Core Loading....");
             //全局静态，查询以后会将Core静态属性全部设置好.
@@ -99,17 +99,17 @@ namespace Make.BLL
                 Core.Config.Category = category;
                 Core.Config.SkillCardUpdate = 0;
                 Core.Config.MaxBuff = 8;
-                Core.Config.PlayerServerConfig = new PlayerServerConfig();
-                Core.Config.PlayerServerConfig.Category = PlayerServerConfig.PlayerServerCategory.StandardPlayerServer;
                 if (!(await Core.Repository.ConfigRepository.Insert(Core.Config)))
                 {
-                    Console.WriteLine("Core Load Fail!");
+                    Console.WriteLine($"Core Load Fail! Can not Find {category}");
+                    return;
                 }
-                else
-                {
-                    config = await Core.Repository.ConfigRepository.Query(category);
-                    Core.Config = config;
-                }
+            }
+            config.PlayerServerConfig = await Core.Repository.ConfigRepository.QueryPlayerServerConfig(playerServerCategory);
+            if(config.PlayerServerConfig == null)
+            {
+                Console.WriteLine($"Core Load Fail! Can not Find {playerServerCategory}");
+                return;
             }
             else Core.Config = config;
             Console.WriteLine("Core Load Success!");

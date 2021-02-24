@@ -30,6 +30,10 @@ namespace Make.Repository
         {
             return await mySQL.configDao.Query(category);
         }
+        public async Task<PlayerServerConfig> QueryPlayerServerConfig(PlayerServerConfig.PlayerServerCategory category)
+        {
+            return await mySQL.configDao.Query(category);
+        }
         public async Task<bool> Delete(UserServerConfig.UserServerCategory category)
         {
             return await mySQL.configDao.Delete(category);

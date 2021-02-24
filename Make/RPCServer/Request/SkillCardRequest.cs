@@ -5,6 +5,8 @@ namespace Make.RPCServer.Request
 {
     public interface SkillCardRequest
     {
-        public void SyncSkillCardUpdate(User user, long timestamp);
+        public void SetSkillCardUpdate(User user, long timestamp);
+
+
     }
 }

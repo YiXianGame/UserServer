@@ -7,12 +7,12 @@ namespace Material.Entity.Config
     {
         #region --Enum--
         [JsonConverter(typeof(StringEnumConverter))]
-        public enum UserServerCategory { LowUserServer, StandardUserServer, HighUserServer }
+        public enum UserServerCategory { LowServer, StandardServer, HighServer }
         #endregion
 
         #region --字段--
         private long skillCardUpdate;
-        private UserServerCategory category = UserServerCategory.LowUserServer;
+        private UserServerCategory category = UserServerCategory.LowServer;
         private int maxBuff = 8; //当前状态的最大量
         private PlayerServerConfig playerServerConfig;
         #endregion

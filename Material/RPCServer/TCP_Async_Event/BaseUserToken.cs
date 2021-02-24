@@ -18,18 +18,18 @@ namespace Material.RPCServer.TCP_Async_Event
 
         #region --字段--
         Tuple<string, string> serverKey;
-        SocketAsyncEventArgs eventArgs;
+        Socket socket;
         #endregion
 
         #region --属性--
 
         public Tuple<string, string> ServerKey { get => serverKey; set => serverKey = value; }
-        internal SocketAsyncEventArgs EventArgs { get => eventArgs; set => eventArgs = value; }
+        internal Socket Socket { get => socket; set => socket = value; }
         public bool Connected
         { 
             get 
             {
-                if (eventArgs.AcceptSocket != null) return eventArgs.AcceptSocket.Connected;
+                if (socket != null) return socket.Connected;
                 else return false;
             } 
         }
@@ -38,7 +38,7 @@ namespace Material.RPCServer.TCP_Async_Event
         #region --方法--
         internal void Send(ServerRequestModel request)
         {
-            if (EventArgs.AcceptSocket.Connected)
+            if (socket.Connected)
             {
 #if DEBUG
                 Console.WriteLine("---------------------------------------------------------");
@@ -62,7 +62,7 @@ namespace Material.RPCServer.TCP_Async_Event
                 Buffer.BlockCopy(bodyBytes, 0, sendBuffer, headerBytes.Length + pattern.Length + future.Length, bodyBytes.Length);
                 SocketAsyncEventArgs sendEventArgs = new SocketAsyncEventArgs();
                 sendEventArgs.SetBuffer(sendBuffer, 0, sendBuffer.Length);
-                EventArgs.AcceptSocket.SendAsync(sendEventArgs);
+                socket.SendAsync(sendEventArgs);
             }
             else
             {
@@ -71,7 +71,7 @@ namespace Material.RPCServer.TCP_Async_Event
         }
         internal void Send(ClientResponseModel response)
         {
-            if (EventArgs.AcceptSocket.Connected)
+            if (socket.Connected)
             {
 #if DEBUG
                 Console.WriteLine("---------------------------------------------------------");
@@ -95,7 +95,7 @@ namespace Material.RPCServer.TCP_Async_Event
                 Buffer.BlockCopy(bodyBytes, 0, sendBuffer, headerBytes.Length + pattern.Length + future.Length, bodyBytes.Length);
                 SocketAsyncEventArgs sendEventArgs = new SocketAsyncEventArgs();
                 sendEventArgs.SetBuffer(sendBuffer, 0, sendBuffer.Length);
-                EventArgs.AcceptSocket.SendAsync(sendEventArgs);
+                socket.SendAsync(sendEventArgs);
             }
         }
         public bool AddIntoTokens()

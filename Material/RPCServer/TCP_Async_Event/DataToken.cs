@@ -45,10 +45,12 @@ namespace Material.RPCServer.TCP_Async_Event
             token.OnDisConnect();
             token = null;
         }
-        public void Connect(BaseUserToken token)
+        public void Connect(BaseUserToken token,Socket socket)
         {
             content.ResetWriterIndex();
             this.token = token;
+            token.Socket = socket;
+            token.ServerKey = new Tuple<string, string>(hostname, port);
             token.OnConnect();
         }
         public void ProcessData()

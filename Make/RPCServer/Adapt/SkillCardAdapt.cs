@@ -14,7 +14,7 @@ namespace Make.RPCServer.Adapt
             }
             else
             {
-                Core.SkillCardRequest.SyncSkillCardUpdate(user, Core.Config.SkillCardUpdate);
+                Core.SkillCardRequest.SetSkillCardUpdate(user, Core.Config.SkillCardUpdate);
                 return new List<SkillCard>(Core.SkillCardByID.Values);
             }
         }

@@ -57,7 +57,7 @@ namespace Material.Entity
 
         long attribute_update;//个人信息更新日期
 
-        long skillCard_update;//卡牌更新日期
+        long cardRepository_update;//卡牌更新日期
 
         long headImage_update;//头像更新日期
 
@@ -87,7 +87,7 @@ namespace Material.Entity
         public int Deaths { get => deaths; set => deaths = value; }
         public long RegisterDate { get => registerDate; set => registerDate = value; }
         public long Attribute_update { get => attribute_update; set => attribute_update = value; }
-        public long SkillCard_update { get => skillCard_update; set => skillCard_update = value; }
+        public long CardRepository_update { get => cardRepository_update; set => cardRepository_update = value; }
         public long HeadImage_update { get => headImage_update; set => headImage_update = value; }
         public List<CardGroup> CardGroups { get => cardGroups; set => cardGroups = value; }
         public long Friend_update { get => friend_update; set => friend_update = value; }
@@ -105,12 +105,19 @@ namespace Material.Entity
         #endregion
 
         #region --Cache属性--
+        [JsonIgnore]
         public long StartMatchTime { get => startMatchTime; set => startMatchTime = value; }
+        [JsonIgnore]
         public int AverageRank { get => averageRank; set => averageRank = value; }
+        [JsonIgnore]
         public int Count { get => count; set => count = value; }
+        [JsonIgnore]
         public Squad Squad { get => squad; set => squad = value; }
+        [JsonIgnore]
         public Team Team { get => team; set => team = value; }
+        [JsonIgnore]
         public TeamGroup TeamGroup { get => teamGroup; set => teamGroup = value; }
+        [JsonIgnore]
         public int Rank { get => lv; set => lv = value; }
         #endregion
 
@@ -133,7 +140,7 @@ namespace Material.Entity
             this.deaths = user.deaths;
             this.registerDate = user.registerDate;
             this.attribute_update = user.attribute_update;
-            this.skillCard_update = user.skillCard_update;
+            this.cardRepository_update = user.cardRepository_update;
             this.headImage_update = user.headImage_update;
             this.friend_update = user.friend_update;
             this.cardGroups_update = user.CardGroups_update;

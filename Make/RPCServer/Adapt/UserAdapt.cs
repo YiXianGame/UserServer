@@ -18,21 +18,19 @@ namespace Make.RPCServer.Adapt
         }
         public static long LoginUser(User user, long id, string username, string password)
         {
-            Task<long> task = Core.Repository.UserRepository.Login(id, username, password);
+            Task<User> task = Core.Repository.UserRepository.Login(id, username, password);
             task.Wait();
-            if (task.Result != -1 && task.Result != -2)
+            if (task.Result == null) return -1;//账户不存在
+            else if (task.Result.Id != -2)
             {
-                user.Id = task.Result;
-                Task<User> userTask = Core.Repository.UserRepository.Query_AttributeById(user.Id);
-                userTask.Wait();
-                user.SetAttribute(userTask.Result);
+                user.SetAttribute(task.Result);
                 if (!user.AddIntoTokens())
                 {
                     return -3;//用户已登录
                 }
-                else return task.Result;
+                else return task.Result.Id;
             }
-            return user.Id;
+            return task.Result.Id;
         }
         public static User Sync_Attribute(User user, long date)
         {
@@ -47,7 +45,7 @@ namespace Make.RPCServer.Adapt
             {
                 Task<User> task = Core.Repository.UserRepository.Sync_CardGroups(item.Id, item.CardGroups_update);
                 task.Wait();
-                users.Add(task.Result);
+                result.Add(task.Result);
             }
             return result;
         }
@@ -84,14 +82,16 @@ namespace Make.RPCServer.Adapt
             task.Wait();
             return task.Result;
         }
-        public static List<CardItem> Sync_SkillCards(User user, long id, long date)
+        public static List<CardItem> Sync_CardRepository(User user, long id, long date)
         {
-            Task<List<CardItem>> task = Core.Repository.UserRepository.Sync_UserSkillCards(id, date);
+            Task<List<CardItem>> task = Core.Repository.UserRepository.Sync_CardRepository(id, date);
             task.Wait();
-
-            Task<long> update_task = Core.Repository.UserRepository.Query_SkillCardUpdateById(id);
-            update_task.Wait();
-            if (task.Result != null) Core.UserRequest.SetSkillCardUpdate(user, update_task.Result);
+            if (task.Result != null)
+            {
+                Task<long> update_task = Core.Repository.UserRepository.Query_CardRepositoryUpdateById(id);
+                update_task.Wait();
+                Core.UserRequest.SetCardRepositoryUpdate(user, update_task.Result);
+            }
             return task.Result;
         }
 

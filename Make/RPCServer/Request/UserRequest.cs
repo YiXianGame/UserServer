@@ -6,7 +6,7 @@ namespace Make.RPCServer.Request
 {
     public interface UserRequest
     {
-        public void SetSkillCardUpdate(User user, long timestamp);
+        public void SetCardRepositoryUpdate(User user, long timestamp);
         public void SetFriendUpdate(User user, long timestamp);
         public void CancelMatch(User user);
         public void MatchSuccess(User user, List<User> group_1, List<User> group_2, int idx, string hostname, string port, string secretKey);
