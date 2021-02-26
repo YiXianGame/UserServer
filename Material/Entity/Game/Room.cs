@@ -6,13 +6,13 @@ namespace Material.Entity.Game
 {
     public abstract class Room
     {
-        public enum RoomType { Solo, Team, Battle_Royale };
+        public enum RoomType { Round_Solo, Round_Team, Round_BattleRoyale, RealTime_Solo, RealTime_Team, RealTime_BattleRoyale };
         public enum RoomStage { Wait, Raise, Action, Result };
         #region --字段--
         protected int round = 0;//房间回合
         protected List<Player> players = new List<Player>();//房间内的玩家
         protected RoomStage stage = RoomStage.Wait;//房间阶段
-        protected RoomType type = RoomType.Solo;//房间类型
+        protected RoomType type = RoomType.Round_Solo;//房间类型
         protected int deaths = 0;//死亡总数
         protected DateTime latest_Date = DateTime.Now;//房间最新时间
         protected int max_players = 10;//最大玩家数

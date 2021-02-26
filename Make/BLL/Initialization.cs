@@ -26,7 +26,7 @@ namespace Make.BLL
             Core.SoloGroupMatchSystem.MatchSuccessEvent += MatchSystemHelper.SoloGroupMatchSystem_MatchSuccessEvent;
 
             #region --RPCServer--
-            Material.RPCServer.RPCType serverType = new Material.RPCServer.RPCType();
+            RPCType serverType = new RPCType();
             serverType.Add<int>("int");
             serverType.Add<string>("string");
             serverType.Add<bool>("bool");
@@ -40,11 +40,12 @@ namespace Make.BLL
             serverType.Add<List<Friend>>("friends");
             serverType.Add<List<User>>("users");
             //适配Server远程客户端服务
-            Material.RPCServer.RPCAdaptFactory.Register<UserAdapt>("UserServer", "192.168.0.105", "28015", serverType);
-            Material.RPCServer.RPCAdaptFactory.Register<SkillCardAdapt>("SkillCardServer", "192.168.0.105", "28015", serverType);
+            RPCAdaptFactory.Register(new UserAdapt(),"UserServer", "192.168.0.105", "28015", serverType);
+            RPCAdaptFactory.Register(new SkillCardAdapt(),"SkillCardServer", "192.168.0.105", "28015", serverType);
             //注册Server远程服务
-            Core.UserRequest = Material.RPCServer.RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.0.105", "28015", serverType);
-            Core.SkillCardRequest = Material.RPCServer.RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.0.105", "28015", serverType);
+            Core.UserRequest = RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.0.105", "28015", serverType);
+            Core.SkillCardRequest = RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.0.105", "28015", serverType);
+            Core.ReadyRequest = RPCRequestProxyFactory.Register<ReadyRequest>("ReadyClient", "192.168.0.105", "28015", serverType);
             //启动Server服务
             RPCNetServerFactory.StartServer("192.168.0.105", "28015", () => new User());
             #endregion
@@ -70,7 +71,7 @@ namespace Make.BLL
             Random random = new Random();
             for (int i = 0; i < 1; i++)
             {
-                Squad squad = new Squad(Material.Utils.SecretKey.Generate(10),Material.Entity.Game.Room.RoomType.Solo);
+                Squad squad = new Squad(Material.Utils.SecretKey.Generate(10),Material.Entity.Game.Room.RoomType.Round_Solo);
                 for (int j = 0; j < 1; j++)
                 {
                     User user = new User();

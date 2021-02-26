@@ -17,6 +17,7 @@ namespace Make
         private static UserRequest userRequest;
         private static PlayerServerRequest playerServerRequest;
         private static SkillCardRequest skillCardClient;
+        private static ReadyRequest readyRequest;
         private static MatchSystem<Team,Squad> soloMatchSystem = new MatchSystem<Team, Squad>(1,1);
         private static MatchSystem<TeamGroup,Team> soloGroupMatchSystem = new MatchSystem<TeamGroup, Team>(2,2);
         #endregion
@@ -30,6 +31,7 @@ namespace Make
         public static PlayerServerRequest PlayerServerRequest { get => playerServerRequest; set => playerServerRequest = value; }
         public static MatchSystem<Team, Squad> SoloMatchSystem { get => soloMatchSystem; set => soloMatchSystem = value; }
         public static MatchSystem<TeamGroup,Team> SoloGroupMatchSystem { get => soloGroupMatchSystem; set => soloGroupMatchSystem = value; }
+        public static ReadyRequest ReadyRequest { get => readyRequest; set => readyRequest = value; }
         #endregion
 
     }

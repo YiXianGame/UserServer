@@ -89,9 +89,9 @@ namespace Material.RPCServer.TCP_Async_Event
                                 Console.WriteLine("--------------------------------------------------");
 #endif
                                 request.Params[0] = token;
-                                object result = method.Invoke(null, request.Params);
+                                object result = method.Invoke(proxy.Instance, request.Params);
                                 string type = "null";
-                                if(result!=null)proxy.Type.TypeToAbstract.TryGetValue(result.GetType(),out type);
+                                if(result!=null)proxy.Type.AbstractName.TryGetValue(result.GetType(),out type);
                                 token.Send(new ClientResponseModel("2.0",JsonConvert.SerializeObject(result),type, new Error(), request.Id));
                             }
                             else
@@ -101,7 +101,7 @@ namespace Material.RPCServer.TCP_Async_Event
                                 Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[客-指令]\n{request}");
                                 Console.WriteLine("--------------------------------------------------");
 #endif
-                                request.Params[0] = this;
+                                request.Params[0] = token;
                                 method.Invoke(null, request.Params);
                             }
                         }

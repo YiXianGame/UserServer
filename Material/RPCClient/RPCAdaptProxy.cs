@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Material.RPCC.Annotation;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -11,39 +12,64 @@ namespace Material.RPCClient
         //猜测类似C++函数指针可能会更快,C#.NET理念下函数指针只能用委托替代，但委托自由度不高.
         //string连接的时候使用引用要比tuple慢很多
         private Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
+        private object instance;
         private RPCType type;
 
         public Dictionary<string, MethodInfo> Methods { get => methods;  }
+        public object Instance { get => instance; set => instance = value; }
 
-        public void Register<T>(RPCType type)
+        public void Register<T>(T instance,RPCType type)
         {
-            StringBuilder methodid = new StringBuilder();
+            this.Instance = instance;
             this.type = type;
+            StringBuilder methodid = new StringBuilder();
             foreach (MethodInfo method in typeof(T).GetMethods())
             {
-                if(method.IsPublic && !method.IsAbstract && method.IsStatic)
+                RPCMethod rpcAttribute = method.GetCustomAttribute<RPCMethod>();
+                if (rpcAttribute == null)
                 {
-                    methodid.Append(method.Name);
-                    ParameterInfo[] parameters = method.GetParameters();
-                    foreach(ParameterInfo param in parameters)
+                    if (!method.IsAbstract)
                     {
-                        try
+                        methodid.Append(method.Name);
+                        ParameterInfo[] parameters = method.GetParameters();
+                        if (rpcAttribute.Paramters == null)
                         {
-                            methodid.Append("-" + type.TypeToAbstract[param.ParameterType]);
+                            foreach (ParameterInfo param in parameters)
+                            {
+                                try
+                                {
+                                    methodid.Append("-" + type.AbstractName[param.ParameterType]);
+                                }
+                                catch (Exception)
+                                {
+                                    throw new RPCException($"C#中的{param.ParameterType}类型参数尚未注册");
+                                }
+                            }
                         }
-                        catch (Exception)
+                        else
                         {
-                            throw new RPCException($"C#中的{param.ParameterType}类型参数尚未注册");
+                            string[] types_name = rpcAttribute.Paramters.Split("-");
+                            if(parameters.Length == types_name.Length)
+                            {
+                                foreach (string type_name in types_name)
+                                {
+                                    if (type.AbstractType.ContainsKey(type_name))
+                                    {
+                                        methodid.Append("-").Append(types_name);
+                                    }
+                                    else throw new RPCException($"C#对应的{types_name}类型参数尚未注册");
+                                }
+                            }
                         }
+                        Methods.TryAdd(methodid.ToString(), method);
+                        methodid.Length = 0;
                     }
-                    Methods.TryAdd(methodid.ToString(), method);
-                    methodid.Length = 0;
                 }
             }
         }
         public void ConvertParams(string methodId, object[] parameters)
         {
-            String[] param_id = methodId.Split('-');
+            string[] param_id = methodId.Split('-');
             if (param_id.Length > 1)
             {
                 for (int i = 1,j=0; i < param_id.Length; i++,j++)

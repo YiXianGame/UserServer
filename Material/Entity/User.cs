@@ -98,7 +98,7 @@ namespace Material.Entity
         #region --Cache字段--
         private long startMatchTime = 0;//开始匹配时间
         private int averageRank = 0;
-        private int count = 0;
+        private int count = 1;
         private Squad squad;
         private Team team;
         private TeamGroup teamGroup;

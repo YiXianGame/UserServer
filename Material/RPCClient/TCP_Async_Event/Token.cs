@@ -64,7 +64,6 @@ namespace Material.RPCClient.TCP_Async_Event
                         //0-Request 1-Response
                         if (pattern == 0)
                         {
-
                             ServerRequestModel request = JsonConvert.DeserializeObject<ServerRequestModel>(content.GetString(0, content.WriterIndex, Encoding.UTF8));
                             if (!RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, hostname, port), out RPCAdaptProxy proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
                             {
@@ -83,7 +82,7 @@ namespace Material.RPCClient.TCP_Async_Event
 #endif
                                 proxy.ConvertParams(request.MethodId, request.Params);
                                 //客户端不讲究什么性能损耗了，直接开Task.
-                                Task.Run(() => method.Invoke(null, request.Params));
+                                Task.Run(() => method.Invoke(proxy.Instance, request.Params));
                             }
                         }
                         else

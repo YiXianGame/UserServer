@@ -8,8 +8,11 @@ namespace Material.RPCClient
     public class RPCAdaptFactory
     {
         public static Dictionary<Tuple<string, string, string>, RPCAdaptProxy> services { get; } = new Dictionary<Tuple<string, string, string>, RPCAdaptProxy>();
-
-        public static void Register<T>(string servicename,string hostname, string port, RPCType type) where T:class
+        public static void Register<T>(string servicename, string hostname, string port, RPCType type) where T : class
+        {
+            Register<T>(null, servicename, hostname, port, type);
+        }
+        public static void Register<T>(T instance,string servicename,string hostname, string port, RPCType type) where T:class
         {
             if (string.IsNullOrEmpty(servicename))
             {
@@ -39,7 +42,7 @@ namespace Material.RPCClient
                 {
                     SocketClient socketClient = RPCNetClientFactory.GetClient(new Tuple<string, string>(hostname, port));
                     service = new RPCAdaptProxy();
-                    service.Register<T>(type);
+                    service.Register(instance,type);
                     services[key] = service;
                 }
                 catch (SocketException e)

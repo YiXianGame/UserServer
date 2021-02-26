@@ -1,4 +1,4 @@
-﻿#define Debug1
+﻿#define Debug
 using Material.ExceptionModel;
 using Material.Interface;
 using System;

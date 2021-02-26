@@ -9,7 +9,7 @@ namespace Make.BLL
 {
     public class MatchSystemHelper
     {
-        public async static void SoloGroupMatchSystem_MatchSuccessEvent(List<TeamGroup> teamGroups)
+        public static void SoloGroupMatchSystem_MatchSuccessEvent(List<TeamGroup> teamGroups)
         {
             foreach(TeamGroup teams in teamGroups)
             {
@@ -23,9 +23,10 @@ namespace Make.BLL
                         {
                             foreach (User user in squad.Items)
                             {
-                                users.Add(await Core.Repository.UserRepository.Query_AttributeById(user.Id));
+                                users.Add(user);
                             }
                         }
+                        result.Add(users);
                     }
                     int idx = 0;
                     foreach (Team team in teams.Items)
@@ -34,7 +35,7 @@ namespace Make.BLL
                         {
                             foreach (User user in squad.Items)
                             {
-                                Core.UserRequest.MatchSuccess(user, result[0], result[1], idx, "192.168.0.105", "28016", Material.Utils.SecretKey.Generate(10));
+                                Core.ReadyRequest.MatchSuccess(user, result[0], result[1], idx, "192.168.0.105", "28016", Material.Utils.SecretKey.Generate(10));
                             }
                         }
                         idx++;
@@ -49,7 +50,7 @@ namespace Make.BLL
                         {
                             foreach (User user in squad.Items)
                             {
-                                Core.UserRequest.CancelMatch(user);
+                                Core.ReadyRequest.CancelMatch(user);
                             }
                         }
                         idx++;

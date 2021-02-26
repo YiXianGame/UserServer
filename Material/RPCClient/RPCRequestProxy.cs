@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Material.RPCC.Annotation;
+using Material.RPCClient.TCP_Async_Event;
+using Newtonsoft.Json;
+using System;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
-using Material.RPCClient.TCP_Async_Event;
-using Material.RPCServer.TCP_Async_Event;
-using Newtonsoft.Json;
 
 namespace Material.RPCClient
 {
@@ -34,45 +34,76 @@ namespace Material.RPCClient
 
         protected override object Invoke(MethodInfo targetMethod, object[] args)
         {
-            try
+            RPCMethod rpcAttribute = targetMethod.GetCustomAttribute<RPCMethod>();
+            if(rpcAttribute != null)
             {
-                //这里要连接字符串，发现StringBuilder效率高一些.
-                StringBuilder methodid = new StringBuilder(targetMethod.Name);
-                ParameterInfo[] parameters = targetMethod.GetParameters();
-                object[] obj = new object[args.Length + 1];
-                for (int i = 0,j = 1; i < args.Length; i++,j++){
-                    try
+                try
+                {
+                    //这里要连接字符串，发现StringBuilder效率高一些.
+                    StringBuilder methodid = new StringBuilder(targetMethod.Name);
+                    int param_count;
+                    if (args != null) param_count = args.Length;
+                    else param_count = 0;
+                    object[] obj = new object[param_count + 1];
+                    if (rpcAttribute.Paramters == null)
                     {
-                        methodid.Append("-" + type.TypeToAbstract[args[i].GetType()]);
-                        obj[j] = JsonConvert.SerializeObject(args[i]);
+                        for (int i = 0, j = 1; i < param_count; i++, j++)
+                        {
+                            try
+                            {
+                                methodid.Append("-" + type.AbstractName[args[i].GetType()]);
+                                obj[j] = JsonConvert.SerializeObject(args[i]);
+                            }
+                            catch (Exception)
+                            {
+                                throw new RPCException($"C#中的{args[i].GetType()}类型参数尚未注册");
+                            }
+                        }
                     }
-                    catch (Exception)
+                    else
                     {
-                        throw new RPCException($"C#中的{args[i].GetType()}类型参数尚未注册");
+                        string[] types_name = rpcAttribute.Paramters.Split('-');
+                        if (types_name.Length == param_count)
+                        {
+                            for (int i = 0, j = 1; i < param_count; i++, j++)
+                            {
+                                try
+                                {
+                                    methodid.Append("-" + types_name[i]);
+                                    obj[j] = JsonConvert.SerializeObject(args[i]);
+                                }
+                                catch (Exception)
+                                {
+                                    throw new RPCException($"C#中的{args[i].GetType()}类型参数尚未注册");
+                                }
+                            }
+                        }
+                        else throw new RPCException($"方法体{targetMethod.Name}中[RPCMethod]与实际参数数量不符,[RPCMethod]:{types_name.Length}个,Method:{param_count}个");
+                    }
+                    ClientRequestModel request = new ClientRequestModel("2.0", servicename, methodid.ToString(), obj);
+                    if (targetMethod.ReturnType == typeof(void))
+                    {
+                        (RPCNetClientFactory.GetClient(key).SocketArgs.UserToken as Token).SendVoid(request);
+                        return null;
+                    }
+                    else
+                    {
+                        (RPCNetClientFactory.GetClient(key).SocketArgs.UserToken as Token).Send(request);
+                        ClientResponseModel result = request.get();
+                        if (type.TypeConvert.TryGetValue(result.Result_Type, out RPCType.ConvertDelegage convert))
+                        {
+                            convert((string)result.Result);
+                        }
+                        else throw new RPCException($"C#中的{result.Result_Type}类型转换器尚未注册");
                     }
                 }
-                ClientRequestModel request = new ClientRequestModel("2.0", servicename, methodid.ToString(), obj);
-                if (targetMethod.ReturnType == typeof(void))
+                catch (SocketException e)
                 {
-                    (RPCNetClientFactory.GetClient(key).SocketArgs.UserToken as Token).SendVoid(request);
-                    return null;
-                }
-                else
-                {
-                    (RPCNetClientFactory.GetClient(key).SocketArgs.UserToken as Token).Send(request);
-                    ClientResponseModel result = request.get();
-                    if (type.TypeConvert.TryGetValue(result.Result_Type, out RPCType.ConvertDelegage convert))
-                    {
-                        convert((string)result.Result);
-                    }
-                    else throw new RPCException($"C#中的{result.Result_Type}类型转换器尚未注册");
+                    Console.WriteLine("发送请求失败，尝试重连\n" + e.StackTrace);
+                    RPCNetClientFactory.GetClient(key).Reconnect();
                 }
             }
-            catch(SocketException e)
-            {
-                Console.WriteLine("发送请求失败，尝试重连\n" + e.StackTrace);
-                RPCNetClientFactory.GetClient(key).Reconnect();
-            }
+
             return null;
         }
     }

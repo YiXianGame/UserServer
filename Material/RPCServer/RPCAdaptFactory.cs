@@ -8,7 +8,7 @@ namespace Material.RPCServer
     { 
         public static ConcurrentDictionary<Tuple<string, string, string>, RPCAdaptProxy> services { get; } = new ConcurrentDictionary<Tuple<string, string, string>, RPCAdaptProxy>();
 
-        public static void Register<R>(string servicename,string hostname, string port,RPCType type) where R:class
+        public static void Register<R>(R instance,string servicename, string hostname, string port, RPCType type) where R : class
         {
             Console.WriteLine($"{servicename}-{hostname}-{port} Loading...");
             if (string.IsNullOrEmpty(servicename))
@@ -37,13 +37,13 @@ namespace Material.RPCServer
 
             RPCAdaptProxy service = null;
             Tuple<string, string, string> key = new Tuple<string, string, string>(servicename, hostname, port.ToString());
-            services.TryGetValue(key,out service);
-            if(service == null)
+            services.TryGetValue(key, out service);
+            if (service == null)
             {
                 try
                 {
                     service = new RPCAdaptProxy();
-                    service.Register<R>(type);
+                    service.Register(instance,type);
                     services[key] = service;
                     Console.WriteLine($"{servicename}-{hostname}-{port} Load Success!");
                 }

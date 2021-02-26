@@ -2,6 +2,7 @@
 using Material.Entity;
 using Material.Entity.Game;
 using Material.Entity.Match;
+using Material.RPCServer.Annotation;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,13 +11,15 @@ namespace Make.RPCServer.Adapt
 {
     public class UserAdapt
     {
-        public static long RegisterUser(User user, string username, string nickname, string password)
+        [RPCMethod]
+        public long RegisterUser(User user, string username, string nickname, string password)
         {
             Task<long> task = Core.Repository.UserRepository.Register(username, nickname, password);
             task.Wait();
             return task.Result;
         }
-        public static long LoginUser(User user, long id, string username, string password)
+        [RPCMethod]
+        public long LoginUser(User user, long id, string username, string password)
         {
             Task<User> task = Core.Repository.UserRepository.Login(id, username, password);
             task.Wait();
@@ -32,13 +35,15 @@ namespace Make.RPCServer.Adapt
             }
             return task.Result.Id;
         }
-        public static User Sync_Attribute(User user, long date)
+        [RPCMethod]
+        public User Sync_Attribute(User user, long date)
         {
             Task<User> task = Core.Repository.UserRepository.Sync_Attribute(user.Id, date);
             task.Wait();
             return task.Result;
         }
-        public static List<User> Sync_CardGroups(User user, List<User> users)
+        [RPCMethod]
+        public List<User> Sync_CardGroups(User user, List<User> users)
         {
             List<User> result = new List<User>();
             foreach (User item in users)
@@ -49,7 +54,8 @@ namespace Make.RPCServer.Adapt
             }
             return result;
         }
-        public static List<User> Sync_Attribute(User user, List<User> dates)
+        [RPCMethod]
+        public List<User> Sync_Attribute(User user, List<User> dates)
         {
             List<User> users = new List<User>();
             foreach (User item in dates)
@@ -60,7 +66,8 @@ namespace Make.RPCServer.Adapt
             }
             return users;
         }
-        public static List<Friend> Sync_Friend(User user, long date)
+        [RPCMethod]
+        public List<Friend> Sync_Friend(User user, long date)
         {
             Task<List<Friend>> task = Core.Repository.UserRepository.Sync_Friend(user.Id, date);
             task.Wait();
@@ -70,19 +77,22 @@ namespace Make.RPCServer.Adapt
             if (task.Result != null) Core.UserRequest.SetFriendUpdate(user, update_task.Result);
             return task.Result;
         }
-        public static long Update_CardGroups(User user, User userWithCardGroups)
+        [RPCMethod]
+        public long Update_CardGroups(User user, User userWithCardGroups)
         {
             Task<long> task = Core.Repository.UserRepository.Update_CardGroups(user.Id, userWithCardGroups);
             task.Wait();
             return task.Result;
         }
-        public static User Query_UserAttributeById(User user, long id)
+        [RPCMethod]
+        public User Query_UserAttributeById(User user, long id)
         {
             Task<User> task = Core.Repository.UserRepository.Query_AttributeById(id);
             task.Wait();
             return task.Result;
         }
-        public static List<CardItem> Sync_CardRepository(User user, long id, long date)
+        [RPCMethod]
+        public List<CardItem> Sync_CardRepository(User user, long id, long date)
         {
             Task<List<CardItem>> task = Core.Repository.UserRepository.Sync_CardRepository(id, date);
             task.Wait();
@@ -94,26 +104,24 @@ namespace Make.RPCServer.Adapt
             }
             return task.Result;
         }
-
-        public static string CreateSquad(User user,string roomType)
+        [RPCMethod]
+        public string CreateSquad(User user,string roomType)
         {
-            Room.RoomType type = (Room.RoomType)Enum.Parse(typeof(Room.RoomType), roomType);
-            if(user.Rank == -1)
+            if(Enum.TryParse<Room.RoomType>(roomType, true, out Room.RoomType type))
             {
-                Task<User> task = Core.Repository.UserRepository.Query_AttributeById(user.Id);
-                task.Wait();
-                user.Rank = task.Result.Lv;
-            }
-            if (type == Room.RoomType.Solo)
-            {
-                user.Squad = new Squad(Material.Utils.SecretKey.Generate(20),type);
-                user.Squad.Captain = user;
-                if(user.Squad.Add(user))return user.Squad.SecretKey;
+                if (type == Room.RoomType.Round_Solo)
+                {
+                    user.Squad = new Squad(Material.Utils.SecretKey.Generate(20), type);
+                    user.Squad.Captain = user;
+                    if (user.Squad.Add(user)) return user.Squad.SecretKey;
+                    else return "-1";
+                }
                 else return "-1";
             }
             else return "-1";
         }
-        public static List<User> EnterSquad(User user,long id,string secretKey)
+        [RPCMethod]
+        public List<User> EnterSquad(User user,long id,string secretKey)
         {
             if (user.GetToken(id, out User host))
             {
@@ -131,7 +139,7 @@ namespace Make.RPCServer.Adapt
                         List<User> users = new List<User>(host.Squad.Items);
                         foreach (User item in host.Squad.Items)
                         {
-                            Core.UserRequest.RefreshSquad(item,users);
+                            Core.ReadyRequest.RefreshSquad(item,users);
                         }
                         return users;
                     }
@@ -141,32 +149,36 @@ namespace Make.RPCServer.Adapt
             }
             else return null;
         }
-        public static bool InviteSquad(User user,long id)
+        [RPCMethod]
+        public bool InviteSquad(User user,long id)
         {
             if(user.Squad != null)
             {
                 if (user.GetToken(id, out User invited))
                 {
-                    Core.UserRequest.InviteSquad(invited, user, user.Squad.SecretKey);
+                    Core.ReadyRequest.InviteSquad(invited, user, user.Squad.SecretKey);
                     return true;
                 }
                 else return false;
             }
             else return false;
         }
-
-        public static bool StartMatch(User user)
+        [RPCMethod]
+        public void StartMatch(User user)
         {
             if (user.Squad != null)
             {
-                if(user.Squad.Captain == user && user.Squad.RoomType == Room.RoomType.Solo)
+                if(user.Squad.Captain == user && user.Squad.RoomType == Room.RoomType.Round_Solo)
                 {
-                    Core.SoloMatchSystem.Enter(user.Squad);
-                    return true;
+                    if (Core.SoloMatchSystem.Enter(user.Squad))
+                    {
+                        foreach (User player in user.Squad.Items)
+                        {
+                            Core.ReadyRequest.StartMatch(player);
+                        }
+                    }
                 }
-                else return false;
             }
-            else return false;
         }
     }
 }
