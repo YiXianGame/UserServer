@@ -102,7 +102,7 @@ namespace Material.RPCServer.TCP_Async_Event
                                 Console.WriteLine("--------------------------------------------------");
 #endif
                                 request.Params[0] = token;
-                                method.Invoke(null, request.Params);
+                                method.Invoke(proxy.Instance, request.Params);
                             }
                         }
                         readerIndex = needRemain + readerIndex;
