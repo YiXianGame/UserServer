@@ -1,9 +1,6 @@
-﻿using Make.Model;
-using Material.Entity;
+﻿using Material.Entity;
 using Material.Entity.Match;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Make.BLL
 {
@@ -11,7 +8,7 @@ namespace Make.BLL
     {
         public static void SoloGroupMatchSystem_MatchSuccessEvent(List<TeamGroup> teamGroups)
         {
-            foreach(TeamGroup teams in teamGroups)
+            foreach (TeamGroup teams in teamGroups)
             {
                 if (teams.Items.Count == 2)
                 {

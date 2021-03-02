@@ -1,5 +1,4 @@
-﻿using Make.Model;
-using Make.RPCClient.Request;
+﻿using Make.RPCClient.Request;
 using Make.RPCServer.Adapt;
 using Make.RPCServer.Request;
 using Material.Entity;
@@ -21,8 +20,8 @@ namespace Make.BLL
             Redis redis = new Redis("127.0.0.1:6379");
             MySQL mySQL = new MySQL("127.0.0.1", "3306", "yixian", "root", "root");
             Core.Repository = new Model.Repository(redis, mySQL);
-            CoreInit(UserServerConfig.UserServerCategory.StandardServer,PlayerServerConfig.PlayerServerCategory.StandardServer);
-            Core.SoloMatchSystem.MatchPiplineOut += Core.SoloGroupMatchSystem.PiplineIn;
+            CoreInit(UserServerConfig.UserServerCategory.StandardServer, PlayerServerConfig.PlayerServerCategory.StandardServer);
+            Core.SoloMatchSystem.MatchPipelineOut += Core.SoloGroupMatchSystem.PiplineIn;
             Core.SoloGroupMatchSystem.MatchSuccessEvent += MatchSystemHelper.SoloGroupMatchSystem_MatchSuccessEvent;
 
             #region --RPCServer--
@@ -40,14 +39,14 @@ namespace Make.BLL
             serverType.Add<List<Friend>>("friends");
             serverType.Add<List<User>>("users");
             //适配Server远程客户端服务
-            RPCAdaptFactory.Register(new UserAdapt(),"UserServer", "192.168.0.105", "28015", serverType);
-            RPCAdaptFactory.Register(new SkillCardAdapt(),"SkillCardServer", "192.168.0.105", "28015", serverType);
+            RPCAdaptFactory.Register(new UserAdapt(), "UserServer", "192.168.80.1", "28015", serverType);
+            RPCAdaptFactory.Register(new SkillCardAdapt(), "SkillCardServer", "192.168.80.1", "28015", serverType);
             //注册Server远程服务
-            Core.UserRequest = RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.0.105", "28015", serverType);
-            Core.SkillCardRequest = RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.0.105", "28015", serverType);
-            Core.ReadyRequest = RPCRequestProxyFactory.Register<ReadyRequest>("ReadyClient", "192.168.0.105", "28015", serverType);
+            Core.UserRequest = RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.80.1", "28015", serverType);
+            Core.SkillCardRequest = RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.80.1", "28015", serverType);
+            Core.ReadyRequest = RPCRequestProxyFactory.Register<ReadyRequest>("ReadyClient", "192.168.80.1", "28015", serverType);
             //启动Server服务
-            RPCNetServerFactory.StartServer("192.168.0.105", "28015", () => new User());
+            RPCNetServerFactory.StartServer("192.168.80.1", "28015", () => new User());
             #endregion
 
             #region --RPCClient--
@@ -64,14 +63,14 @@ namespace Make.BLL
             clientType.Add<List<Friend>>("friends");
             clientType.Add<List<User>>("users");
             //注册Client远程服务
-            Core.PlayerServerRequest = Material.RPCClient.RPCRequestProxyFactory.Register<PlayerServerRequest>("PlayerServer", "192.168.0.105", "28016", clientType);
+            Core.PlayerServerRequest = Material.RPCClient.RPCRequestProxyFactory.Register<PlayerServerRequest>("PlayerServer", "192.168.80.1", "28016", clientType);
             //启动Client服务
-            //RPCNetClientFactory.StartClient("192.168.0.105", "28015");
+            //RPCNetClientFactory.StartClient("192.168.80.1", "28015");
             #endregion
             Random random = new Random();
             for (int i = 0; i < 1; i++)
             {
-                Squad squad = new Squad(Material.Utils.SecretKey.Generate(10),Material.Entity.Game.Room.RoomType.Round_Solo);
+                Squad squad = new Squad(Material.Utils.SecretKey.Generate(10), Material.Entity.Game.Room.RoomType.Round_Solo);
                 for (int j = 0; j < 1; j++)
                 {
                     User user = new User();
@@ -83,7 +82,7 @@ namespace Make.BLL
                 }
                 Core.SoloMatchSystem.Enter(squad);
             }
-            Core.SoloMatchSystem.StartPolling(0,5000);
+            Core.SoloMatchSystem.StartPolling(0, 5000);
             SkillCardInit();
             AdventuresInit();
             Console.WriteLine("Initialization Success!");
@@ -107,7 +106,7 @@ namespace Make.BLL
                 }
             }
             config.PlayerServerConfig = await Core.Repository.ConfigRepository.QueryPlayerServerConfig(playerServerCategory);
-            if(config.PlayerServerConfig == null)
+            if (config.PlayerServerConfig == null)
             {
                 Console.WriteLine($"Core Load Fail! Can not Find {playerServerCategory}");
                 return;

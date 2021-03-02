@@ -24,7 +24,7 @@ namespace Make.Model
          *  MatchSystem<TeamGroup,Team> soloGroupMatchSystem = new MatchSystem<TeamGroup, Team>(12,12);
          *  泛型第一个为父亲容器，第二个为容器子项
          * 
-         *  通道流：A.MatchSystem.MatchPiplineOut += B.MatchSystem.PiplineIn;
+         *  通道流：A.MatchSystem.MatchPipelineOut += B.MatchSystem.PiplineIn;
          *  此通道流将从A流向B，B无需增加时间轮询.
          *  
          *  2021.2.22 代码性能实测 1-4人 5人队10人组,Rank全匹配: 100W 3000ms 
@@ -32,13 +32,13 @@ namespace Make.Model
          */
 
         #region --委托--
-        public delegate bool MatchPiplineDelegate(List<T> teamGroups);
+        public delegate bool MatchPipelineDelegate(List<T> teamGroups);
         public delegate void MatchSuccessDelegate(List<T> teamGroups);
         public delegate void MatchFailDelegate(T team);
         #endregion
 
         #region --事件--
-        public event MatchPiplineDelegate MatchPiplineOut;
+        public event MatchPipelineDelegate MatchPipelineOut;
         public event MatchSuccessDelegate MatchSuccessEvent;
         public event MatchFailDelegate MatchFailEvent;
         #endregion
@@ -265,7 +265,7 @@ namespace Make.Model
             Console.WriteLine($"{typeof(T)}-总耗时:{end - now}毫秒");
 #endif
             if (MatchSuccessEvent != null) MatchSuccessEvent(SuccessPool);
-            if (MatchPiplineOut != null) MatchPiplineOut(SuccessPool);
+            if (MatchPipelineOut != null) MatchPipelineOut(SuccessPool);
             SuccessPool = null;
 
             Monitor.Exit(teamsPool);
