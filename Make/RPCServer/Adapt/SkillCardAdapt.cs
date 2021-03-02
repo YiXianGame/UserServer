@@ -7,7 +7,7 @@ namespace Make.RPCServer.Adapt
 {
     public class SkillCardAdapt
     {
-        [RPCMethod]
+        [RPCAdapt]
         public List<SkillCard> Sync(User user, long timestamp)
         {
             if (Core.Config.SkillCardUpdate.Equals(timestamp))
@@ -20,7 +20,7 @@ namespace Make.RPCServer.Adapt
                 return new List<SkillCard>(Core.SkillCardByID.Values);
             }
         }
-        [RPCMethod]
+        [RPCAdapt]
         public List<SkillCard> Query(User user, List<long> skillCardIds)
         {
             List<SkillCard> skillCards = new List<SkillCard>();

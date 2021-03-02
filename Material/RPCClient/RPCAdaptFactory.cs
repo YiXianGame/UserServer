@@ -57,5 +57,9 @@ namespace Material.RPCClient
         {
             services.Remove(new Tuple<string, string, string>(servicename,hostname,port), out RPCAdaptProxy value);
         }
+        public static bool Get(string servicename, string hostname, string port ,out RPCAdaptProxy proxy)
+        {
+            return services.TryGetValue(new Tuple<string, string, string>(servicename, hostname, port), out proxy);
+        }
     }
 }

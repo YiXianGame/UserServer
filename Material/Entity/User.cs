@@ -1,10 +1,8 @@
-﻿using Make.Model;
-using Material.Entity.Match;
-using Material.Interface;
+﻿using Material.Entity.Match;
+using Material.Model.MatchSystem.Interface;
 using Material.RPCServer.TCP_Async_Event;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
 using System.Collections.Generic;
 
 namespace Material.Entity
@@ -102,6 +100,8 @@ namespace Material.Entity
         private Squad squad;
         private Team team;
         private TeamGroup teamGroup;
+        private bool confirm;
+        private CardGroup cardGroup;
         #endregion
 
         #region --Cache属性--
@@ -118,7 +118,9 @@ namespace Material.Entity
         [JsonIgnore]
         public TeamGroup TeamGroup { get => teamGroup; set => teamGroup = value; }
         [JsonIgnore]
-        public int Rank { get => lv; set => lv = value; }
+        public int SumRank { get => lv; set => lv = value; }
+        public CardGroup CardGroup { get => cardGroup; set => cardGroup = value; }
+        public bool Confirm { get => confirm; set => confirm = value; }
         #endregion
 
         #region --方法--

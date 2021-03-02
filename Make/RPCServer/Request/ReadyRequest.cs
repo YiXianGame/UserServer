@@ -8,15 +8,17 @@ namespace Make.RPCServer.Request
 {
     public interface ReadyRequest
     {
-        [RPCMethod]
+        [RPCRequest]
         public void StartMatch(User user);
-        [RPCMethod]
+        [RPCRequest]
         public void MatchSuccess(User user, List<User> group_1, List<User> group_2, int idx, string hostname, string port, string secretKey);
-        [RPCMethod]
+        [RPCRequest]
         public void RefreshSquad(User user, List<User> users);
-        [RPCMethod]
+        [RPCRequest]
         public void InviteSquad(User user, User inviter, string secretKey);
-        [RPCMethod]
+        [RPCRequest]
         public void CancelMatch(User user);
+        [RPCRequest]
+        public void SwitchCardGroup(long id,bool isTeammates,CardGroup cardGroup);
     }
 }

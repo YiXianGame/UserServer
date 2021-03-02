@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Material.Interface
+namespace Material.Model.MatchSystem.Interface
 {
     public interface IMatchSystemItem
     {
-        public int Rank { get; set; }
+        public int SumRank { get; set; }
         public int Count { get; set; }
         public long StartMatchTime { get; set; }
         public int AverageRank { get; set; }

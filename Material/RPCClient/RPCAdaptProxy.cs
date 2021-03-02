@@ -1,4 +1,4 @@
-﻿using Material.RPCC.Annotation;
+﻿using Material.RPCClient.Annotation;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -25,7 +25,7 @@ namespace Material.RPCClient
             StringBuilder methodid = new StringBuilder();
             foreach (MethodInfo method in typeof(T).GetMethods())
             {
-                RPCMethod rpcAttribute = method.GetCustomAttribute<RPCMethod>();
+                RPCAdapt rpcAttribute = method.GetCustomAttribute<RPCAdapt>();
                 if (rpcAttribute == null)
                 {
                     if (!method.IsAbstract)

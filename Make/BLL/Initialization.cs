@@ -38,9 +38,11 @@ namespace Make.BLL
             serverType.Add<List<CardGroup>>("cardGroups");
             serverType.Add<List<Friend>>("friends");
             serverType.Add<List<User>>("users");
+            serverType.Add<CardGroup>("cardGroup");
             //适配Server远程客户端服务
             RPCAdaptFactory.Register(new UserAdapt(), "UserServer", "192.168.80.1", "28015", serverType);
             RPCAdaptFactory.Register(new SkillCardAdapt(), "SkillCardServer", "192.168.80.1", "28015", serverType);
+            RPCAdaptFactory.Register(new ReadyAdapt(), "ReadyServer", "192.168.80.1", "28015", serverType);
             //注册Server远程服务
             Core.UserRequest = RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.80.1", "28015", serverType);
             Core.SkillCardRequest = RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.80.1", "28015", serverType);
@@ -74,8 +76,8 @@ namespace Make.BLL
                 for (int j = 0; j < 1; j++)
                 {
                     User user = new User();
-                    user.Rank = random.Next(1, 9);
-                    user.AverageRank = user.Rank;
+                    user.SumRank = random.Next(1, 9);
+                    user.AverageRank = user.SumRank;
                     user.Count = 1;
                     user.StartMatchTime = Material.Utils.TimeStamp.Now();
                     squad.Add(user);

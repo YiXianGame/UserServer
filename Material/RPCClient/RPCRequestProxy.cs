@@ -1,4 +1,4 @@
-﻿using Material.RPCC.Annotation;
+﻿using Material.RPCClient.Annotation;
 using Material.RPCClient.TCP_Async_Event;
 using Newtonsoft.Json;
 using System;
@@ -34,7 +34,7 @@ namespace Material.RPCClient
 
         protected override object Invoke(MethodInfo targetMethod, object[] args)
         {
-            RPCMethod rpcAttribute = targetMethod.GetCustomAttribute<RPCMethod>();
+            RPCRequest rpcAttribute = targetMethod.GetCustomAttribute<RPCRequest>();
             if(rpcAttribute != null)
             {
                 try

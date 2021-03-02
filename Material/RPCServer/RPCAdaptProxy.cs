@@ -1,4 +1,5 @@
 ﻿using Material.RPCServer.Annotation;
+using Material.RPCServer.TCP_Async_Event;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -24,7 +25,7 @@ namespace Material.RPCServer
             StringBuilder methodid = new StringBuilder();
             foreach (MethodInfo method in typeof(T).GetMethods())
             {
-                RPCMethod rpcAttribute = method.GetCustomAttribute<RPCMethod>();
+                RPCAdapt rpcAttribute = method.GetCustomAttribute<RPCAdapt>();
                 if (rpcAttribute != null)
                 {
                     if (!method.IsAbstract)
@@ -33,16 +34,20 @@ namespace Material.RPCServer
                         ParameterInfo[] parameters = method.GetParameters();
                         if (rpcAttribute.Paramters == null)
                         {
-                            //跳过第一个参数Token，本来打算让客户端加上这个参数，但是分析后觉得代码不够友好，还节省资源.
                             for (int i = 1; i < parameters.Length; i++)
                             {
+                                if(i == 1 && (parameters[i].ParameterType.IsAssignableFrom(typeof(BaseUserToken))))
+                                {
+                                    throw new RPCException($"{method.Name}方法中的首参数并非继承于BaseUserToken!");
+                                }
+
                                 try
                                 {
                                     methodid.Append("-" + type.AbstractName[parameters[i].ParameterType]);
                                 }
                                 catch (Exception)
                                 {
-                                    throw new RPCException($"C#中的{parameters[i].ParameterType}类型参数尚未注册");
+                                    throw new RPCException($"{method.Name}方法中的{parameters[i].ParameterType}类型参数尚未注册");
                                 }
                             }
                         }

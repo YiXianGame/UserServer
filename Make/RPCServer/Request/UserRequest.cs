@@ -7,9 +7,9 @@ namespace Make.RPCServer.Request
 {
     public interface UserRequest
     {
-        [RPCMethod]
+        [RPCRequest]
         public void SetCardRepositoryUpdate(User user, long timestamp);
-        [RPCMethod]
+        [RPCRequest]
         public void SetFriendUpdate(User user, long timestamp);
         
 

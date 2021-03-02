@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Material.RPCServer.Annotation
+namespace Material.RPCClient.Annotation
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class RPCMethod : Attribute
+    public class RPCAdapt : Attribute
     {
         private string paramters = null;
 

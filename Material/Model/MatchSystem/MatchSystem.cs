@@ -1,13 +1,13 @@
 ﻿#define Debug
 using Material.ExceptionModel;
-using Material.Interface;
+using Material.Model.MatchSystem.Interface;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Make.Model
+namespace Material.Model.MatchSystem
 {
-    public class MatchSystem<T,R> where T:IMatchSystemTeam<R>,new() where R:IMatchSystemItem
+    public class MatchSystem<T,R> where R:IMatchSystemTeam<T>,new() where T:IMatchSystemItem
     {
         /*  将所有组进行对抗配对
          *  参考 https://blog.csdn.net/best789248/article/details/78429538
@@ -32,9 +32,9 @@ namespace Make.Model
          */
 
         #region --委托--
-        public delegate bool MatchPipelineDelegate(List<T> teamGroups);
-        public delegate void MatchSuccessDelegate(List<T> teamGroups);
-        public delegate void MatchFailDelegate(T team);
+        public delegate bool MatchPipelineDelegate(List<R> teamGroups);
+        public delegate void MatchSuccessDelegate(List<R> teamGroups);
+        public delegate void MatchFailDelegate(R team);
         #endregion
 
         #region --事件--
@@ -45,8 +45,8 @@ namespace Make.Model
 
         #region --字段--
         private Timer timer;
-        private SortedDictionary<int, Dictionary<int, LinkedList<R>>> teamsPool = new SortedDictionary<int, Dictionary<int, LinkedList<R>>>();
-        private List<T> SuccessPool;
+        private SortedDictionary<int, Dictionary<int, LinkedList<T>>> teamsPool = new SortedDictionary<int, Dictionary<int, LinkedList<T>>>();
+        private List<R> SuccessPool;
         private int min = 0;
         private int max = 0;
         #endregion
@@ -66,38 +66,38 @@ namespace Make.Model
             return timer;
         }
 
-        public bool Enter(R item)
+        public bool Enter(T item)
         {
             lock (teamsPool)
             {
-                if (!teamsPool.TryGetValue(item.Count, out Dictionary<int, LinkedList<R>> rankTeams))
+                if (!teamsPool.TryGetValue(item.Count, out Dictionary<int, LinkedList<T>> rankTeams))
                 {
-                    rankTeams = new Dictionary<int, LinkedList<R>>();
+                    rankTeams = new Dictionary<int, LinkedList<T>>();
                     if (!teamsPool.TryAdd(item.Count, rankTeams))return false;
                 }
-                if (!rankTeams.TryGetValue(item.AverageRank, out LinkedList<R> timeTeams))
+                if (!rankTeams.TryGetValue(item.AverageRank, out LinkedList<T> timeTeams))
                 {
-                    timeTeams = new LinkedList<R>();
+                    timeTeams = new LinkedList<T>();
                     if (!rankTeams.TryAdd(item.AverageRank,timeTeams))return false;
                 }
                 timeTeams.AddLast(item);
                 return true;
             }
         }
-        public bool Enter(List<R> teams)
+        public bool Enter(List<T> teams)
         {
             lock (teamsPool)
             {
-                foreach(R item in teams)
+                foreach(T item in teams)
                 {
-                    if (!teamsPool.TryGetValue(item.Count, out Dictionary<int, LinkedList<R>> rankTeams))
+                    if (!teamsPool.TryGetValue(item.Count, out Dictionary<int, LinkedList<T>> rankTeams))
                     {
-                        rankTeams = new Dictionary<int, LinkedList<R>>();
+                        rankTeams = new Dictionary<int, LinkedList<T>>();
                         if (!teamsPool.TryAdd(item.Count, rankTeams)) return false;
                     }
-                    if (!rankTeams.TryGetValue(item.AverageRank, out LinkedList<R> timeTeams))
+                    if (!rankTeams.TryGetValue(item.AverageRank, out LinkedList<T> timeTeams))
                     {
-                        timeTeams = new LinkedList<R>();
+                        timeTeams = new LinkedList<T>();
                         if (!rankTeams.TryAdd(item.AverageRank, timeTeams)) return false;
                     }
                     timeTeams.AddLast(item);
@@ -105,7 +105,7 @@ namespace Make.Model
                 return true;
             }
         }
-        public bool PiplineIn(List<R> teams)
+        public bool PiplineIn(List<T> teams)
         {
             if (Enter(teams))
             {
@@ -122,16 +122,16 @@ namespace Make.Model
             //获取不到锁本次就不执行了，防止背压的产生
             if(!Monitor.TryEnter(teamsPool))return;
 
-            SuccessPool = new List<T>();
+            SuccessPool = new List<R>();
             long now = Material.Utils.TimeStamp.Now();
 #if Debug
             Console.WriteLine($"{typeof(T)}开始匹配");
             int teams_sum = 0, item_sum = 0;
-            foreach (Dictionary<int, LinkedList<R>> linkTeams in teamsPool.Values)
+            foreach (Dictionary<int, LinkedList<T>> linkTeams in teamsPool.Values)
             {
-                foreach (LinkedList<R> timeTeams in linkTeams.Values)
+                foreach (LinkedList<T> timeTeams in linkTeams.Values)
                 {
-                    foreach (R item in timeTeams)
+                    foreach (T item in timeTeams)
                     {
                         teams_sum++;
                         item_sum += item.Count;
@@ -141,11 +141,11 @@ namespace Make.Model
             Console.WriteLine($"{typeof(T)}深度组团开始,本次有{teams_sum}支队伍，{item_sum}个待匹配项");
             foreach (int key in teamsPool.Keys)
             {
-                if (teamsPool.TryGetValue(key, out Dictionary<int, LinkedList<R>> rankTeams))
+                if (teamsPool.TryGetValue(key, out Dictionary<int, LinkedList<T>> rankTeams))
                 {
                     foreach (int second_key in rankTeams.Keys)
                     {
-                        if (rankTeams.TryGetValue(second_key, out LinkedList<R> timeTeams))
+                        if (rankTeams.TryGetValue(second_key, out LinkedList<T> timeTeams))
                         {
                             Console.WriteLine($"{typeof(T)}-{key}队 Rank:{second_key} 数量:{timeTeams.Count}");
                         }
@@ -153,15 +153,15 @@ namespace Make.Model
                 }
             }
 #endif
-            foreach (Dictionary<int, LinkedList<R>> rankTeams in teamsPool.Values)
+            foreach (Dictionary<int, LinkedList<T>> rankTeams in teamsPool.Values)
             {
-                foreach (LinkedList<R> teams in rankTeams.Values)
+                foreach (LinkedList<T> teams in rankTeams.Values)
                 {
                     while (teams.First != null)
                     {
-                        R item = teams.First.Value;
+                        T item = teams.First.Value;
                         teams.RemoveFirst();
-                        T container = new T();
+                        R container = new R();
                         container.Add(item);
                         //判断是否等待时间超过1小时,有一种极端的情况，已经超时，但是恰好被选中了，即被标记了true
                         if ((now - item.StartMatchTime) >= 60 * 60 * 1000)
@@ -194,11 +194,11 @@ namespace Make.Model
             Console.WriteLine($"{typeof(T)}开始清理队伍池数据:" + teamsPool.Count + "队");
             foreach (int key in teamsPool.Keys)
             {
-                if (teamsPool.TryGetValue(key, out Dictionary<int, LinkedList<R>> rankTeams))
+                if (teamsPool.TryGetValue(key, out Dictionary<int, LinkedList<T>> rankTeams))
                 {
                     foreach (int second_key in rankTeams.Keys)
                     {
-                        if (rankTeams.TryGetValue(second_key, out LinkedList<R> timeTeams))
+                        if (rankTeams.TryGetValue(second_key, out LinkedList<T> timeTeams))
                         {
                             Console.WriteLine($"{typeof(T)}-{key}队 Rank:{second_key} 数量:{timeTeams.Count}");
                         }
@@ -210,11 +210,11 @@ namespace Make.Model
             List<int> clearTeamspool = new List<int>();
             foreach (int key in teamsPool.Keys)
             {
-                if (teamsPool.TryGetValue(key, out Dictionary<int, LinkedList<R>> rankTeams))
+                if (teamsPool.TryGetValue(key, out Dictionary<int, LinkedList<T>> rankTeams))
                 {
                     foreach (int second_key in rankTeams.Keys)
                     {
-                        if (rankTeams.TryGetValue(second_key, out LinkedList<R> timeTeams))
+                        if (rankTeams.TryGetValue(second_key, out LinkedList<T> timeTeams))
                         {
                             if (timeTeams.Count == 0)
                             {
@@ -236,11 +236,11 @@ namespace Make.Model
             Console.WriteLine($"{typeof(T)}清理队伍池数据完毕:" + teamsPool.Count + "队");
             foreach (int key in teamsPool.Keys)
             {
-                if (teamsPool.TryGetValue(key, out Dictionary<int, LinkedList<R>> rankTeams))
+                if (teamsPool.TryGetValue(key, out Dictionary<int, LinkedList<T>> rankTeams))
                 {
                     foreach (int second_key in rankTeams.Keys)
                     {
-                        if (rankTeams.TryGetValue(second_key, out LinkedList<R> timeTeams))
+                        if (rankTeams.TryGetValue(second_key, out LinkedList<T> timeTeams))
                         {
                             Console.WriteLine($"{typeof(T)}-{key}队 Rank:{second_key} 数量:{timeTeams.Count}");
                         }
@@ -249,11 +249,11 @@ namespace Make.Model
             }
             teams_sum = 0;
             item_sum = 0;
-            foreach (Dictionary<int, LinkedList<R>> rankTeams in teamsPool.Values)
+            foreach (Dictionary<int, LinkedList<T>> rankTeams in teamsPool.Values)
             {
-                foreach (LinkedList<R> timeTeams in rankTeams.Values)
+                foreach (LinkedList<T> timeTeams in rankTeams.Values)
                 {
-                    foreach (R team in timeTeams)
+                    foreach (T team in timeTeams)
                     {
                         teams_sum++;
                         item_sum += team.Count;
@@ -270,7 +270,7 @@ namespace Make.Model
 
             Monitor.Exit(teamsPool);
         }
-        private bool DFSMatch(T container)
+        private bool DFSMatch(R container)
         {
             if(container.Count == 7)
             {
@@ -297,16 +297,16 @@ namespace Make.Model
             for (int i = max - container.Count; i > 0; i--)
             {
                 //得到这个人数的所有Rank队伍
-                if (teamsPool.TryGetValue(i, out Dictionary<int, LinkedList<R>> rankTeams))
+                if (teamsPool.TryGetValue(i, out Dictionary<int, LinkedList<T>> rankTeams))
                 {
                     for (int searchRankUp = middle, searchRankDown = middle; searchRankUp <= rank_max || searchRankDown >= rank_min; searchRankUp++, searchRankDown--)
                     {
-                        LinkedList<R> teams;
+                        LinkedList<T> teams;
                         if ((rankTeams.TryGetValue(searchRankUp, out teams)) || (rankTeams.TryGetValue(searchRankDown, out teams)))
                         {
                             if(teams.First != null)
                             {
-                                R other = teams.First.Value;
+                                T other = teams.First.Value;
                                 teams.RemoveFirst();
                                 container.Add(other);
                                 //可以做一些if判断

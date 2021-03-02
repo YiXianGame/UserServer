@@ -23,7 +23,7 @@ namespace Material.RPCServer
 
         protected override object Invoke(MethodInfo targetMethod, object[] args)
         {
-            RPCMethod rpcAttribute = targetMethod.GetCustomAttribute<RPCMethod>();
+            RPCRequest rpcAttribute = targetMethod.GetCustomAttribute<RPCRequest>();
             if (rpcAttribute != null)
             {
                 //这里要连接字符串，发现StringBuilder效率高一些.
