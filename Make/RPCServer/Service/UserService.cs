@@ -1,24 +1,22 @@
-﻿using Make.Model;
-using Material.Entity;
-using Material.Entity.Game;
+﻿using Material.Entity;
 using Material.Entity.Match;
 using Material.RPCServer.Annotation;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Make.RPCServer.Adapt
+namespace Make.RPCServer.Service
 {
-    public class UserAdapt
+    public class UserService
     {
-        [RPCAdapt]
+        [RPCService]
         public long RegisterUser(User user, string username, string nickname, string password)
         {
             Task<long> task = Core.Repository.UserRepository.Register(username, nickname, password);
             task.Wait();
             return task.Result;
         }
-        [RPCAdapt]
+        [RPCService]
         public long LoginUser(User user, long id, string username, string password)
         {
             Task<User> task = Core.Repository.UserRepository.Login(id, username, password);
@@ -35,14 +33,14 @@ namespace Make.RPCServer.Adapt
             }
             return task.Result.Id;
         }
-        [RPCAdapt]
+        [RPCService]
         public User Sync_Attribute(User user, long date)
         {
             Task<User> task = Core.Repository.UserRepository.Sync_Attribute(user.Id, date);
             task.Wait();
             return task.Result;
         }
-        [RPCAdapt]
+        [RPCService]
         public List<User> Sync_CardGroups(User user, List<User> users)
         {
             List<User> result = new List<User>();
@@ -54,7 +52,7 @@ namespace Make.RPCServer.Adapt
             }
             return result;
         }
-        [RPCAdapt]
+        [RPCService]
         public List<User> Sync_Attribute(User user, List<User> dates)
         {
             List<User> users = new List<User>();
@@ -66,7 +64,7 @@ namespace Make.RPCServer.Adapt
             }
             return users;
         }
-        [RPCAdapt]
+        [RPCService]
         public List<Friend> Sync_Friend(User user, long date)
         {
             Task<List<Friend>> task = Core.Repository.UserRepository.Sync_Friend(user.Id, date);
@@ -77,21 +75,21 @@ namespace Make.RPCServer.Adapt
             if (task.Result != null) Core.UserRequest.SetFriendUpdate(user, update_task.Result);
             return task.Result;
         }
-        [RPCAdapt]
+        [RPCService]
         public long Update_CardGroups(User user, User userWithCardGroups)
         {
             Task<long> task = Core.Repository.UserRepository.Update_CardGroups(user.Id, userWithCardGroups);
             task.Wait();
             return task.Result;
         }
-        [RPCAdapt]
+        [RPCService]
         public User Query_UserAttributeById(User user, long id)
         {
             Task<User> task = Core.Repository.UserRepository.Query_AttributeById(id);
             task.Wait();
             return task.Result;
         }
-        [RPCAdapt]
+        [RPCService]
         public List<CardItem> Sync_CardRepository(User user, long id, long date)
         {
             Task<List<CardItem>> task = Core.Repository.UserRepository.Sync_CardRepository(id, date);
@@ -104,7 +102,7 @@ namespace Make.RPCServer.Adapt
             }
             return task.Result;
         }
-        [RPCAdapt]
+        [RPCService]
         public string CreateSquad(User user, string roomType)
         {
             if (Enum.TryParse(roomType, true, out Room.RoomType type))

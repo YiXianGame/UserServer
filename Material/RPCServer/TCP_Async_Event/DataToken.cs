@@ -69,7 +69,7 @@ namespace Material.RPCServer.TCP_Async_Event
                         //从客户端发回来的，只可能是请求，绝对不会是响应，因为服务器绝对不会因为一个客户进行一个线程等待.
                         ClientRequestModel request = JsonConvert.DeserializeObject<ClientRequestModel>(content.GetString(0,content.WriterIndex, Encoding.UTF8));
                         content.ResetWriterIndex();
-                        if(!RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, Hostname, Port), out RPCAdaptProxy proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
+                        if(!RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, Hostname, Port), out RPCService proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
                         {   
 #if DEBUG
                             Console.WriteLine("------------------未找到该方法--------------------");

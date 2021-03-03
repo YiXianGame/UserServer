@@ -3,11 +3,11 @@ using Material.Entity;
 using Material.RPCServer.Annotation;
 using System.Collections.Generic;
 
-namespace Make.RPCServer.Adapt
+namespace Make.RPCServer.Service
 {
-    public class SkillCardAdapt
+    public class SkillCardService
     {
-        [RPCAdapt]
+        [RPCService]
         public List<SkillCard> Sync(User user, long timestamp)
         {
             if (Core.Config.SkillCardUpdate.Equals(timestamp))
@@ -20,7 +20,7 @@ namespace Make.RPCServer.Adapt
                 return new List<SkillCard>(Core.SkillCardByID.Values);
             }
         }
-        [RPCAdapt]
+        [RPCService]
         public List<SkillCard> Query(User user, List<long> skillCardIds)
         {
             List<SkillCard> skillCards = new List<SkillCard>();

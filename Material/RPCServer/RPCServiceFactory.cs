@@ -4,9 +4,9 @@ using Material.RPCServer.TCP_Async_Event;
 
 namespace Material.RPCServer
 {
-    public class RPCAdaptFactory
+    public class RPCServiceFactory
     { 
-        public static ConcurrentDictionary<Tuple<string, string, string>, RPCAdaptProxy> services { get; } = new ConcurrentDictionary<Tuple<string, string, string>, RPCAdaptProxy>();
+        public static ConcurrentDictionary<Tuple<string, string, string>, RPCService> services { get; } = new ConcurrentDictionary<Tuple<string, string, string>, RPCService>();
 
         public static void Register<R>(R instance,string servicename, string hostname, string port, RPCType type) where R : class
         {
@@ -35,14 +35,14 @@ namespace Material.RPCServer
                 throw new ArgumentNullException(nameof(type));
             }
 
-            RPCAdaptProxy service = null;
+            RPCService service = null;
             Tuple<string, string, string> key = new Tuple<string, string, string>(servicename, hostname, port.ToString());
             services.TryGetValue(key, out service);
             if (service == null)
             {
                 try
                 {
-                    service = new RPCAdaptProxy();
+                    service = new RPCService();
                     service.Register(instance,type);
                     services[key] = service;
                     Console.WriteLine($"{servicename}-{hostname}-{port} Load Success!");
@@ -65,10 +65,10 @@ namespace Material.RPCServer
 
         public static void Destory(string servicename, string hostname, string port)
         {
-            services.TryRemove(new Tuple<string, string, string>(servicename,hostname,port), out RPCAdaptProxy value);
+            services.TryRemove(new Tuple<string, string, string>(servicename,hostname,port), out RPCService value);
         }
 
-        public static bool Get(string servicename, string hostname, string port, out RPCAdaptProxy proxy)
+        public static bool Get(string servicename, string hostname, string port, out RPCService proxy)
         {
             return services.TryGetValue(new Tuple<string, string, string>(servicename, hostname, port), out proxy);
         }

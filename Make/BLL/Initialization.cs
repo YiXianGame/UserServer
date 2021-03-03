@@ -67,7 +67,7 @@ namespace Make.BLL
             //注册Client远程服务
             Core.PlayerServerRequest = Material.RPCClient.RPCRequestProxyFactory.Register<PlayerServerRequest>("PlayerServer", "192.168.80.1", "28016", clientType);
             //启动Client服务
-            //RPCNetClientFactory.StartClient("192.168.80.1", "28015");
+            Material.RPCClient.RPCNetClientFactory.StartClient("192.168.80.1", "28016");
             #endregion
             Random random = new Random();
             for (int i = 0; i < 1; i++)

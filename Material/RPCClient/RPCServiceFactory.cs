@@ -5,9 +5,9 @@ using System.Net.Sockets;
 
 namespace Material.RPCClient
 {
-    public class RPCAdaptFactory
+    public class RPCServiceFactory
     {
-        public static Dictionary<Tuple<string, string, string>, RPCAdaptProxy> services { get; } = new Dictionary<Tuple<string, string, string>, RPCAdaptProxy>();
+        public static Dictionary<Tuple<string, string, string>, RPCService> services { get; } = new Dictionary<Tuple<string, string, string>, RPCService>();
         public static void Register<T>(string servicename, string hostname, string port, RPCType type) where T : class
         {
             Register<T>(null, servicename, hostname, port, type);
@@ -33,7 +33,7 @@ namespace Material.RPCClient
             {
                 throw new ArgumentNullException(nameof(type));
             }
-            RPCAdaptProxy service = null;
+            RPCService service = null;
             Tuple<string, string, string> key = new Tuple<string, string, string>(servicename, hostname, port);
             services.TryGetValue(key,out service);
             if(service == null)
@@ -41,7 +41,7 @@ namespace Material.RPCClient
                 try
                 {
                     SocketClient socketClient = RPCNetClientFactory.GetClient(new Tuple<string, string>(hostname, port));
-                    service = new RPCAdaptProxy();
+                    service = new RPCService();
                     service.Register(instance,type);
                     services[key] = service;
                 }
@@ -55,9 +55,9 @@ namespace Material.RPCClient
 
         public static void Destory(string servicename, string hostname, string port)
         {
-            services.Remove(new Tuple<string, string, string>(servicename,hostname,port), out RPCAdaptProxy value);
+            services.Remove(new Tuple<string, string, string>(servicename,hostname,port), out RPCService value);
         }
-        public static bool Get(string servicename, string hostname, string port ,out RPCAdaptProxy proxy)
+        public static bool Get(string servicename, string hostname, string port ,out RPCService proxy)
         {
             return services.TryGetValue(new Tuple<string, string, string>(servicename, hostname, port), out proxy);
         }

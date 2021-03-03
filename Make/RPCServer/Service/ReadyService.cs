@@ -1,16 +1,14 @@
 ﻿using Material.Entity;
-using Material.Entity.Game;
 using Material.Entity.Match;
 using Material.RPCServer.Annotation;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-namespace Make.RPCServer.Adapt
+namespace Make.RPCServer.Service
 {
-    public class ReadyAdapt
+    public class ReadyService
     {
 
-        [RPCAdapt]
+        [RPCService]
         public List<User> EnterSquad(User user, long id, string secretKey)
         {
             if (user.GetToken(id, out User host))
@@ -39,7 +37,7 @@ namespace Make.RPCServer.Adapt
             }
             else return null;
         }
-        [RPCAdapt]
+        [RPCService]
         public bool InviteSquad(User user, long id)
         {
             if (user.Squad != null)
@@ -53,7 +51,7 @@ namespace Make.RPCServer.Adapt
             }
             else return false;
         }
-        [RPCAdapt]
+        [RPCService]
         public void StartMatch(User user)
         {
             if (user.Squad != null)
@@ -70,7 +68,7 @@ namespace Make.RPCServer.Adapt
                 }
             }
         }
-        [RPCAdapt]
+        [RPCService]
         public void SwitchCardGroup(User user,CardGroup cardGroup)
         {
             if (!user.Confirm && user.Squad != null && user.Team != null && user.TeamGroup != null)
@@ -92,28 +90,40 @@ namespace Make.RPCServer.Adapt
                 }
             }
         }
-        [RPCAdapt]
-        public void ConfirmCardGroup(User user)
+        [RPCService]
+        public bool ConfirmCardGroup(User user)
         {
             if (!user.Confirm && user.Squad != null && user.Team != null && user.TeamGroup != null)
             {
-                user.Confirm = true;
-                bool flag = true;
-                foreach (Team team in user.TeamGroup.Items)
+                if(user.CardGroup != null)
                 {
-                    foreach (Squad squad in team.Items)
+                    user.Confirm = true;
+                    ++user.TeamGroup.ConfirmCount;
+                    if (user.TeamGroup.ConfirmCount == user.TeamGroup.Count)
                     {
-                        foreach (User player in squad.Items)
+
+                        List<long> redTeam = new List<long>();
+                        List<long> blueTeam = new List<long>();
+                        int idx = 0;
+                        foreach (Team team in user.TeamGroup.Items)
                         {
-                            if (!player.Confirm) flag = false;
+                            foreach (Squad squad in team.Items)
+                            {
+                                foreach (User player in squad.Items)
+                                {
+                                    if (idx == 0) redTeam.Add(player.Id);
+                                    else blueTeam.Add(player.Id);
+                                }
+                            }
+                            ++idx;
                         }
+                        string secretKey = Core.PlayerServerRequest.CreateRoom(redTeam, blueTeam, user.Squad.RoomType);
+
                     }
                 }
-                if(flag)
-                {
-
-                }
+                return false;
             }
+            return false;
         }
     }
 }

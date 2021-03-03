@@ -3,7 +3,7 @@
 namespace Material.RPCClient.Annotation
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class RPCAdapt : Attribute
+    public class RPCService : Attribute
     {
         private string paramters = null;
 

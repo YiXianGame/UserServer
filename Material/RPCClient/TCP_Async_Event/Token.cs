@@ -65,7 +65,7 @@ namespace Material.RPCClient.TCP_Async_Event
                         if (pattern == 0)
                         {
                             ServerRequestModel request = JsonConvert.DeserializeObject<ServerRequestModel>(content.GetString(0, content.WriterIndex, Encoding.UTF8));
-                            if (!RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, hostname, port), out RPCAdaptProxy proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
+                            if (!RPCServiceFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, hostname, port), out RPCService proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
                             {
 #if DEBUG
                                 Console.WriteLine("------------------未找到该适配--------------------");

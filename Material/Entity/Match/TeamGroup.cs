@@ -5,6 +5,10 @@ namespace Material.Entity.Match
 {
     public class TeamGroup:Model.MatchSystem.Entity.BaseTeamGroup<Team>
     {
+        int confirmCount;
+
+        public int ConfirmCount { get => confirmCount; set => confirmCount = value; }
+
         public override bool Add(Team item)
         {
             if (base.Add(item))
