@@ -1,10 +1,8 @@
-﻿using Material.Entity.Game;
-using Material.Model.MatchSystem.Interface;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 
 namespace Material.Entity.Match
 {
-    public class Squad : Model.MatchSystem.Entity.BaseSquad<User>
+    public class MatchSquad : Model.MatchSystem.Entity.BaseSquad<User>
     {
         private string secretKey;
         private Room.RoomType roomType;
@@ -14,7 +12,7 @@ namespace Material.Entity.Match
 
         public Room.RoomType RoomType { get => roomType; set => roomType = value; }
         public User Captain { get => captain; set => captain = value; }
-        public Squad(string secretKey, Room.RoomType roomType)
+        public MatchSquad(string secretKey, Room.RoomType roomType)
         {
             this.startMatchTime = Material.Utils.TimeStamp.Now();
             this.secretKey = secretKey;

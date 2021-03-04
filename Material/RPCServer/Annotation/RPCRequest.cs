@@ -5,8 +5,8 @@ namespace Material.RPCServer.Annotation
     [AttributeUsage(AttributeTargets.Method)]
     public class RPCRequest : Attribute
     {
-        private string paramters = null;
+        private string[] paramters = null;
 
-        public string Paramters { get => paramters; set => paramters = value; }
+        public string[] Paramters { get => paramters; set => paramters = value; }
     }
 }

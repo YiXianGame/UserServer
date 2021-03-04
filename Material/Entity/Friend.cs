@@ -3,6 +3,7 @@ using Newtonsoft.Json.Converters;
 
 namespace Material.Entity
 {
+    [JsonObject(MemberSerialization.OptOut)]
     public class Friend
     {
         #region --Enum--

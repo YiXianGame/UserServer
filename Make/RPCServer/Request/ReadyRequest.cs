@@ -1,8 +1,7 @@
 ﻿using Material.Entity;
+using Material.Entity.Match;
 using Material.RPCServer.Annotation;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Make.RPCServer.Request
 {
@@ -11,7 +10,7 @@ namespace Make.RPCServer.Request
         [RPCRequest]
         public void StartMatch(User user);
         [RPCRequest]
-        public void MatchSuccess(User user, List<User> group_1, List<User> group_2, int idx, string hostname, string port, string secretKey);
+        public void MatchSuccess(User user, List<Team> teams);
         [RPCRequest]
         public void RefreshSquad(User user, List<User> users);
         [RPCRequest]
@@ -19,6 +18,8 @@ namespace Make.RPCServer.Request
         [RPCRequest]
         public void CancelMatch(User user);
         [RPCRequest]
-        public void SwitchCardGroup(long id,bool isTeammates,CardGroup cardGroup);
+        public void SwitchCardGroup(User user,long id,bool isTeammates,CardGroup cardGroup);
+        [RPCRequest]
+        public void ConnectPlayerServer(User user,string ip,string port,string roomId);
     }
 }

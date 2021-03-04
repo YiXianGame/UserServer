@@ -1,6 +1,6 @@
 ﻿using Make.RPCClient.Request;
-using Make.RPCServer.Adapt;
 using Make.RPCServer.Request;
+using Make.RPCServer.Service;
 using Material.Entity;
 using Material.Entity.Config;
 using Material.Entity.Match;
@@ -26,23 +26,24 @@ namespace Make.BLL
 
             #region --RPCServer--
             RPCType serverType = new RPCType();
-            serverType.Add<int>("int");
-            serverType.Add<string>("string");
-            serverType.Add<bool>("bool");
-            serverType.Add<long>("long");
-            serverType.Add<User>("user");
-            serverType.Add<SkillCard>("skillCard");
-            serverType.Add<List<long>>("longs");
-            serverType.Add<List<SkillCard>>("skillCards");
-            serverType.Add<List<CardItem>>("cardItem");
-            serverType.Add<List<CardGroup>>("cardGroups");
-            serverType.Add<List<Friend>>("friends");
-            serverType.Add<List<User>>("users");
-            serverType.Add<CardGroup>("cardGroup");
+            serverType.Add<int>("Int");
+            serverType.Add<string>("String");
+            serverType.Add<bool>("Bool");
+            serverType.Add<long>("Long");
+            serverType.Add<User>("User");
+            serverType.Add<CardGroup>("CardGroup");
+            serverType.Add<SkillCard>("SkillCard");
+            serverType.Add<List<long>>("List<long>");
+            serverType.Add<List<SkillCard>>("List<SkillCard>");
+            serverType.Add<List<CardItem>>("List<CardItem>");
+            serverType.Add<List<CardGroup>>("List<CardGroup>");
+            serverType.Add<List<Friend>>("List<Friend>");
+            serverType.Add<List<User>>("List<User>");
+            serverType.Add<List<Team>>("List<Team>");
             //适配Server远程客户端服务
-            RPCAdaptFactory.Register(new UserAdapt(), "UserServer", "192.168.80.1", "28015", serverType);
-            RPCAdaptFactory.Register(new SkillCardAdapt(), "SkillCardServer", "192.168.80.1", "28015", serverType);
-            RPCAdaptFactory.Register(new ReadyAdapt(), "ReadyServer", "192.168.80.1", "28015", serverType);
+            RPCServiceFactory.Register(new UserService(), "UserServer", "192.168.80.1", "28015", serverType);
+            RPCServiceFactory.Register(new SkillCardService(), "SkillCardServer", "192.168.80.1", "28015", serverType);
+            RPCServiceFactory.Register(new ReadyService(), "ReadyServer", "192.168.80.1", "28015", serverType);
             //注册Server远程服务
             Core.UserRequest = RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.80.1", "28015", serverType);
             Core.SkillCardRequest = RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.80.1", "28015", serverType);
@@ -53,17 +54,20 @@ namespace Make.BLL
 
             #region --RPCClient--
             Material.RPCClient.RPCType clientType = new Material.RPCClient.RPCType();
-            clientType.Add<int>("int");
-            clientType.Add<string>("string");
-            clientType.Add<bool>("bool");
-            clientType.Add<long>("long");
-            clientType.Add<User>("user");
-            clientType.Add<SkillCard>("skillCard");
-            clientType.Add<List<SkillCard>>("skillCards");
-            clientType.Add<List<CardItem>>("cardItem");
-            clientType.Add<List<CardGroup>>("cardGroups");
-            clientType.Add<List<Friend>>("friends");
-            clientType.Add<List<User>>("users");
+            serverType.Add<int>("Int");
+            serverType.Add<string>("String");
+            serverType.Add<bool>("Bool");
+            serverType.Add<long>("Long");
+            serverType.Add<User>("User");
+            serverType.Add<CardGroup>("CardGroup");
+            serverType.Add<SkillCard>("SkillCard");
+            serverType.Add<List<long>>("List<long>");
+            serverType.Add<List<SkillCard>>("List<SkillCard>");
+            serverType.Add<List<CardItem>>("List<CardItem>");
+            serverType.Add<List<CardGroup>>("List<CardGroup>");
+            serverType.Add<List<Friend>>("List<Friend>");
+            serverType.Add<List<User>>("List<User>");
+            serverType.Add<List<Team>>("List<Team>");
             //注册Client远程服务
             Core.PlayerServerRequest = Material.RPCClient.RPCRequestProxyFactory.Register<PlayerServerRequest>("PlayerServer", "192.168.80.1", "28016", clientType);
             //启动Client服务
@@ -72,7 +76,7 @@ namespace Make.BLL
             Random random = new Random();
             for (int i = 0; i < 1; i++)
             {
-                Squad squad = new Squad(Material.Utils.SecretKey.Generate(10), Material.Entity.Game.Room.RoomType.Round_Solo);
+                MatchSquad squad = new MatchSquad(Material.Utils.SecretKey.Generate(10), Room.RoomType.RealTime_Solo);
                 for (int j = 0; j < 1; j++)
                 {
                     User user = new User();

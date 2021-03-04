@@ -1,15 +1,18 @@
-﻿using Material.Model.MatchSystem.Interface;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Material.Entity.Match
 {
-    public class Team:Model.MatchSystem.Entity.BaseTeam<Squad>
+    public class MatchTeam : Model.MatchSystem.Entity.BaseTeam<MatchSquad>
     {
-        public Team()
+        List<Team> teams;
+        public MatchTeam()
         {
             this.startMatchTime = Utils.TimeStamp.Now();
         }
-        public override bool Add(Squad item)
+
+        public List<Team> Teams { get => teams; set => teams = value; }
+
+        public override bool Add(MatchSquad item)
         {
             if (base.Add(item))
             {
@@ -22,7 +25,7 @@ namespace Material.Entity.Match
             else return false;
         }
 
-        public override bool Remove(Squad item)
+        public override bool Remove(MatchSquad item)
         {
             if (base.Remove(item))
             {

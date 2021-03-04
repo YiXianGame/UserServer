@@ -62,7 +62,7 @@ namespace Material.RPCClient
                     }
                     else
                     {
-                        string[] types_name = rpcAttribute.Paramters.Split('-');
+                        string[] types_name = rpcAttribute.Paramters;
                         if (types_name.Length == param_count)
                         {
                             for (int i = 0, j = 1; i < param_count; i++, j++)

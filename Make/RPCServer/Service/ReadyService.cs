@@ -69,22 +69,22 @@ namespace Make.RPCServer.Service
             }
         }
         [RPCService]
-        public void SwitchCardGroup(User user,CardGroup cardGroup)
+        public void SwitchCardGroup(User user, CardGroup cardGroup)
         {
             if (!user.Confirm && user.Squad != null && user.Team != null && user.TeamGroup != null)
             {
                 user.CardGroup = cardGroup;
-                foreach(Team team in user.TeamGroup.Items)
+                foreach (MatchTeam team in user.TeamGroup.Items)
                 {
-                    foreach(Squad squad in team.Items)
+                    foreach (MatchSquad squad in team.Items)
                     {
-                        foreach(User player in squad.Items)
+                        foreach (User player in squad.Items)
                         {
                             if (player.Team == user.Team)
                             {
-                                Core.ReadyRequest.SwitchCardGroup(user.Id, true, cardGroup);
+                                Core.ReadyRequest.SwitchCardGroup(player, user.Id, true, cardGroup);
                             }
-                            else Core.ReadyRequest.SwitchCardGroup(user.Id, false, cardGroup);
+                            else Core.ReadyRequest.SwitchCardGroup(player, user.Id, false, cardGroup);
                         }
                     }
                 }
@@ -101,25 +101,36 @@ namespace Make.RPCServer.Service
                     ++user.TeamGroup.ConfirmCount;
                     if (user.TeamGroup.ConfirmCount == user.TeamGroup.Count)
                     {
-
-                        List<long> redTeam = new List<long>();
-                        List<long> blueTeam = new List<long>();
-                        int idx = 0;
-                        foreach (Team team in user.TeamGroup.Items)
+                        List<Team> _teams = new List<Team>();
+                        foreach (MatchTeam team in user.TeamGroup.Items)
                         {
-                            foreach (Squad squad in team.Items)
+                            Team _team = new Team();
+                            foreach (MatchSquad squad in team.Items)
+                            {
+                                foreach (User item in squad.Items)
+                                {
+                                    Player player = new Player();
+                                    player.SetAttribute(item);
+                                    _team.Teammates.Add(player.Id, player);
+                                }
+                            }
+                            _teams.Add(_team);
+                        }
+
+                        string id = Core.PlayerServerRequest.CreateRoom(_teams, user.Squad.RoomType);
+
+                        foreach (MatchTeam team in user.TeamGroup.Items)
+                        {
+                            foreach (MatchSquad squad in team.Items)
                             {
                                 foreach (User player in squad.Items)
                                 {
-                                    if (idx == 0) redTeam.Add(player.Id);
-                                    else blueTeam.Add(player.Id);
+                                    Core.ReadyRequest.ConnectPlayerServer(player, Core.Config.PlayerServerConfig.Ip, Core.Config.PlayerServerConfig.Port, id);
                                 }
                             }
-                            ++idx;
                         }
-                        string secretKey = Core.PlayerServerRequest.CreateRoom(redTeam, blueTeam, user.Squad.RoomType);
-
                     }
+                    return true;
                 }
                 return false;
             }

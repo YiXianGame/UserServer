@@ -17,51 +17,29 @@ namespace Material.Entity
 
         #region --字段--
 
-        long id;
-
-        string username;
-
-        string password;
-
-        byte[] headImage;
-
-        string nickname;
-
-        int upgrade_num = 0;
-
-        int create_num = 0;
-
-        long money = 0;
-
-        string personalSignature;
-
-        int battleCount;//战斗场次
-
-        long exp;//经验
-
-        int lv = 1;//等级
-
-        string title = "炼气";//称号
-
-        UserState state = UserState.Offline;//玩家当前游戏状态
-
-        int kills;//击杀数
-
-        int deaths;//死亡数
-
-        List<CardGroup> cardGroups;//技能卡组
-
-        long registerDate;//注册日期
-
-        long attribute_update;//个人信息更新日期
-
-        long cardRepository_update;//卡牌更新日期
-
-        long headImage_update;//头像更新日期
-
-        long friend_update;//好友更新日期
-
-        long cardGroups_update;//技能卡组更新日期
+        private long id;
+        private string username;
+        private string password;
+        private byte[] headImage;
+        private string nickname;
+        private int upgrade_num = 0;
+        private int create_num = 0;
+        private long money = 0;
+        private string personalSignature;
+        private int battleCount;//战斗场次
+        private long exp;//经验
+        private int lv = 1;//等级
+        private string title = "炼气";//称号
+        private UserState state = UserState.Offline;//玩家当前游戏状态
+        private int kills;//击杀数
+        private int deaths;//死亡数
+        private List<CardGroup> cardGroups;//技能卡组
+        private long registerDate;//注册日期
+        private long attribute_update;//个人信息更新日期
+        private long cardRepository_update;//卡牌更新日期
+        private long headImage_update;//头像更新日期
+        private long friend_update;//好友更新日期
+        private long cardGroups_update;//技能卡组更新日期
         #endregion
 
         #region --属性--
@@ -97,9 +75,9 @@ namespace Material.Entity
         private long startMatchTime = 0;//开始匹配时间
         private int averageRank = 0;
         private int count = 1;
-        private Squad squad;
-        private Team team;
-        private TeamGroup teamGroup;
+        private MatchSquad squad;
+        private MatchTeam team;
+        private MatchTeamGroup teamGroup;
         private bool confirm;
         private CardGroup cardGroup;
         #endregion
@@ -112,14 +90,15 @@ namespace Material.Entity
         [JsonIgnore]
         public int Count { get => count; set => count = value; }
         [JsonIgnore]
-        public Squad Squad { get => squad; set => squad = value; }
+        public MatchSquad Squad { get => squad; set => squad = value; }
         [JsonIgnore]
-        public Team Team { get => team; set => team = value; }
+        public MatchTeam Team { get => team; set => team = value; }
         [JsonIgnore]
-        public TeamGroup TeamGroup { get => teamGroup; set => teamGroup = value; }
+        public MatchTeamGroup TeamGroup { get => teamGroup; set => teamGroup = value; }
         [JsonIgnore]
         public int SumRank { get => lv; set => lv = value; }
         public CardGroup CardGroup { get => cardGroup; set => cardGroup = value; }
+        [JsonIgnore]
         public bool Confirm { get => confirm; set => confirm = value; }
         #endregion
 

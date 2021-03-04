@@ -48,7 +48,7 @@ namespace Material.RPCClient
                         }
                         else
                         {
-                            string[] types_name = rpcAttribute.Paramters.Split("-");
+                            string[] types_name = rpcAttribute.Paramters;
                             if(parameters.Length == types_name.Length)
                             {
                                 foreach (string type_name in types_name)

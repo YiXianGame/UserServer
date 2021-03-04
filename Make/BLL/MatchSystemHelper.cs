@@ -6,51 +6,34 @@ namespace Make.BLL
 {
     public class MatchSystemHelper
     {
-        public static void SoloGroupMatchSystem_MatchSuccessEvent(List<TeamGroup> teamGroups)
+        public static void SoloGroupMatchSystem_MatchSuccessEvent(List<MatchTeamGroup> teamGroups)
         {
-            foreach (TeamGroup teams in teamGroups)
+            foreach (MatchTeamGroup teams in teamGroups)
             {
-                if (teams.Items.Count == 2)
+                List<Team> _teams = new List<Team>();
+                foreach (MatchTeam team in teams.Items)
                 {
-                    List<List<User>> result = new List<List<User>>(2);
-                    foreach (Team team in teams.Items)
+                    Team _team = new Team();
+                    foreach (MatchSquad squad in team.Items)
                     {
-                        List<User> users = new List<User>();
-                        foreach (Squad squad in team.Items)
+                        foreach (User user in squad.Items)
                         {
-                            foreach (User user in squad.Items)
-                            {
-                                users.Add(user);
-                            }
+                            Player player = new Player();
+                            player.SetAttribute(user);
+                            _team.Teammates.Add(player.Id, player);
                         }
-                        result.Add(users);
                     }
-                    int idx = 0;
-                    foreach (Team team in teams.Items)
-                    {
-                        foreach (Squad squad in team.Items)
-                        {
-                            foreach (User user in squad.Items)
-                            {
-                                Core.ReadyRequest.MatchSuccess(user, result[0], result[1], idx, "192.168.0.105", "28016", Material.Utils.SecretKey.Generate(10));
-                            }
-                        }
-                        idx++;
-                    }
+                    _teams.Add(_team);
                 }
-                else
+
+                foreach (MatchTeam team in teams.Items)
                 {
-                    int idx = 0;
-                    foreach (Team team in teams.Items)
+                    foreach (MatchSquad squad in team.Items)
                     {
-                        foreach (Squad squad in team.Items)
+                        foreach (User user in squad.Items)
                         {
-                            foreach (User user in squad.Items)
-                            {
-                                Core.ReadyRequest.CancelMatch(user);
-                            }
+                            Core.ReadyRequest.MatchSuccess(user, _teams);
                         }
-                        idx++;
                     }
                 }
             }

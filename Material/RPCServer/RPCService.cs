@@ -53,7 +53,7 @@ namespace Material.RPCServer
                         }
                         else
                         {
-                            string[] types_name = rpcAttribute.Paramters.Split('-');
+                            string[] types_name = rpcAttribute.Paramters;
                             if(parameters.Length == types_name.Length)
                             {
                                 //跳过第一个参数Token，本来打算让客户端加上这个参数，但是分析后觉得代码不够友好，还节省资源.

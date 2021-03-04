@@ -52,7 +52,7 @@ namespace Material.RPCServer
                     }
                     else
                     {
-                        string[] types_name = rpcAttribute.Paramters.Split('-');
+                        string[] types_name = rpcAttribute.Paramters;
                         if(param_count == types_name.Length)
                         {
                             obj = new string[param_count - 1];

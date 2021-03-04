@@ -109,7 +109,7 @@ namespace Make.RPCServer.Service
             {
                 if (type == Room.RoomType.Round_Solo)
                 {
-                    user.Squad = new Squad(Material.Utils.SecretKey.Generate(20), type);
+                    user.Squad = new MatchSquad(Material.Utils.SecretKey.Generate(20), type);
                     user.Squad.Captain = user;
                     if (user.Squad.Add(user)) return user.Squad.SecretKey;
                     else return "-1";

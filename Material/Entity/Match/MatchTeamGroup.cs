@@ -1,19 +1,17 @@
-﻿using Material.Model.MatchSystem.Interface;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 
 namespace Material.Entity.Match
 {
-    public class TeamGroup:Model.MatchSystem.Entity.BaseTeamGroup<Team>
+    public class MatchTeamGroup:Model.MatchSystem.Entity.BaseTeamGroup<MatchTeam>
     {
         int confirmCount;
-
         public int ConfirmCount { get => confirmCount; set => confirmCount = value; }
 
-        public override bool Add(Team item)
+        public override bool Add(MatchTeam item)
         {
             if (base.Add(item))
             {
-                foreach (Squad squad in item.Items)
+                foreach (MatchSquad squad in item.Items)
                 {
                     foreach (User user in squad.Items)
                     {
@@ -25,11 +23,11 @@ namespace Material.Entity.Match
             else return false;
         }
 
-        public override bool Remove(Team item)
+        public override bool Remove(MatchTeam item)
         {
             if (base.Add(item))
             {
-                foreach (Squad squad in item.Items)
+                foreach (MatchSquad squad in item.Items)
                 {
                     foreach (User user in squad.Items)
                     {
