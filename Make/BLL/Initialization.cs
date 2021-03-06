@@ -7,8 +7,10 @@ using Material.Entity.Match;
 using Material.MySQL;
 using Material.Redis;
 using Material.RPCServer;
+using Material.RPCServer.Extension.Authority;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Make.BLL
 {
@@ -40,38 +42,42 @@ namespace Make.BLL
             serverType.Add<List<Friend>>("List<Friend>");
             serverType.Add<List<User>>("List<User>");
             serverType.Add<List<Team>>("List<Team>");
+            RPCServiceConfig serverServiceConfig = new RPCServiceConfig(serverType);
+            RPCRequestConfig serverRequestConfig = new RPCRequestConfig(serverType);
             //适配Server远程客户端服务
-            RPCServiceFactory.Register(new UserService(), "UserServer", "192.168.80.1", "28015", serverType);
-            RPCServiceFactory.Register(new SkillCardService(), "SkillCardServer", "192.168.80.1", "28015", serverType);
-            RPCServiceFactory.Register(new ReadyService(), "ReadyServer", "192.168.80.1", "28015", serverType);
+            RPCServiceFactory.Register<UserService>("UserServer", "192.168.80.1", "28015", serverServiceConfig);
+            RPCServiceFactory.Register<SkillCardService>("SkillCardServer", "192.168.80.1", "28015", serverServiceConfig);
+            RPCServiceFactory.Register<ReadyService>("ReadyServer", "192.168.80.1", "28015", serverServiceConfig);
             //注册Server远程服务
-            Core.UserRequest = RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.80.1", "28015", serverType);
-            Core.SkillCardRequest = RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.80.1", "28015", serverType);
-            Core.ReadyRequest = RPCRequestProxyFactory.Register<ReadyRequest>("ReadyClient", "192.168.80.1", "28015", serverType);
+            Core.UserRequest = RPCRequestProxyFactory.Register<UserRequest>("UserClient", "192.168.80.1", "28015", serverRequestConfig);
+            Core.SkillCardRequest = RPCRequestProxyFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.80.1", "28015", serverRequestConfig);
+            Core.ReadyRequest = RPCRequestProxyFactory.Register<ReadyRequest>("ReadyClient", "192.168.80.1", "28015", serverRequestConfig);
             //启动Server服务
-            RPCNetServerFactory.StartServer("192.168.80.1", "28015", () => new User());
+            RPCNetConfig serverNetConfig = new RPCNetConfig("192.168.80.1", "28015", () => new User());
+             RPCNetServerFactory.StartServer(serverNetConfig);
+            serverNetConfig.InterceptorEvent += ServerNetConfig_InterceptorEvent;
             #endregion
 
             #region --RPCClient--
             Material.RPCClient.RPCType clientType = new Material.RPCClient.RPCType();
-            serverType.Add<int>("Int");
-            serverType.Add<string>("String");
-            serverType.Add<bool>("Bool");
-            serverType.Add<long>("Long");
-            serverType.Add<User>("User");
-            serverType.Add<CardGroup>("CardGroup");
-            serverType.Add<SkillCard>("SkillCard");
-            serverType.Add<List<long>>("List<long>");
-            serverType.Add<List<SkillCard>>("List<SkillCard>");
-            serverType.Add<List<CardItem>>("List<CardItem>");
-            serverType.Add<List<CardGroup>>("List<CardGroup>");
-            serverType.Add<List<Friend>>("List<Friend>");
-            serverType.Add<List<User>>("List<User>");
-            serverType.Add<List<Team>>("List<Team>");
+            clientType.Add<int>("Int");
+            clientType.Add<string>("String");
+            clientType.Add<bool>("Bool");
+            clientType.Add<long>("Long");
+            clientType.Add<User>("User");
+            clientType.Add<CardGroup>("CardGroup");
+            clientType.Add<SkillCard>("SkillCard");
+            clientType.Add<List<long>>("List<long>");
+            clientType.Add<List<SkillCard>>("List<SkillCard>");
+            clientType.Add<List<CardItem>>("List<CardItem>");
+            clientType.Add<List<CardGroup>>("List<CardGroup>");
+            clientType.Add<List<Friend>>("List<Friend>");
+            clientType.Add<List<User>>("List<User>");
+            clientType.Add<List<Team>>("List<Team>");
             //注册Client远程服务
-            Core.PlayerServerRequest = Material.RPCClient.RPCRequestProxyFactory.Register<PlayerServerRequest>("PlayerServer", "192.168.80.1", "28016", clientType);
+            Core.PlayerServerRequest = Material.RPCClient.RPCRequestProxyFactory.Register<PlayerServerRequest>("PlayerServer", "192.168.80.1", "28016", new Material.RPCClient.RPCRequestConfig(clientType));
             //启动Client服务
-            Material.RPCClient.RPCNetClientFactory.StartClient("192.168.80.1", "28016");
+            Material.RPCClient.RPCNetFactory.StartClient(new Material.RPCClient.RPCNetConfig("192.168.80.1", "28016"));
             #endregion
             Random random = new Random();
             for (int i = 0; i < 1; i++)
@@ -93,6 +99,17 @@ namespace Make.BLL
             AdventuresInit();
             Console.WriteLine("Initialization Success!");
         }
+
+        private bool ServerNetConfig_InterceptorEvent(RPCService service, MethodInfo method, Material.RPCServer.TCP_Async_Event.BaseUserToken token)
+        {
+            Material.RPCServer.Annotation.RPCService annotation = method.GetCustomAttribute<Material.RPCServer.Annotation.RPCService>();
+            if ((annotation.Authority != null && ((IAuthorityCheck)token).Check(annotation)) || (service.Config.Authoritable && ((IAuthorityCheck)token).Check((IAuthoritable)service)))
+            {
+                return true;
+            }
+            else return false;
+        }
+
         private async void CoreInit(UserServerConfig.UserServerCategory category, PlayerServerConfig.PlayerServerCategory playerServerCategory)
         {
             Console.WriteLine("Core Loading....");

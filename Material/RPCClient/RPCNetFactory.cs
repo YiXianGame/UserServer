@@ -9,7 +9,7 @@ namespace Material.RPCClient
     /// <summary>
     /// 客户端工厂
     /// </summary>
-    public class RPCNetClientFactory
+    public class RPCNetFactory
     {
         private static Dictionary<Tuple<string, string>, SocketClient> socketclients { get; } = new Dictionary<Tuple<string, string>, SocketClient>();
         /// <summary>
@@ -18,15 +18,15 @@ namespace Material.RPCClient
         /// <param name="serverIp">远程服务IP</param>
         /// <param name="port">远程服务端口</param>
         /// <returns>客户端</returns>
-        public static SocketClient StartClient(string hostname,string port)
+        public static SocketClient StartClient(RPCNetConfig config)
         {
-            Tuple<string, string> key = new Tuple<string, string>(hostname, port);
+            Tuple<string, string> key = new Tuple<string, string>(config.Host, config.Port);
             socketclients.TryGetValue(key,out SocketClient socketclient);
             if (socketclient == null)
             {
                 try
                 {
-                    socketclient = new SocketClient(key.Item1, key.Item2);
+                    socketclient = new SocketClient(config);
                     socketclient.Connect();
                     socketclients[key] = socketclient;
                 }

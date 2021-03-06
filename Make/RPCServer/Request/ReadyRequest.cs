@@ -20,6 +20,6 @@ namespace Make.RPCServer.Request
         [RPCRequest]
         public void SwitchCardGroup(User user,long id,bool isTeammates,CardGroup cardGroup);
         [RPCRequest]
-        public void ConnectPlayerServer(User user,string ip,string port,string roomId);
+        public void ConnectPlayerServer(User user,string ip,string port);
     }
 }

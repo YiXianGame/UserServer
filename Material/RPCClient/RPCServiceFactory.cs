@@ -8,11 +8,11 @@ namespace Material.RPCClient
     public class RPCServiceFactory
     {
         public static Dictionary<Tuple<string, string, string>, RPCService> services { get; } = new Dictionary<Tuple<string, string, string>, RPCService>();
-        public static void Register<T>(string servicename, string hostname, string port, RPCType type) where T : class
+        public static void Register<T>(string servicename, string hostname, string port, RPCServiceConfig config) where T : class
         {
-            Register<T>(null, servicename, hostname, port, type);
+            Register<T>(null, servicename, hostname, port, config);
         }
-        public static void Register<T>(T instance,string servicename,string hostname, string port, RPCType type) where T:class
+        public static void Register<T>(T instance,string servicename,string hostname, string port, RPCServiceConfig config) where T:class
         {
             if (string.IsNullOrEmpty(servicename))
             {
@@ -29,9 +29,9 @@ namespace Material.RPCClient
                 throw new ArgumentException("参数为空", nameof(port));
             }
 
-            if (type is null)
+            if (config.Type is null)
             {
-                throw new ArgumentNullException(nameof(type));
+                throw new ArgumentNullException(nameof(config.Type));
             }
             RPCService service = null;
             Tuple<string, string, string> key = new Tuple<string, string, string>(servicename, hostname, port);
@@ -40,9 +40,9 @@ namespace Material.RPCClient
             {
                 try
                 {
-                    SocketClient socketClient = RPCNetClientFactory.GetClient(new Tuple<string, string>(hostname, port));
+                    SocketClient socketClient = RPCNetFactory.GetClient(new Tuple<string, string>(hostname, port));
                     service = new RPCService();
-                    service.Register(instance,type);
+                    service.Register(instance,config);
                     services[key] = service;
                 }
                 catch (SocketException e)

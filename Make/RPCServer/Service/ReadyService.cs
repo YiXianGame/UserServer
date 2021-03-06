@@ -116,16 +116,16 @@ namespace Make.RPCServer.Service
                             }
                             _teams.Add(_team);
                         }
-
-                        string id = Core.PlayerServerRequest.CreateRoom(_teams, user.Squad.RoomType);
-
-                        foreach (MatchTeam team in user.TeamGroup.Items)
+                        if(Core.PlayerServerRequest.CreateRoom(_teams, user.Squad.RoomType.ToString()))
                         {
-                            foreach (MatchSquad squad in team.Items)
+                            foreach (MatchTeam team in user.TeamGroup.Items)
                             {
-                                foreach (User player in squad.Items)
+                                foreach (MatchSquad squad in team.Items)
                                 {
-                                    Core.ReadyRequest.ConnectPlayerServer(player, Core.Config.PlayerServerConfig.Ip, Core.Config.PlayerServerConfig.Port, id);
+                                    foreach (User player in squad.Items)
+                                    {
+                                        Core.ReadyRequest.ConnectPlayerServer(player, Core.Config.PlayerServerConfig.Ip, Core.Config.PlayerServerConfig.Port);
+                                    }
                                 }
                             }
                         }

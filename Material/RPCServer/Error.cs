@@ -2,9 +2,18 @@
 {
     public class Error
     {
-        int Code { get; set; }
+        public enum ErrorCode { Intercepted }
+        ErrorCode Code { get; set; }
         string Message { get; set; }
         string Data { get; set; }
+
+        public Error(ErrorCode code, string message, string data)
+        {
+            Code = code;
+            Message = message;
+            Data = data;
+        }
+
         public override string ToString()
         {
             return "Code:" + Code 

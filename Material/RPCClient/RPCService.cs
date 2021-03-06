@@ -13,15 +13,15 @@ namespace Material.RPCClient
         //string连接的时候使用引用要比tuple慢很多
         private Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
         private object instance;
-        private RPCType type;
+        RPCServiceConfig config;
 
         public Dictionary<string, MethodInfo> Methods { get => methods;  }
         public object Instance { get => instance; set => instance = value; }
 
-        public void Register<T>(T instance,RPCType type)
+        public void Register<T>(T instance,RPCServiceConfig config)
         {
             this.Instance = instance;
-            this.type = type;
+            this.config = config;
             StringBuilder methodid = new StringBuilder();
             foreach (MethodInfo method in typeof(T).GetMethods())
             {
@@ -38,7 +38,7 @@ namespace Material.RPCClient
                             {
                                 try
                                 {
-                                    methodid.Append("-" + type.AbstractName[param.ParameterType]);
+                                    methodid.Append("-" + config.Type.AbstractName[param.ParameterType]);
                                 }
                                 catch (Exception)
                                 {
@@ -53,7 +53,7 @@ namespace Material.RPCClient
                             {
                                 foreach (string type_name in types_name)
                                 {
-                                    if (type.AbstractType.ContainsKey(type_name))
+                                    if (config.Type.AbstractType.ContainsKey(type_name))
                                     {
                                         methodid.Append("-").Append(types_name);
                                     }
@@ -74,7 +74,7 @@ namespace Material.RPCClient
             {
                 for (int i = 1,j=0; i < param_id.Length; i++,j++)
                 {
-                    if (type.TypeConvert.TryGetValue(param_id[i], out RPCType.ConvertDelegage convert))
+                    if (config.Type.TypeConvert.TryGetValue(param_id[i], out RPCType.ConvertDelegage convert))
                     {
                         parameters[j] = convert((string)parameters[j]);
                     }

@@ -2,8 +2,10 @@
 {
     public class Error
     {
-        int Code { get; set; }
-        string Message { get; set; }
-        string Data { get; set; }   
+        public int Code { get; set; }
+        public string Message { get; set; }
+        public string Data { get; set; }   
+
+
     }
 }

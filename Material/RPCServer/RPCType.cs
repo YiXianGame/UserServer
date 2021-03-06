@@ -8,7 +8,6 @@ namespace Material.RPCServer
     {
         public delegate object ConvertDelegage(string obj);
         public Dictionary<Type, string> AbstractName { get; set; } = new Dictionary<Type, string>();
-
         public Dictionary<string, Type> AbstractType { get; set; } = new Dictionary<string,Type>();
         public Dictionary<string, ConvertDelegage> TypeConvert { get; set; } = new Dictionary<string, ConvertDelegage>();
 

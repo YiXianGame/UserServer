@@ -42,7 +42,7 @@ namespace Material.MySQL.Dao
                 connection.Close();
             }
         }
-        public async Task<User> Query_AttributeByUsername(string username)
+        public async Task<User> Query_UserByUsername(string username)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -73,6 +73,7 @@ namespace Material.MySQL.Dao
                     user.CardRepository_update = reader.GetInt64("card_repository_update");
                     user.HeadImage_update = reader.GetInt64("head_image_update");
                     user.Friend_update = reader.GetInt64("friend_update");
+                    user.CardGroups = JsonConvert.DeserializeObject<List<CardGroup>>(reader.GetString("card_groups"));
                     user.CardGroups_update = reader.GetInt64("card_groups_update");
                 }
                 return user;
@@ -83,7 +84,7 @@ namespace Material.MySQL.Dao
             }
         }
 
-        public async Task<User> Query_AttributeByID(long id,bool has_password = false)
+        public async Task<User> Query_UserByID(long id,bool has_password = false)
         {
             GetConnection(out MySqlConnection connection);
             try
@@ -114,6 +115,7 @@ namespace Material.MySQL.Dao
                     user.CardRepository_update = reader.GetInt64("card_repository_update");
                     user.HeadImage_update = reader.GetInt64("head_image_update");
                     user.Friend_update = reader.GetInt64("friend_update");
+                    user.CardGroups = JsonConvert.DeserializeObject<List<CardGroup>>(reader.GetString("card_groups"));
                     user.CardGroups_update = reader.GetInt64("card_groups_update");
                 }
                 return user;

@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using Material.Entity;
+using Material.RPCServer.Extension.Authority;
 using Newtonsoft.Json;
 
 namespace Material.RPCServer.TCP_Async_Event
@@ -15,8 +16,9 @@ namespace Material.RPCServer.TCP_Async_Event
         private SocketAsyncEventArgs eventArgs;
         private DotNetty.Buffers.IByteBuffer content;
         private int needRemain;
-        string hostname;
-        string port;
+        private string hostname;
+        private string port;
+        private RPCNetConfig config;
 
         //下面两部分只负责接收部分，发包构造部分并没有使用，修改时请注意！
         //下面这部分用于拆包分析   
@@ -69,7 +71,10 @@ namespace Material.RPCServer.TCP_Async_Event
                         //从客户端发回来的，只可能是请求，绝对不会是响应，因为服务器绝对不会因为一个客户进行一个线程等待.
                         ClientRequestModel request = JsonConvert.DeserializeObject<ClientRequestModel>(content.GetString(0,content.WriterIndex, Encoding.UTF8));
                         content.ResetWriterIndex();
-                        if(!RPCAdaptFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, Hostname, Port), out RPCService proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
+                        readerIndex = needRemain + readerIndex;
+                        needRemain = 0;
+                        
+                        if (!RPCServiceFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, Hostname, Port), out RPCService service) || !service.Methods.TryGetValue(request.MethodId, out MethodInfo method))
                         {   
 #if DEBUG
                             Console.WriteLine("------------------未找到该方法--------------------");
@@ -79,34 +84,35 @@ namespace Material.RPCServer.TCP_Async_Event
                         }
                         else
                         {
-                            proxy.ConvertParams(request.MethodId,request.Params);
-                            //0-Request 1-Command
-                            if (pattern == 0)
+                            if (config.OnInterceptor(service,method,token) && service.Config.OnInterceptor(service,method,token))
                             {
+                                service.ConvertParams(request.MethodId, request.Params);
+                                //0-Request 1-Command
+                                if (pattern == 0)
+                                {
 #if DEBUG
-                                Console.WriteLine("--------------------------------------------------");
-                                Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[客-请求]\n{request}");
-                                Console.WriteLine("--------------------------------------------------");
+                                    Console.WriteLine("--------------------------------------------------");
+                                    Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[客-请求]\n{request}");
+                                    Console.WriteLine("--------------------------------------------------");
 #endif
-                                request.Params[0] = token;
-                                object result = method.Invoke(proxy.Instance, request.Params);
-                                string type = "null";
-                                if(result!=null)proxy.Type.AbstractName.TryGetValue(result.GetType(),out type);
-                                token.Send(new ClientResponseModel("2.0",JsonConvert.SerializeObject(result),type, new Error(), request.Id));
-                            }
-                            else
-                            {
+                                    if (service.Config.TokenEnable && request.Params.Length >= 1) request.Params[0] = token;
+                                    object result = method.Invoke(service, request.Params);
+                                    service.Config.Type.AbstractName.TryGetValue(method.ReturnType, out string type);
+                                    token.Send(new ClientResponseModel("2.0", JsonConvert.SerializeObject(result), type, null, request.Id));
+                                }
+                                else
+                                {
 #if DEBUG
-                                Console.WriteLine("--------------------------------------------------");
-                                Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[客-指令]\n{request}");
-                                Console.WriteLine("--------------------------------------------------");
+                                    Console.WriteLine("--------------------------------------------------");
+                                    Console.WriteLine($"{DateTime.Now}::{Hostname}:{Port}::[客-指令]\n{request}");
+                                    Console.WriteLine("--------------------------------------------------");
 #endif
-                                request.Params[0] = token;
-                                method.Invoke(proxy.Instance, request.Params);
+                                    request.Params[0] = token;
+                                    method.Invoke(service,request.Params);
+                                }
                             }
+                            else token.Send(new ClientResponseModel("2.0", null, "null", new Error(Error.ErrorCode.Intercepted,$"{request.MethodId}服务请求已拦截",null), request.Id));
                         }
-                        readerIndex = needRemain + readerIndex;
-                        needRemain = 0;
                         continue;
                     }
                     else

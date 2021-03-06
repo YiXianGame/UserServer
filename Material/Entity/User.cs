@@ -1,5 +1,6 @@
 ﻿using Material.Entity.Match;
 using Material.Model.MatchSystem.Interface;
+using Material.RPCServer.Extension.Authority;
 using Material.RPCServer.TCP_Async_Event;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 namespace Material.Entity
 {
     [JsonObject(MemberSerialization.OptOut)]
-    public class User : BaseUserToken, IMatchSystemItem
+    public class User : BaseUserToken, IMatchSystemItem,IAuthorityCheck
     {
         #region --Enum--
         [JsonConverter(typeof(StringEnumConverter))]
@@ -80,6 +81,7 @@ namespace Material.Entity
         private MatchTeamGroup teamGroup;
         private bool confirm;
         private CardGroup cardGroup;
+        private int authority = 0;
         #endregion
 
         #region --Cache属性--
@@ -100,6 +102,7 @@ namespace Material.Entity
         public CardGroup CardGroup { get => cardGroup; set => cardGroup = value; }
         [JsonIgnore]
         public bool Confirm { get => confirm; set => confirm = value; }
+        public object Authority { get => authority; set => authority = (int)value; }
         #endregion
 
         #region --方法--
@@ -125,6 +128,11 @@ namespace Material.Entity
             this.headImage_update = user.headImage_update;
             this.friend_update = user.friend_update;
             this.cardGroups_update = user.CardGroups_update;
+        }
+
+        public bool Check(IAuthoritable authoritable)
+        {
+            return (int)Authority >= (int)authoritable.Authority;
         }
         #endregion
     }

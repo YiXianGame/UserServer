@@ -23,9 +23,9 @@ namespace Make.Repository
         }
         public async Task<User> Login(long id, string username, string password)
         {
-            // null 账户不存在 -2密码错误
+            // null 账户不存在 -1密码错误
             User user;
-            if (id == 0) user = await mySQL.userDao.Query_AttributeByUsername(username);
+            if (id == 0) user = await mySQL.userDao.Query_UserByUsername(username);
             else
             {
                 user = await redis.userDao.Query_User(id, true);
@@ -43,7 +43,7 @@ namespace Make.Repository
 
             if (!user.Password.Equals(password))
             {
-                user.Id = -2;//密码错误
+                user.Id = -1;//密码错误
                 return user;
             }
             else
@@ -59,7 +59,7 @@ namespace Make.Repository
                 long result = await mySQL.userDao.Insert(username, nickname, password);
                 if (result != -1)
                 {
-                    User user = await mySQL.userDao.Query_AttributeByID(result);
+                    User user = await mySQL.userDao.Query_UserByID(result);
                     redis.userDao.SetAccount(user);
                     return user.Id;
                 }
@@ -71,7 +71,7 @@ namespace Make.Repository
         public async Task<User> Cache(long id)
         {
             //这里要到了密码!!注意密码的去向，User内部的密码序列化已经忽略。
-            User user = await mySQL.userDao.Query_AttributeByID(id, true);
+            User user = await mySQL.userDao.Query_UserByID(id, true);
             if (user != null)//Mysql中有此用户的数据
             {
                 redis.userDao.SetAccount(user);

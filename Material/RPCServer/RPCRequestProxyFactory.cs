@@ -6,7 +6,7 @@ namespace Material.RPCServer
 {
     public class RPCRequestProxyFactory
     {
-        private static Dictionary<Tuple<string, string, string>, object> requests { get; } = new Dictionary<Tuple<string, string, string>, object>();
+        private static Dictionary<Tuple<string, string, string>, RPCRequestProxy> requests { get; } = new Dictionary<Tuple<string, string, string>, RPCRequestProxy>();
         /// <summary>
         /// 获取RPC代理
         /// </summary>
@@ -14,7 +14,7 @@ namespace Material.RPCServer
         /// <param name="serverIp">远程服务IP</param>
         /// <param name="port">远程服务端口</param>
         /// <returns>客户端</returns>
-        public static R Register<R>(string servicename,string hostname, string port,RPCType type)
+        public static R Register<R>(string servicename,string hostname, string port,RPCRequestConfig config)
         {
             if (string.IsNullOrEmpty(servicename))
             {
@@ -34,27 +34,24 @@ namespace Material.RPCServer
                 throw new ArgumentException("参数为空", nameof(port));
             }
 
-            if (type is null)
+            if (config.Type is null)
             {
                 Console.WriteLine($"{servicename}-{hostname}-{port} Load Fail!");
-                throw new ArgumentNullException(nameof(type));
+                throw new ArgumentNullException(nameof(config.Type));
             }
-
-            R request = default(R);
             Tuple<string, string, string> key = new Tuple<string, string, string>(servicename, hostname, port);
-            requests.TryGetValue(key,out object obj);
-            request = (R)obj;
+            requests.TryGetValue(key,out RPCRequestProxy request);
             if(request == null)
             {
-                request = RPCRequestProxy.Register<R>(servicename,type);
+                request = RPCRequestProxy.Register<R>(servicename,config);
                 requests[key] = request;
                 Console.WriteLine($"{servicename}-{hostname}-{port} Load Success!");
             }
-            return request;
+            return (R)(request as object);
         }
         public static void Destory(Tuple<string, string, string> key)
         {
-            requests.Remove(key, out object value);
+            requests.Remove(key, out RPCRequestProxy value);
         }
     }
 }

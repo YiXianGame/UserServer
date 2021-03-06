@@ -8,6 +8,6 @@ namespace Make.RPCClient.Request
     public interface PlayerServerRequest
     {
         [RPCRequest]
-        public string CreateRoom(List<Team> teams,Room.RoomType roomType);
+        public bool CreateRoom(List<Team> teams,string roomType);
     }
 }

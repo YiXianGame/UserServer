@@ -1,35 +1,44 @@
 ﻿using Material.Entity;
 using Material.Entity.Match;
 using Material.RPCServer.Annotation;
+using Material.RPCServer.Extension;
+using Material.RPCServer.Extension.Authority;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace Make.RPCServer.Service
 {
-    public class UserService
+    public class UserService : IAuthoritable
     {
-        [RPCService]
+        private int authority;
+        public object Authority { get => authority; set => authority = (int)value; }
+        [RPCService(authority = 0)]
         public long RegisterUser(User user, string username, string nickname, string password)
         {
             Task<long> task = Core.Repository.UserRepository.Register(username, nickname, password);
             task.Wait();
             return task.Result;
         }
-        [RPCService]
+        [RPCService(authority = 0)]
         public long LoginUser(User user, long id, string username, string password)
         {
             Task<User> task = Core.Repository.UserRepository.Login(id, username, password);
             task.Wait();
             if (task.Result == null) return -1;//账户不存在
-            else if (task.Result.Id != -2)
+            else if (task.Result.Id != -1)
             {
                 user.SetAttribute(task.Result);
                 if (!user.AddIntoTokens())
                 {
-                    return -3;//用户已登录
+                    return -2;//用户已登录
                 }
-                else return task.Result.Id;
+                else
+                {
+                    user.Authority = 1;
+                    return task.Result.Id;
+                }
             }
             return task.Result.Id;
         }
@@ -118,5 +127,7 @@ namespace Make.RPCServer.Service
             }
             else return "-1";
         }
+
+        
     }
 }

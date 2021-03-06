@@ -12,23 +12,25 @@ namespace Material.RPCClient
     {
         private string servicename;
         private Tuple<string,string> key;
-        RPCType type;
-        public static T Register<T>(string servicename, Tuple<string, string> clientkey, RPCType type)
+        private RPCRequestConfig config;
+        private int paramStart;
+        public static T Register<T>(string servicename, Tuple<string, string> clientkey, RPCRequestConfig config)
         {
             if (string.IsNullOrEmpty(servicename))
             {
                 throw new ArgumentException("参数为空", nameof(servicename));
             }
 
-            if (type is null)
+            if (config.Type is null)
             {
-                throw new ArgumentNullException(nameof(type));
+                throw new ArgumentNullException(nameof(config.Type));
             }
-
             RPCRequestProxy proxy = (RPCRequestProxy)(Create<T, RPCRequestProxy>() as object);
             proxy.key = clientkey ?? throw new ArgumentNullException(nameof(clientkey));
-            proxy.servicename = servicename;
-            proxy.type = type;
+            proxy.servicename = servicename; 
+            proxy.config = config;
+            if (config.TokenEnable) proxy.paramStart = 1;
+            else proxy.paramStart = 0;
             return (T)(proxy as object);
         }
 
@@ -44,14 +46,14 @@ namespace Material.RPCClient
                     int param_count;
                     if (args != null) param_count = args.Length;
                     else param_count = 0;
-                    object[] obj = new object[param_count + 1];
+                    object[] obj = new object[param_count + paramStart];
                     if (rpcAttribute.Paramters == null)
                     {
-                        for (int i = 0, j = 1; i < param_count; i++, j++)
+                        for (int i = 0, j = paramStart; i < param_count; i++, j++)
                         {
                             try
                             {
-                                methodid.Append("-" + type.AbstractName[args[i].GetType()]);
+                                methodid.Append("-" + config.Type.AbstractName[args[i].GetType()]);
                                 obj[j] = JsonConvert.SerializeObject(args[i]);
                             }
                             catch (Exception)
@@ -65,7 +67,7 @@ namespace Material.RPCClient
                         string[] types_name = rpcAttribute.Paramters;
                         if (types_name.Length == param_count)
                         {
-                            for (int i = 0, j = 1; i < param_count; i++, j++)
+                            for (int i = 0, j = paramStart; i < param_count; i++, j++)
                             {
                                 try
                                 {
@@ -83,14 +85,21 @@ namespace Material.RPCClient
                     ClientRequestModel request = new ClientRequestModel("2.0", servicename, methodid.ToString(), obj);
                     if (targetMethod.ReturnType == typeof(void))
                     {
-                        (RPCNetClientFactory.GetClient(key).SocketArgs.UserToken as Token).SendVoid(request);
+                        (RPCNetFactory.GetClient(key).SocketArgs.UserToken as Token).SendVoid(request);
                         return null;
                     }
                     else
                     {
-                        (RPCNetClientFactory.GetClient(key).SocketArgs.UserToken as Token).Send(request);
+                        (RPCNetFactory.GetClient(key).SocketArgs.UserToken as Token).Send(request);
                         ClientResponseModel result = request.get();
-                        if (type.TypeConvert.TryGetValue(result.Result_Type, out RPCType.ConvertDelegage convert))
+                        if (result.Error != null)
+                        {
+                            if(result.Error.Code == 0)
+                            {
+                               throw new RPCException(RPCException.ErrorCode.Intercepted, $"ErrorCode:{result.Error.Code} Message:{result.Error.Message} Data:{result.Error.Data}");
+                            }
+                        }
+                        else if (config.Type.TypeConvert.TryGetValue(result.Result_Type, out RPCType.ConvertDelegage convert))
                         {
                             convert((string)result.Result);
                         }
@@ -100,7 +109,7 @@ namespace Material.RPCClient
                 catch (SocketException e)
                 {
                     Console.WriteLine("发送请求失败，尝试重连\n" + e.StackTrace);
-                    RPCNetClientFactory.GetClient(key).Reconnect();
+                    RPCNetFactory.GetClient(key).Reconnect();
                 }
             }
 

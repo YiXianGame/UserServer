@@ -16,45 +16,36 @@ namespace Material.RPCServer.TCP_Async_Event
 
         private int numConnectedSockets;
 
-        private int numConnections;
-
         private SocketAsyncEventArgsPool readWritePool;
 
         private Semaphore semaphoreAcceptedClients;
 
         AutoResetEvent keepalive = new AutoResetEvent(false);
 
-        string hostname;
-
-        int port;
+        private RPCNetConfig config;
 
         private ConcurrentDictionary<object, BaseUserToken> tokens = new ConcurrentDictionary<object, BaseUserToken>();
 
-        BaseUserToken.GetInstance tokenCreateMethod;
 
         public ConcurrentDictionary<object, BaseUserToken> Tokens { get => tokens; set => tokens = value; }
         
-        public SocketListener(string hostname,string port,int numConnections,int bufferSize, BaseUserToken.GetInstance createMethod)
+        public SocketListener(RPCNetConfig config)
         {
             this.numConnectedSockets = 0;
-            this.numConnections = numConnections;
-            this.hostname = hostname;
-            this.port = int.Parse(port);
-            this.readWritePool = new SocketAsyncEventArgsPool(numConnections);
-            this.semaphoreAcceptedClients = new Semaphore(numConnections, numConnections);
-            this.tokenCreateMethod = createMethod;
-            for (int i = 0; i < this.numConnections; i++)
+            this.readWritePool = new SocketAsyncEventArgsPool(config.NumConnections);
+            this.semaphoreAcceptedClients = new Semaphore(config.NumConnections, config.NumConnections);
+            for (int i = 0; i < this.config.NumConnections; i++)
             {
                 SocketAsyncEventArgs receiveEventArg = new SocketAsyncEventArgs();
                 receiveEventArg.Completed += OnReceiveCompleted;
-                receiveEventArg.SetBuffer(new Byte[bufferSize], 0, bufferSize);
-                receiveEventArg.UserToken = new DataToken(receiveEventArg,hostname,port);
+                receiveEventArg.SetBuffer(new Byte[config.BufferSize], 0, config.BufferSize);
+                receiveEventArg.UserToken = new DataToken(receiveEventArg,config.Host,config.Port);
                 this.readWritePool.Push(receiveEventArg);
             }
 
-            IPAddress[] addressList = Dns.GetHostEntry(hostname).AddressList;
+            IPAddress[] addressList = Dns.GetHostEntry(config.Host).AddressList;
 
-            IPEndPoint localEndPoint = new IPEndPoint(addressList[addressList.Length - 1],int.Parse(port));
+            IPEndPoint localEndPoint = new IPEndPoint(addressList[addressList.Length - 1],int.Parse(config.Port));
 
             this.listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             if (localEndPoint.AddressFamily == AddressFamily.InterNetworkV6)
@@ -67,11 +58,7 @@ namespace Material.RPCServer.TCP_Async_Event
 
                 this.listenSocket.Bind(localEndPoint);
             }
-
-
-            this.listenSocket.Listen(this.numConnections);
-
-
+            this.listenSocket.Listen(this.config.NumConnections);
         }
 
         private void CloseClientSocket(SocketAsyncEventArgs e)
@@ -88,7 +75,7 @@ namespace Material.RPCServer.TCP_Async_Event
             e.AcceptSocket.Dispose();
             e.AcceptSocket = null;
             this.semaphoreAcceptedClients.Release();
-            tokens.TryRemove((e.UserToken as DataToken).Token.Key,out BaseUserToken value);
+            if(config.AutoManageTokens)tokens.TryRemove((e.UserToken as DataToken).Token.Key,out BaseUserToken value);
             (e.UserToken as DataToken).DisConnect();
             this.readWritePool.Push(e);
             Interlocked.Decrement(ref this.numConnectedSockets);
@@ -113,7 +100,7 @@ namespace Material.RPCServer.TCP_Async_Event
                         // Get the socket for the accepted client connection and put it into the 
                         // ReadEventArg object User user.
                         readEventArgs.AcceptSocket = s;
-                        (readEventArgs.UserToken as DataToken).Connect(tokenCreateMethod(),s);
+                        (readEventArgs.UserToken as DataToken).Connect(config.CreateMethod.Invoke(),s);
                         Interlocked.Increment(ref this.numConnectedSockets);
                         Console.WriteLine("Client connection accepted. There are {0} clients connected to the server",
                             this.numConnectedSockets);
@@ -147,7 +134,7 @@ namespace Material.RPCServer.TCP_Async_Event
         public void StartAccept(SocketAsyncEventArgs acceptEventArg)
         {
 
-            Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:{hostname}:{port}线程任务已经开始运行");
+            Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:{config.Host}:{config.Port}线程任务已经开始运行");
             while (true)
             {
                 mutex.WaitOne();
@@ -162,7 +149,7 @@ namespace Material.RPCServer.TCP_Async_Event
                     acceptEventArg.AcceptSocket = null;
                 }
                 this.semaphoreAcceptedClients.WaitOne();
-                Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:开始异步等待{hostname}:{port}中Accpet请求");
+                Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:开始异步等待{config.Host}:{config.Port}中Accpet请求");
                 if (!this.listenSocket.AcceptAsync(acceptEventArg))
                 {
                     this.ProcessAccept(acceptEventArg);
@@ -172,7 +159,7 @@ namespace Material.RPCServer.TCP_Async_Event
                     keepalive.Reset();
                     keepalive.WaitOne();
                 }
-                Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:完成{hostname}:{port}中请求的Accpet");
+                Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:完成{config.Host}:{config.Port}中请求的Accpet");
                 mutex.ReleaseMutex();
             }
         }
@@ -227,7 +214,7 @@ namespace Material.RPCServer.TCP_Async_Event
         private void Dispose(bool disposing)
         {
             if (isDipose) return;
-            Console.WriteLine($"{Thread.CurrentThread.Name}开始销毁{hostname}:{port}实例");
+            Console.WriteLine($"{Thread.CurrentThread.Name}开始销毁{config.Host}:{config.Port}实例");
             if (disposing)
             {
                 semaphoreAcceptedClients = null;

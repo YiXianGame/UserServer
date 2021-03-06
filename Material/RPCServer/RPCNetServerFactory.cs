@@ -20,22 +20,22 @@ namespace Material.RPCServer
         /// <param name="serverIp">远程服务IP</param>
         /// <param name="port">远程服务端口</param>
         /// <returns>客户端</returns>
-        public static SocketListener StartServer(string hostname,string port,BaseUserToken.GetInstance createMethod)
+        public static SocketListener StartServer(RPCNetConfig config)
         {
-            Tuple<string, string> key = new Tuple<string, string>(hostname, port);
+            Tuple<string, string> key = new Tuple<string, string>(config.Host, config.Port);
             SocketListener socketserver;
             socketservers.TryGetValue(key, out socketserver);
             if (socketserver == null)
             {
                 try
                 {
-                    socketserver = new SocketListener(key.Item1, key.Item2, 1000, 1024,createMethod);
-                    for(int i = 0; i < 5; i++)
+                    socketserver = new SocketListener(config);
+                    for (int i = 0; i < config.NumChannels; i++)
                     {
                         Thread thread = new Thread(() => socketserver.StartAccept(null));
                         thread.Name = i.ToString();
                         thread.Start();
-                    }   
+                    }
                     socketservers[key] = socketserver;
                 }
                 catch (SocketException e)

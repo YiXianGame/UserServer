@@ -11,16 +11,14 @@ namespace Material.RPCServer
     {
         private string servicename;
         RPCType type;
-
-        public static T Register<T>(string servicename,RPCType type)
+        RPCRequestConfig config;
+        public static RPCRequestProxy Register<T>(string servicename, RPCRequestConfig config)
         {
-            RPCRequestProxy proxy = (RPCRequestProxy)(Create<T, RPCRequestProxy>() as object);
+            RPCRequestProxy proxy = Create<T, RPCRequestProxy>() as RPCRequestProxy;
             proxy.servicename = servicename;
-            proxy.type = type;
-            return (T)(proxy as object);
+            proxy.config = config;
+            return proxy;
         }
-
-
         protected override object Invoke(MethodInfo targetMethod, object[] args)
         {
             RPCRequest rpcAttribute = targetMethod.GetCustomAttribute<RPCRequest>();

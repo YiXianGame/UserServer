@@ -61,10 +61,14 @@ namespace Material.RPCClient.TCP_Async_Event
                     if (needRemain <= writerIndex - readerIndex)
                     {
                         content.WriteBytes(socketArgs.Buffer, readerIndex, needRemain);
+                        string data = content.GetString(0, content.WriterIndex, Encoding.UTF8);
+                        content.ResetWriterIndex();
+                        readerIndex = needRemain + readerIndex;
+                        needRemain = 0;
                         //0-Request 1-Response
                         if (pattern == 0)
                         {
-                            ServerRequestModel request = JsonConvert.DeserializeObject<ServerRequestModel>(content.GetString(0, content.WriterIndex, Encoding.UTF8));
+                            ServerRequestModel request = JsonConvert.DeserializeObject<ServerRequestModel>(data);
                             if (!RPCServiceFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, hostname, port), out RPCService proxy) || !proxy.Methods.TryGetValue(request.MethodId, out MethodInfo method))
                             {
 #if DEBUG
@@ -81,13 +85,12 @@ namespace Material.RPCClient.TCP_Async_Event
                                 Console.WriteLine("---------------------------------------------------------");
 #endif
                                 proxy.ConvertParams(request.MethodId, request.Params);
-                                //客户端不讲究什么性能损耗了，直接开Task.
-                                Task.Run(() => method.Invoke(proxy.Instance, request.Params));
+                                method.Invoke(proxy.Instance, request.Params);
                             }
                         }
                         else
                         {
-                            ClientResponseModel response = JsonConvert.DeserializeObject<ClientResponseModel>(content.GetString(0, content.WriterIndex, Encoding.UTF8));
+                            ClientResponseModel response = JsonConvert.DeserializeObject<ClientResponseModel>(data);
 #if DEBUG
                             Console.WriteLine("---------------------------------------------------------");
                             Console.WriteLine($"{DateTime.Now}::{hostname}:{port}::[服-返回]\n{response}");
@@ -98,9 +101,6 @@ namespace Material.RPCClient.TCP_Async_Event
                                 request.set(response);
                             }
                         }
-                        content.ResetWriterIndex();
-                        readerIndex = needRemain + readerIndex;
-                        needRemain = 0;
                         continue;
                     }
                     else

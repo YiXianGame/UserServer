@@ -15,8 +15,8 @@ namespace Material.MySQL.Dao.Interface
         public Task<bool> Update_Password(long id, string password);
         public Task<bool> Update_CardGroups(long id, List<CardGroup> cardGroup, long timestamp);
         public Task<bool> Update_State(long id,UserState state, long timestamp);
-        public Task<User> Query_AttributeByUsername(string username);
-        public Task<User> Query_AttributeByID(long id,bool has_password = false);
+        public Task<User> Query_UserByUsername(string username);
+        public Task<User> Query_UserByID(long id,bool has_password = false);
         public Task<long> Query_IdByUsername(string username);
     }
 }

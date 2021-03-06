@@ -14,7 +14,7 @@ namespace Material.RPCClient
         /// <param name="serverIp">远程服务IP</param>
         /// <param name="port">远程服务端口</param>
         /// <returns>客户端</returns>
-        public static T Register<T>(string servicename,string hostname, string port,RPCType type)
+        public static T Register<T>(string servicename,string hostname, string port,RPCRequestConfig config)
         {
             T service = default(T);
             Tuple<string, string, string> key = new Tuple<string, string, string>(servicename, hostname, port);
@@ -23,7 +23,7 @@ namespace Material.RPCClient
             if(service == null)
             {
                 Tuple<string, string> clientkey = new Tuple<string, string>(hostname, port);
-                service = RPCRequestProxy.Register<T>(servicename, clientkey, type);
+                service = RPCRequestProxy.Register<T>(servicename, clientkey, config);
                 services[key] = service;
             }
             return service;

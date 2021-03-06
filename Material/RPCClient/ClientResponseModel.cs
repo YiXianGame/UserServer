@@ -8,7 +8,6 @@
         public readonly Error Error = null;
         public readonly string Id = null;
 
-
         public override string ToString()
         {
 

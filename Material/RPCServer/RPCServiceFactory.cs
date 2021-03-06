@@ -8,7 +8,7 @@ namespace Material.RPCServer
     { 
         public static ConcurrentDictionary<Tuple<string, string, string>, RPCService> services { get; } = new ConcurrentDictionary<Tuple<string, string, string>, RPCService>();
 
-        public static void Register<R>(R instance,string servicename, string hostname, string port, RPCType type) where R : class
+        public static void Register<R>(string servicename, string hostname, string port, RPCServiceConfig config) where R : class
         {
             Console.WriteLine($"{servicename}-{hostname}-{port} Loading...");
             if (string.IsNullOrEmpty(servicename))
@@ -29,21 +29,18 @@ namespace Material.RPCServer
                 throw new ArgumentException("参数为空", nameof(port));
             }
 
-            if (type is null)
+            if (config.Type is null)
             {
                 Console.WriteLine($"{servicename}-{hostname}-{port} Load Fail!");
-                throw new ArgumentNullException(nameof(type));
+                throw new ArgumentNullException(nameof(config.Type));
             }
-
-            RPCService service = null;
             Tuple<string, string, string> key = new Tuple<string, string, string>(servicename, hostname, port.ToString());
-            services.TryGetValue(key, out service);
+            services.TryGetValue(key, out RPCService service);
             if (service == null)
             {
                 try
                 {
-                    service = new RPCService();
-                    service.Register(instance,type);
+                    service = RPCService.Register<R>(config);
                     services[key] = service;
                     Console.WriteLine($"{servicename}-{hostname}-{port} Load Success!");
                 }

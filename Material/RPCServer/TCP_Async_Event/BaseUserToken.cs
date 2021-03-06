@@ -17,22 +17,14 @@ namespace Material.RPCServer.TCP_Async_Event
         #endregion
 
         #region --字段--
-        Tuple<string, string> serverKey;
-        Socket socket;
+        private Tuple<string, string> serverKey;
+        private Socket socket;
         #endregion
 
         #region --属性--
 
         public Tuple<string, string> ServerKey { get => serverKey; set => serverKey = value; }
-        internal Socket Socket { get => socket; set => socket = value; }
-        public bool Connected
-        { 
-            get 
-            {
-                if (socket != null) return socket.Connected;
-                else return false;
-            } 
-        }
+        public Socket Socket { get => socket; set => socket = value; }
         #endregion
 
         #region --方法--
