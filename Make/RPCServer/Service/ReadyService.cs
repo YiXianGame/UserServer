@@ -1,13 +1,13 @@
 ﻿using Material.Entity;
 using Material.Entity.Match;
-using Material.RPCServer.Annotation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Material.EtherealS.Annotation;
+
 namespace Make.RPCServer.Service
 {
     public class ReadyService
     {
-
         [RPCService]
         public List<User> EnterSquad(User user, long id, string secretKey)
         {

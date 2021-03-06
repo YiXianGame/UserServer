@@ -1,5 +1,4 @@
-﻿using Material.Entity.Game;
-using Material.Model.MatchSystem.Interface;
+﻿using Material.Model.MatchSystem.Interface;
 using System.Collections.Generic;
 
 namespace Material.Model.MatchSystem.Entity

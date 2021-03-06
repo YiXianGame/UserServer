@@ -1,10 +1,10 @@
 ﻿using Material.Entity.Match;
 using Material.Model.MatchSystem.Interface;
-using Material.RPCServer.Extension.Authority;
-using Material.RPCServer.TCP_Async_Event;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using Material.EtherealS.Extension.Authority;
+using Material.EtherealS.Model;
 
 namespace Material.Entity
 {

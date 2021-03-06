@@ -1,12 +1,10 @@
 ﻿using Material.Entity;
 using Material.Entity.Match;
-using Material.RPCServer.Annotation;
-using Material.RPCServer.Extension;
-using Material.RPCServer.Extension.Authority;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Material.EtherealS.Annotation;
+using Material.EtherealS.Extension.Authority;
 
 namespace Make.RPCServer.Service
 {
@@ -14,6 +12,7 @@ namespace Make.RPCServer.Service
     {
         private int authority;
         public object Authority { get => authority; set => authority = (int)value; }
+
         [RPCService(authority = 0)]
         public long RegisterUser(User user, string username, string nickname, string password)
         {

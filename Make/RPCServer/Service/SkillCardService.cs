@@ -1,11 +1,11 @@
 ﻿using Make.Model;
 using Material.Entity;
-using Material.RPCServer.Annotation;
 using System.Collections.Generic;
+using Material.EtherealS.Annotation;
 
 namespace Make.RPCServer.Service
 {
-    public class SkillCardService
+    public class SkillCardService 
     {
         [RPCService]
         public List<SkillCard> Sync(User user, long timestamp)
