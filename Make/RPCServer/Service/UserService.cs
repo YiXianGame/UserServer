@@ -10,8 +10,7 @@ namespace Make.RPCServer.Service
 {
     public class UserService : IAuthoritable
     {
-        private int authority;
-        public object Authority { get => authority; set => authority = (int)value; }
+        public object Authority { get => 1; set { } }
 
         [RPCService(authority = 0)]
         public long RegisterUser(User user, string username, string nickname, string password)

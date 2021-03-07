@@ -15,17 +15,22 @@ namespace Material.EtherealC.Net.AsyncClient
         /// </summary>
         private static AutoResetEvent autoConnectEvent = new AutoResetEvent(false);
         private RPCNetConfig config;
+        private string host;
+        private string port;
         public SocketAsyncEventArgs SocketArgs { get; set; }
         /// <summary>
         /// Token
         /// </summary>
-        public SocketClient(RPCNetConfig config)
+        public SocketClient(string host,string port,RPCNetConfig config)
         {
+            this.host = host;
+            this.port = port;
+            this.config = config;
             this.SocketArgs = new SocketAsyncEventArgs();
             // Get host related information.
-            IPAddress[] addressList = Dns.GetHostEntry(config.Host).AddressList;
+            IPAddress[] addressList = Dns.GetHostEntry(host).AddressList;
             // Instantiates the endpoint and socket.
-            hostEndPoint = new IPEndPoint(addressList[addressList.Length - 1], int.Parse(config.Port));
+            hostEndPoint = new IPEndPoint(addressList[addressList.Length - 1], int.Parse(port));
         }
 
         public void Connect()
@@ -46,7 +51,7 @@ namespace Material.EtherealC.Net.AsyncClient
                     SocketArgs.Completed += OnReceiveCompleted;
                     SocketArgs.SetBuffer(new Byte[config.BufferSize], 0, config.BufferSize);
                     SocketArgs.AcceptSocket = acceptArgs.AcceptSocket;
-                    SocketArgs.UserToken = new Token(SocketArgs, config.Host, config.Port);
+                    SocketArgs.UserToken = new Token(SocketArgs, host, port,config);
                     SocketArgs.RemoteEndPoint = hostEndPoint;
                     SocketArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnConnect);
                     if (!SocketArgs.AcceptSocket.ReceiveAsync(SocketArgs))
@@ -133,7 +138,7 @@ namespace Material.EtherealC.Net.AsyncClient
                         SocketArgs = new SocketAsyncEventArgs();
                         SocketArgs.SetBuffer(new Byte[config.BufferSize], 0, config.BufferSize);
                         SocketArgs.Completed += OnReceiveCompleted;
-                        SocketArgs.UserToken = new Token(SocketArgs, config.Host, config.Port);
+                        SocketArgs.UserToken = new Token(SocketArgs, host, port,config);
                         if (!clientSocket.ReceiveAsync(SocketArgs))
                         {
                             ProcessReceive(SocketArgs);

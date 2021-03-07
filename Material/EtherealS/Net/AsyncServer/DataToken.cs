@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
@@ -34,16 +34,18 @@ namespace Material.EtherealS.Net.AsyncServer
         public string Hostname { get => hostname; set => hostname = value; }
         public string Port { get => port; set => port = value; }
 
-        public DataToken(SocketAsyncEventArgs eventArgs,string hostname,string port)
+        public DataToken(SocketAsyncEventArgs eventArgs,string hostname,string port,RPCNetConfig config)
         {
+            this.config = config;
             this.eventArgs = eventArgs;
             this.content = DotNetty.Buffers.UnpooledByteBufferAllocator.Default.DirectBuffer(eventArgs.Buffer.Length,1024000);
-            this.Hostname = hostname;
-            this.Port = port;
+            this.hostname = hostname;
+            this.port = port;
         }
         public void DisConnect()
         {
             content.ResetWriterIndex();
+            needRemain = 0;
             token.OnDisConnect();
             token = null;
         }

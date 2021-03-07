@@ -100,11 +100,11 @@ namespace Material.EtherealC.Request
                                throw new RPCException(RPCException.ErrorCode.Intercepted, $"ErrorCode:{result.Error.Code} Message:{result.Error.Message} Data:{result.Error.Data}");
                             }
                         }
-                        else if (config.Type.TypeConvert.TryGetValue(result.Result_Type, out RPCType.ConvertDelegage convert))
+                        else if (config.Type.TypeConvert.TryGetValue(result.ResultType, out RPCType.ConvertDelegage convert))
                         {
-                            convert((string)result.Result);
+                            return convert((string)result.Result);
                         }
-                        else throw new RPCException($"C#中的{result.Result_Type}类型转换器尚未注册");
+                        else throw new RPCException($"C#中的{result.ResultType}类型转换器尚未注册");
                     }
                 }
                 catch (SocketException e)
@@ -113,7 +113,6 @@ namespace Material.EtherealC.Request
                     RPCNetFactory.GetClient(key).Reconnect();
                 }
             }
-
             return null;
         }
     }

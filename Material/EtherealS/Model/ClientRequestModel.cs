@@ -4,11 +4,17 @@ namespace Material.EtherealS.Model
 {
     public class ClientRequestModel
     {
-        public readonly string JsonRpc;
-        public readonly string MethodId;
-        public readonly object[] Params;
-        public string Id;
-        public readonly string Service;
+        private string jsonRpc;
+        private string methodId;
+        private object[] @params;
+        private string id;
+        private string service;
+
+        public string JsonRpc { get => jsonRpc; set => jsonRpc = value; }
+        public string MethodId { get => methodId; set => methodId = value; }
+        public object[] Params { get => @params; set => @params = value; }
+        public string Id { get => id; set => id = value; }
+        public string Service { get => service; set => service = value; }
 
         public ClientRequestModel(string jsonRpc, string service, string methodId, object[] @params)
         {

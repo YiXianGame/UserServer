@@ -13,7 +13,7 @@ namespace Make
     {
         #region --字段--
         private static UserServerConfig config;
-        private static Dictionary<long, SkillCard> skill_Card_ID_Skllcard = new Dictionary<long, SkillCard>();
+        private static Dictionary<long, SkillCard> skillCards = new Dictionary<long, SkillCard>();
         private static Model.Repository repository;
         private static UserRequest userRequest;
         private static PlayerServerRequest playerServerRequest;
@@ -24,7 +24,7 @@ namespace Make
         #endregion
 
         #region --属性--
-        public static Dictionary<long, SkillCard> SkillCardByID { get => skill_Card_ID_Skllcard; set => skill_Card_ID_Skllcard = value; }
+        public static Dictionary<long, SkillCard> SkillCards { get => skillCards; set => skillCards = value; }
         public static Model.Repository Repository { get => repository; set => repository = value; }
         public static UserRequest UserRequest { get => userRequest; set => userRequest = value; }
         public static SkillCardRequest SkillCardRequest { get => skillCardClient; set => skillCardClient = value; }

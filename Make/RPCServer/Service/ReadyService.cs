@@ -3,11 +3,14 @@ using Material.Entity.Match;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Material.EtherealS.Annotation;
+using Material.EtherealS.Extension.Authority;
 
 namespace Make.RPCServer.Service
 {
-    public class ReadyService
+    public class ReadyService :IAuthoritable
     {
+        public object Authority { get => 1; set { } }
+
         [RPCService]
         public List<User> EnterSquad(User user, long id, string secretKey)
         {

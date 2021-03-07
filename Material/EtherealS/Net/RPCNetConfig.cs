@@ -15,8 +15,6 @@ namespace Material.EtherealS.Net
         #endregion
 
         #region --字段--
-        private string host;
-        private string port;
         private int numConnections = 1024;
         private int bufferSize = 1024;
         private int numChannels = 5;
@@ -26,8 +24,6 @@ namespace Material.EtherealS.Net
         #endregion
 
         #region --属性--
-        public string Host { get => host; set => host = value; }
-        public string Port { get => port; set => port = value; }
         public bool AutoManageTokens { get => autoManageTokens; set => autoManageTokens = value; }
         public int NumConnections { get => numConnections; set => numConnections = value; }
         public int BufferSize { get => bufferSize; set => bufferSize = value; }
@@ -37,19 +33,21 @@ namespace Material.EtherealS.Net
         #endregion
 
         #region --方法--
-        public RPCNetConfig(string host, string port, BaseUserToken.GetInstance createMethod)
+        public RPCNetConfig(BaseUserToken.GetInstance createMethod)
         {
-            this.host = host;
-            this.port = port;
             this.createMethod = createMethod;
         }
         public bool OnInterceptor(RPCNetService service,MethodInfo method,BaseUserToken token)
         {
-            foreach(InterceptorDelegate item in InterceptorEvent.GetInvocationList())
+            if (InterceptorEvent != null)
             {
-                if (!item.Invoke(service, method, token)) return false;
+                foreach (InterceptorDelegate item in InterceptorEvent.GetInvocationList())
+                {
+                    if (!item.Invoke(service, method, token)) return false;
+                }
+                return true;
             }
-            return true;
+            else return true;
         }
         #endregion
     }

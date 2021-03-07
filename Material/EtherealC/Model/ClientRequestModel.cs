@@ -8,12 +8,20 @@ namespace Material.EtherealC.Model
         [JsonIgnore]
         private AutoResetEvent sign = new AutoResetEvent(false);
         [JsonIgnore]
-        public ClientResponseModel Result;
-        public readonly string JsonRpc;
-        public readonly string MethodId;
-        public readonly object[] Params;
-        public string Id;
-        public readonly string Service;
+        private ClientResponseModel result;
+        private string jsonRpc;
+        private string methodId;
+        private object[] @params;
+        private string id;
+        private string service;
+
+        public AutoResetEvent Sign { get => sign; set => sign = value; }
+        public ClientResponseModel Result { get => result; set => result = value; } 
+        public string JsonRpc { get => jsonRpc; set => jsonRpc = value; }
+        public string MethodId { get => methodId; set => methodId = value; }
+        public object[] Params { get => @params; set => @params = value; }
+        public string Id { get => id; set => id = value; }
+        public string Service { get => service; set => service = value; }
 
         public ClientRequestModel(string jsonRpc,string service,string methodId, object[] @params)
         {
@@ -26,14 +34,14 @@ namespace Material.EtherealC.Model
         public void set(ClientResponseModel result)
         {
             Result = result;
-            sign.Set();
+            Sign.Set();
         }
         public ClientResponseModel get()
         {
             //暂停当前进程，等待返回.
             while (Result == null)
             {
-                sign.WaitOne();
+                Sign.WaitOne();
             }
             return Result;
         }

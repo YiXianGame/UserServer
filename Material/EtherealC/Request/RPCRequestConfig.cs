@@ -5,7 +5,7 @@ namespace Material.EtherealC.Request
     public class RPCRequestConfig
     {
         #region --字段--
-        private bool tokenEnable;
+        private bool tokenEnable = true;
         private RPCType type;
         #endregion
 

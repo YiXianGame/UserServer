@@ -30,19 +30,20 @@ namespace Material.EtherealC.Net.AsyncClient
         private SocketAsyncEventArgs socketArgs;
         private DotNetty.Buffers.IByteBuffer content;
         private int needRemain;
-
+        private RPCNetConfig config;
 
         /// <summary>
         /// Class constructor.
         /// </summary>
         /// <param name="connection">Socket to accept incoming data.</param>
         /// <param name="capacity">Buffer size for accepted data.</param>
-        public Token(SocketAsyncEventArgs eventArgs, string hostname, string port)
+        public Token(SocketAsyncEventArgs eventArgs, string hostname, string port,RPCNetConfig config)
         {
             this.socketArgs = eventArgs;
             this.content = DotNetty.Buffers.UnpooledByteBufferAllocator.Default.DirectBuffer(eventArgs.Buffer.Length, 1024000);
             this.hostname = hostname;
             this.port = port;
+            this.config = config;
         }
         public void Init()
         {

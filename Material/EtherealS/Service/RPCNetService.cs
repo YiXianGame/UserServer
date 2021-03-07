@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Material.EtherealS.Annotation;
+using Material.EtherealS.Extension.Authority;
 using Material.EtherealS.Model;
 
 namespace Material.EtherealS.Service
@@ -26,10 +27,17 @@ namespace Material.EtherealS.Service
             this.Instance = instance;
             if (config.TokenEnable) paramStart = 1;
             else paramStart = 0;
+
+            //检查权限接口是否开启并实现
+            if (config.Authoritable && !(instance is IAuthoritable))
+            {
+                throw new RPCException($"{instance.GetType().FullName} 服务已开启权限系统，但尚未实现权限接口");
+            }
+
             StringBuilder methodid = new StringBuilder();
             foreach (MethodInfo method in instance.GetType().GetMethods())
             {
-                    RPCService rpcAttribute = method.GetCustomAttribute<RPCService>();
+                RPCService rpcAttribute = method.GetCustomAttribute<RPCService>();
                 if (rpcAttribute != null)
                 {
                     if (!method.IsAbstract)

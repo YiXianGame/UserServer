@@ -17,15 +17,15 @@ namespace Material.EtherealC.Net
         /// <param name="serverIp">远程服务IP</param>
         /// <param name="port">远程服务端口</param>
         /// <returns>客户端</returns>
-        public static SocketClient StartClient(RPCNetConfig config)
+        public static SocketClient StartClient(string host,string port,RPCNetConfig config)
         {
-            Tuple<string, string> key = new Tuple<string, string>(config.Host, config.Port);
+            Tuple<string, string> key = new Tuple<string, string>(host, port);
             socketclients.TryGetValue(key,out SocketClient socketclient);
             if (socketclient == null)
             {
                 try
                 {
-                    socketclient = new SocketClient(config);
+                    socketclient = new SocketClient(host,port,config);
                     socketclient.Connect();
                     socketclients[key] = socketclient;
                 }

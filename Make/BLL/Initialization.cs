@@ -31,6 +31,32 @@ namespace Make.BLL
             Core.SoloMatchSystem.MatchPipelineOut += Core.SoloGroupMatchSystem.PiplineIn;
             Core.SoloGroupMatchSystem.MatchSuccessEvent += MatchSystemHelper.SoloGroupMatchSystem_MatchSuccessEvent;
 
+            #region --RPCClient--
+            if (Core.Config.PlayerServerConfig != null)
+            {
+                Material.EtherealC.Model.RPCType clientType = new Material.EtherealC.Model.RPCType();
+                clientType.Add<int>("Int");
+                clientType.Add<string>("String");
+                clientType.Add<bool>("Bool");
+                clientType.Add<long>("Long");
+                clientType.Add<User>("User");
+                clientType.Add<CardGroup>("CardGroup");
+                clientType.Add<SkillCard>("SkillCard");
+                clientType.Add<List<long>>("List<long>");
+                clientType.Add<List<SkillCard>>("List<SkillCard>");
+                clientType.Add<List<CardItem>>("List<CardItem>");
+                clientType.Add<List<CardGroup>>("List<CardGroup>");
+                clientType.Add<List<Friend>>("List<Friend>");
+                clientType.Add<List<User>>("List<User>");
+                clientType.Add<List<Team>>("List<Team>");
+                //注册Client远程服务
+                Core.PlayerServerRequest = RPCRequestFactory.Register<PlayerServerRequest>("PlayerServer", Core.Config.PlayerServerConfig.Ip, Core.Config.PlayerServerConfig.Port, new RPCRequestConfig(clientType));
+                //启动Client服务
+                Material.EtherealC.Net.RPCNetFactory.StartClient(Core.Config.PlayerServerConfig.Ip, Core.Config.PlayerServerConfig.Port, new Material.EtherealC.Net.RPCNetConfig(1024));
+                PlayerServerLogin();    
+            }
+            #endregion
+
             #region --RPCServer--
             RPCType serverType = new RPCType();
             serverType.Add<int>("Int");
@@ -49,6 +75,7 @@ namespace Make.BLL
             serverType.Add<List<Team>>("List<Team>");
             RPCNetServiceConfig serverServiceConfig = new RPCNetServiceConfig(serverType);
             RPCNetRequestConfig serverRequestConfig = new RPCNetRequestConfig(serverType);
+            serverServiceConfig.Authoritable = true;
             //适配Server远程客户端服务
             RPCServiceFactory.Register<UserService>("UserServer", "192.168.80.1", "28015", serverServiceConfig);
             RPCServiceFactory.Register<SkillCardService>("SkillCardServer", "192.168.80.1", "28015", serverServiceConfig);
@@ -58,48 +85,11 @@ namespace Make.BLL
             Core.SkillCardRequest = RPCNetRequestFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.80.1", "28015", serverRequestConfig);
             Core.ReadyRequest = RPCNetRequestFactory.Register<ReadyRequest>("ReadyClient", "192.168.80.1", "28015", serverRequestConfig);
             //启动Server服务
-            RPCNetConfig serverNetConfig = new RPCNetConfig("192.168.80.1", "28015",()=>new User());
-            RPCNetFactory.StartServer(serverNetConfig);
+            RPCNetConfig serverNetConfig = new RPCNetConfig(() => new User());
+            RPCNetFactory.StartServer("192.168.80.1", "28015", serverNetConfig);
             serverNetConfig.InterceptorEvent += OnAuthorityCheck;
             #endregion
 
-            #region --RPCClient--
-            Material.EtherealC.Model.RPCType clientType = new Material.EtherealC.Model.RPCType();
-            clientType.Add<int>("Int");
-            clientType.Add<string>("String");
-            clientType.Add<bool>("Bool");
-            clientType.Add<long>("Long");
-            clientType.Add<User>("User");
-            clientType.Add<CardGroup>("CardGroup");
-            clientType.Add<SkillCard>("SkillCard");
-            clientType.Add<List<long>>("List<long>");
-            clientType.Add<List<SkillCard>>("List<SkillCard>");
-            clientType.Add<List<CardItem>>("List<CardItem>");
-            clientType.Add<List<CardGroup>>("List<CardGroup>");
-            clientType.Add<List<Friend>>("List<Friend>");
-            clientType.Add<List<User>>("List<User>");
-            clientType.Add<List<Team>>("List<Team>");
-            //注册Client远程服务
-            Core.PlayerServerRequest = RPCRequestFactory.Register<PlayerServerRequest>("PlayerServer", "192.168.80.1", "28016", new RPCRequestConfig(clientType));
-            //启动Client服务
-            Material.EtherealC.Net.RPCNetFactory.StartClient(new Material.EtherealC.Net.RPCNetConfig("192.168.80.1", "28016"));
-            #endregion
-
-            Random random = new Random();
-            for (int i = 0; i < 1; i++)
-            {
-                MatchSquad squad = new MatchSquad(Material.Utils.SecretKey.Generate(10), Room.RoomType.RealTime_Solo);
-                for (int j = 0; j < 1; j++)
-                {
-                    User user = new User();
-                    user.SumRank = random.Next(1, 9);
-                    user.AverageRank = user.SumRank;
-                    user.Count = 1;
-                    user.StartMatchTime = Material.Utils.TimeStamp.Now();
-                    squad.Add(user);
-                }
-                Core.SoloMatchSystem.Enter(squad);
-            }
             Core.SoloMatchSystem.StartPolling(0, 5000);
             SkillCardInit();
             AdventuresInit();
@@ -109,11 +99,23 @@ namespace Make.BLL
         private bool OnAuthorityCheck(RPCNetService service, MethodInfo method, BaseUserToken token)
         {
             RPCService annotation = method.GetCustomAttribute<RPCService>();
-            if ((annotation.Authority != null && ((IAuthorityCheck)token).Check(annotation)) || (service.Config.Authoritable && ((IAuthorityCheck)token).Check((IAuthoritable)service)))
+            if (annotation.Authority != null)
             {
-                return true;
+                if ((token as IAuthorityCheck).Check(annotation))
+                {
+                    return true;
+                }
+                else return false;
             }
-            else return false;
+            else if (service.Config.Authoritable)
+            {
+                if ((token as IAuthorityCheck).Check((IAuthoritable)service))
+                {
+                    return true;
+                }
+                else return false;
+            }
+            else return true;
         }
 
         private async void CoreInit(UserServerConfig.UserServerCategory category, PlayerServerConfig.PlayerServerCategory playerServerCategory)
@@ -134,6 +136,7 @@ namespace Make.BLL
                     return;
                 }
             }
+            Console.WriteLine($"Core-PlayerServerConfig-{playerServerCategory} Loading....");
             config.PlayerServerConfig = await Core.Repository.ConfigRepository.QueryPlayerServerConfig(playerServerCategory);
             if (config.PlayerServerConfig == null)
             {
@@ -141,6 +144,7 @@ namespace Make.BLL
                 return;
             }
             else Core.Config = config;
+            Console.WriteLine($"Core-PlayerServerConfig-{playerServerCategory} Load Success....");
             Console.WriteLine("Core Load Success!");
         }
 
@@ -203,7 +207,7 @@ namespace Make.BLL
                 List<SkillCard> skillCards = await Core.Repository.SkillCardRepository.Query_All();
                 foreach (SkillCard item in skillCards)
                 {
-                    Core.SkillCardByID.Add(item.Id, item);
+                    Core.SkillCards.Add(item.Id, item);
                 }
             }
             Console.WriteLine("SkillCard Load Success!");
@@ -211,6 +215,15 @@ namespace Make.BLL
         public void AdventuresInit()
         {
 
+        }
+        public void PlayerServerLogin()
+        {
+            Console.WriteLine("PlayerServer Login....");
+            if (Core.PlayerServerRequest.Login(Core.Config.PlayerServerConfig.SecretKey))
+            {
+                Console.WriteLine("PlayerServer Login Success!");
+            }
+            else Console.WriteLine("PlayerServer Login Fail!");
         }
     }
 }

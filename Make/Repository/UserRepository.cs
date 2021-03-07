@@ -96,17 +96,24 @@ namespace Make.Repository
         public async Task<User> Sync_CardGroups(long id, long timestamp)
         {
             //先从Redis里面取更新信息    
-            long update = await redis.userDao.Query_CardGroupsUpdate(id);
-            if (update == -1)//Redis不存在该用户
+            User user = await redis.userDao.Query_User(id);
+            if (user == null)//Redis不存在该用户
             {
-                User user = await Cache(id);//缓存该用户
-                update = user.CardGroups_update;
+                user = await Cache(id);//缓存该用户
             }
-            if (update != timestamp)//说明需要更新了
+            foreach(CardGroup cardGroup in user.CardGroups)
             {
-                User user = new User();
-                user.CardGroups_update = timestamp;
-                user.CardGroups = await redis.userDao.Query_CardGroups(id);
+                foreach(long skillCard in cardGroup.Cards.ToArray())
+                {
+                    if (!Core.SkillCards.ContainsKey(skillCard))
+                    {
+                        cardGroup.Cards.Remove(skillCard);
+                        user.CardGroups_update = TimeStamp.Now();
+                    }
+                }
+            }
+            if (user.CardGroups_update != timestamp)//说明需要更新了
+            {
                 return user;
             }
             else return null;

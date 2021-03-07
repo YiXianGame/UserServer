@@ -2,11 +2,13 @@
 using Material.Entity;
 using System.Collections.Generic;
 using Material.EtherealS.Annotation;
+using Material.EtherealS.Extension.Authority;
 
 namespace Make.RPCServer.Service
 {
-    public class SkillCardService 
+    public class SkillCardService : IAuthoritable
     {
+        public object Authority { get => 1; set { } }
         [RPCService]
         public List<SkillCard> Sync(User user, long timestamp)
         {
@@ -17,7 +19,7 @@ namespace Make.RPCServer.Service
             else
             {
                 Core.SkillCardRequest.SetSkillCardUpdate(user, Core.Config.SkillCardUpdate);
-                return new List<SkillCard>(Core.SkillCardByID.Values);
+                return new List<SkillCard>(Core.SkillCards.Values);
             }
         }
         [RPCService]

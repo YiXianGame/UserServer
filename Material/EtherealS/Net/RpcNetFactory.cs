@@ -21,16 +21,16 @@ namespace Material.EtherealS.Net
         /// <param name="serverIp">远程服务IP</param>
         /// <param name="port">远程服务端口</param>
         /// <returns>客户端</returns>
-        public static SocketListener StartServer(RPCNetConfig config)
+        public static SocketListener StartServer(string host, string port, RPCNetConfig config)
         {
-            Tuple<string, string> key = new Tuple<string, string>(config.Host, config.Port);
+            Tuple<string, string> key = new Tuple<string, string>(host, port);
             SocketListener socketserver;
             socketservers.TryGetValue(key, out socketserver);
             if (socketserver == null)
             {
                 try
                 {
-                    socketserver = new SocketListener(config);
+                    socketserver = new SocketListener(host,port,config);
                     for (int i = 0; i < config.NumChannels; i++)
                     {
                         Thread thread = new Thread(() => socketserver.StartAccept(null));

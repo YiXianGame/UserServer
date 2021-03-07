@@ -9,5 +9,7 @@ namespace Make.RPCClient.Request
     {
         [RPCRequest]
         public bool CreateRoom(List<Team> teams,string roomType);
+        [RPCRequest]
+        public bool Login(string secretKey);
     }
 }

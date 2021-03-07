@@ -3,9 +3,9 @@
     public class Error
     {
         public enum ErrorCode { Intercepted }
-        ErrorCode Code { get; set; }
-        string Message { get; set; }
-        string Data { get; set; }
+        public ErrorCode Code { get; set; }
+        public string Message { get; set; }
+        public string Data { get; set; }
 
         public Error(ErrorCode code, string message, string data)
         {

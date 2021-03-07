@@ -21,17 +21,24 @@ namespace Material.EtherealS.Net.AsyncServer
 
         private Semaphore semaphoreAcceptedClients;
 
-        AutoResetEvent keepalive = new AutoResetEvent(false);
+        private AutoResetEvent keepalive = new AutoResetEvent(false);
 
         private RPCNetConfig config;
+
+        private string host;
+
+        private string port;
 
         private ConcurrentDictionary<object, BaseUserToken> tokens = new ConcurrentDictionary<object, BaseUserToken>();
 
 
         public ConcurrentDictionary<object, BaseUserToken> Tokens { get => tokens; set => tokens = value; }
         
-        public SocketListener(RPCNetConfig config)
+        public SocketListener(string host,string port,RPCNetConfig config)
         {
+            this.config = config;
+            this.host = host;
+            this.port = port;
             this.numConnectedSockets = 0;
             this.readWritePool = new SocketAsyncEventArgsPool(config.NumConnections);
             this.semaphoreAcceptedClients = new Semaphore(config.NumConnections, config.NumConnections);
@@ -40,13 +47,13 @@ namespace Material.EtherealS.Net.AsyncServer
                 SocketAsyncEventArgs receiveEventArg = new SocketAsyncEventArgs();
                 receiveEventArg.Completed += OnReceiveCompleted;
                 receiveEventArg.SetBuffer(new Byte[config.BufferSize], 0, config.BufferSize);
-                receiveEventArg.UserToken = new DataToken(receiveEventArg,config.Host,config.Port);
+                receiveEventArg.UserToken = new DataToken(receiveEventArg,host,port,config);
                 this.readWritePool.Push(receiveEventArg);
             }
 
-            IPAddress[] addressList = Dns.GetHostEntry(config.Host).AddressList;
+            IPAddress[] addressList = Dns.GetHostEntry(host).AddressList;
 
-            IPEndPoint localEndPoint = new IPEndPoint(addressList[addressList.Length - 1],int.Parse(config.Port));
+            IPEndPoint localEndPoint = new IPEndPoint(addressList[addressList.Length - 1],int.Parse(port));
 
             this.listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             if (localEndPoint.AddressFamily == AddressFamily.InterNetworkV6)
@@ -135,7 +142,7 @@ namespace Material.EtherealS.Net.AsyncServer
         public void StartAccept(SocketAsyncEventArgs acceptEventArg)
         {
 
-            Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:{config.Host}:{config.Port}线程任务已经开始运行");
+            Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:{host}:{port}线程任务已经开始运行");
             while (true)
             {
                 mutex.WaitOne();
@@ -150,7 +157,7 @@ namespace Material.EtherealS.Net.AsyncServer
                     acceptEventArg.AcceptSocket = null;
                 }
                 this.semaphoreAcceptedClients.WaitOne();
-                Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:开始异步等待{config.Host}:{config.Port}中Accpet请求");
+                Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:开始异步等待{host}:{port}中Accpet请求");
                 if (!this.listenSocket.AcceptAsync(acceptEventArg))
                 {
                     this.ProcessAccept(acceptEventArg);
@@ -160,7 +167,7 @@ namespace Material.EtherealS.Net.AsyncServer
                     keepalive.Reset();
                     keepalive.WaitOne();
                 }
-                Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:完成{config.Host}:{config.Port}中请求的Accpet");
+                Console.WriteLine($"[线程]{Thread.CurrentThread.Name}:完成{host}:{port}中请求的Accpet");
                 mutex.ReleaseMutex();
             }
         }
@@ -215,7 +222,7 @@ namespace Material.EtherealS.Net.AsyncServer
         private void Dispose(bool disposing)
         {
             if (isDipose) return;
-            Console.WriteLine($"{Thread.CurrentThread.Name}开始销毁{config.Host}:{config.Port}实例");
+            Console.WriteLine($"{Thread.CurrentThread.Name}开始销毁{host}:{port}实例");
             if (disposing)
             {
                 semaphoreAcceptedClients = null;

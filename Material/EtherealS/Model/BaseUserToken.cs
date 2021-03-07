@@ -67,7 +67,7 @@ namespace Material.EtherealS.Model
             {
 #if DEBUG
                 Console.WriteLine("---------------------------------------------------------");
-                Console.WriteLine($"{DateTime.Now}::{serverKey.Item1}:{serverKey.Item2}::[客-返回]\n{response}");
+                Console.WriteLine($"{DateTime.Now}::{serverKey.Item1}:{serverKey.Item2}::[服-返回]\n{response}");
                 Console.WriteLine("---------------------------------------------------------");
 #endif
                 //构造data数据
@@ -90,9 +90,14 @@ namespace Material.EtherealS.Model
                 socket.SendAsync(sendEventArgs);
             }
         }
-        public bool AddIntoTokens()
+        public bool AddIntoTokens(bool replace = false)
         {
-            return Net.RPCNetFactory.GetTokens(serverKey).TryAdd(Key, this);
+            if (replace)
+            {
+                Net.RPCNetFactory.GetTokens(serverKey).TryRemove(Key, out BaseUserToken token);
+                return Net.RPCNetFactory.GetTokens(serverKey).TryAdd(Key, this);
+            }
+            else return Net.RPCNetFactory.GetTokens(serverKey).TryAdd(Key, this);
         }
         public bool RemoveFromTokens()
         {
