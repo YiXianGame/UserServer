@@ -13,7 +13,7 @@ namespace Material.EtherealS.Service
             Console.WriteLine($"{servicename}-{hostname}-{port} Loading...");
             if (string.IsNullOrEmpty(servicename))
             {
-                Console.WriteLine($"{servicename}-{hostname}-{port} Load Fail!");
+                Console.WriteLine($"{servicename}-{hostname}-{port} Load Fail!");   
                 throw new ArgumentException("参数为空", nameof(servicename));
             }
 

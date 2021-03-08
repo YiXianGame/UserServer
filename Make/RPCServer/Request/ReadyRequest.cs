@@ -17,9 +17,5 @@ namespace Make.RPCServer.Request
         public void InviteSquad(User user, User inviter, string secretKey);
         [RPCRequest]
         public void CancelMatch(User user);
-        [RPCRequest]
-        public void SwitchCardGroup(User user,long id,bool isTeammates,CardGroup cardGroup);
-        [RPCRequest]
-        public void ConnectPlayerServer(User user,string ip,string port);
     }
 }

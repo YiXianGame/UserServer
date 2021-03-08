@@ -76,7 +76,7 @@ namespace Material.EtherealS.Net.AsyncServer
                         readerIndex = needRemain + readerIndex;
                         needRemain = 0;
                         
-                        if (!RPCServiceFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, Hostname, Port), out RPCNetService service) || !service.Methods.TryGetValue(request.MethodId, out MethodInfo method))
+                            if (!RPCServiceFactory.services.TryGetValue(new Tuple<string, string, string>(request.Service, Hostname, Port), out RPCNetService service) || !service.Methods.TryGetValue(request.MethodId, out MethodInfo method))
                         {   
 #if DEBUG
                             Console.WriteLine("------------------未找到该方法--------------------");

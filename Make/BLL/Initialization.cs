@@ -3,7 +3,7 @@ using Make.RPCServer.Request;
 using Make.RPCServer.Service;
 using Material.Entity;
 using Material.Entity.Config;
-using Material.Entity.Match;
+using Material.EtherealC.Request;
 using Material.EtherealS.Annotation;
 using Material.EtherealS.Extension.Authority;
 using Material.EtherealS.Model;
@@ -15,7 +15,6 @@ using Material.Redis;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Material.EtherealC.Request;
 
 namespace Make.BLL
 {
@@ -77,17 +76,20 @@ namespace Make.BLL
             RPCNetRequestConfig serverRequestConfig = new RPCNetRequestConfig(serverType);
             serverServiceConfig.Authoritable = true;
             //适配Server远程客户端服务
-            RPCServiceFactory.Register<UserService>("UserServer", "192.168.80.1", "28015", serverServiceConfig);
-            RPCServiceFactory.Register<SkillCardService>("SkillCardServer", "192.168.80.1", "28015", serverServiceConfig);
-            RPCServiceFactory.Register<ReadyService>("ReadyServer", "192.168.80.1", "28015", serverServiceConfig);
+            RPCServiceFactory.Register<UserService>("UserServer",Core.Config.Ip,Core.Config.Port, serverServiceConfig);
+            RPCServiceFactory.Register<SkillCardService>("SkillCardServer", Core.Config.Ip, Core.Config.Port, serverServiceConfig);
+            RPCServiceFactory.Register<ReadyService>("ReadyServer", Core.Config.Ip, Core.Config.Port, serverServiceConfig);
+            RPCServiceFactory.Register<EquipService>("EquipServer", Core.Config.Ip, Core.Config.Port, serverServiceConfig);
+
             //注册Server远程服务
-            Core.UserRequest = RPCNetRequestFactory.Register<UserRequest>("UserClient", "192.168.80.1", "28015", serverRequestConfig);
-            Core.SkillCardRequest = RPCNetRequestFactory.Register<SkillCardRequest>("SkillCardClient", "192.168.80.1", "28015", serverRequestConfig);
-            Core.ReadyRequest = RPCNetRequestFactory.Register<ReadyRequest>("ReadyClient", "192.168.80.1", "28015", serverRequestConfig);
+            Core.UserRequest = RPCNetRequestFactory.Register<UserRequest>("UserClient", Core.Config.Ip, Core.Config.Port, serverRequestConfig);
+            Core.SkillCardRequest = RPCNetRequestFactory.Register<SkillCardRequest>("SkillCardClient", Core.Config.Ip, Core.Config.Port, serverRequestConfig);
+            Core.ReadyRequest = RPCNetRequestFactory.Register<ReadyRequest>("ReadyClient", Core.Config.Ip, Core.Config.Port, serverRequestConfig);
+            Core.EquipRequest = RPCNetRequestFactory.Register<EquipRequest>("EquipClient", Core.Config.Ip, Core.Config.Port, serverRequestConfig);
             //启动Server服务
             RPCNetConfig serverNetConfig = new RPCNetConfig(() => new User());
-            RPCNetFactory.StartServer("192.168.80.1", "28015", serverNetConfig);
-            serverNetConfig.InterceptorEvent += OnAuthorityCheck;
+            RPCNetFactory.StartServer(Core.Config.Ip, Core.Config.Port, serverNetConfig);
+            serverNetConfig.InterceptorEvent += AuthorityCheck.ServiceCheck;
             #endregion
 
             Core.SoloMatchSystem.StartPolling(0, 5000);
@@ -95,29 +97,6 @@ namespace Make.BLL
             AdventuresInit();
             Console.WriteLine("Initialization Success!");
         }
-
-        private bool OnAuthorityCheck(RPCNetService service, MethodInfo method, BaseUserToken token)
-        {
-            RPCService annotation = method.GetCustomAttribute<RPCService>();
-            if (annotation.Authority != null)
-            {
-                if ((token as IAuthorityCheck).Check(annotation))
-                {
-                    return true;
-                }
-                else return false;
-            }
-            else if (service.Config.Authoritable)
-            {
-                if ((token as IAuthorityCheck).Check((IAuthoritable)service))
-                {
-                    return true;
-                }
-                else return false;
-            }
-            else return true;
-        }
-
         private async void CoreInit(UserServerConfig.UserServerCategory category, PlayerServerConfig.PlayerServerCategory playerServerCategory)
         {
             Console.WriteLine("Core Loading....");

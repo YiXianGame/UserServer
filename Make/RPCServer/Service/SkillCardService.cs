@@ -9,6 +9,7 @@ namespace Make.RPCServer.Service
     public class SkillCardService : IAuthoritable
     {
         public object Authority { get => 1; set { } }
+
         [RPCService]
         public List<SkillCard> Sync(User user, long timestamp)
         {

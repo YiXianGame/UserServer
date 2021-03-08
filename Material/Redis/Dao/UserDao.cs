@@ -64,6 +64,7 @@ namespace Material.Redis.Dao
                 user.Friend_update = (long)values[19];
                 user.CardGroups_update = (long)values[20];
                 user.CardGroups = JsonConvert.DeserializeObject<List<CardGroup>>(values[18]);
+                if (user.CardGroups == null) user.CardGroups = new List<CardGroup>();
             }
             return user;
         }

@@ -15,6 +15,8 @@ namespace Material.Entity.Config
         private UserServerCategory category = UserServerCategory.LowServer;
         private int maxBuff = 8; //当前状态的最大量
         private PlayerServerConfig playerServerConfig;
+        private string ip;
+        private string port;
         #endregion
 
         #region --属性--
@@ -22,6 +24,8 @@ namespace Material.Entity.Config
         public UserServerCategory Category { get => category; set => category = value; }
         public int MaxBuff { get => maxBuff; set => maxBuff = value; }
         public PlayerServerConfig PlayerServerConfig { get => playerServerConfig; set => playerServerConfig = value; }
+        public string Ip { get => ip; set => ip = value; }
+        public string Port { get => port; set => port = value; }
 
 
         #endregion

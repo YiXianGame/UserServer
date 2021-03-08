@@ -27,11 +27,13 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "INSERT INTO user_server(category,skill_card_update,max_buff) VALUES(@category,@skill_card_update,@max_buff)";
+                string sqlcommand = "INSERT INTO user_server(category,skill_card_update,max_buff,ip,port) VALUES(@category,@skill_card_update,@max_buff,@ip,@port)";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", config.Category.ToString()));
                 parameters.Add(new MySqlParameter("@skill_card_update", config.SkillCardUpdate));
                 parameters.Add(new MySqlParameter("@max_buff", config.MaxBuff));
+                parameters.Add(new MySqlParameter("@ip", config.Ip));
+                parameters.Add(new MySqlParameter("@port", config.Port));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
                 if (result == 1)
                 {
@@ -69,11 +71,13 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "UPDATE user_server SET skill_card_update=@skill_card_update,max_buff=@max_buff WHERE category=@category";
+                string sqlcommand = "UPDATE user_server SET skill_card_update=@skill_card_update,max_buff=@max_buff,ip=@ip,port=@port WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", config.Category.ToString()));
                 parameters.Add(new MySqlParameter("@skill_card_update", config.SkillCardUpdate));
                 parameters.Add(new MySqlParameter("@max_buff", config.MaxBuff));
+                parameters.Add(new MySqlParameter("@ip", config.Ip));
+                parameters.Add(new MySqlParameter("@port", config.Port));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
                 if (result == 1)
                 {
@@ -91,7 +95,7 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "SELECT skill_card_update,max_buff FROM user_server WHERE category=@category";
+                string sqlcommand = "SELECT skill_card_update,max_buff,ip,port FROM user_server WHERE category=@category";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@category", category.ToString()));
 
@@ -102,6 +106,8 @@ namespace Material.MySQL.Dao
                     config.Category = category;
                     config.SkillCardUpdate = reader.GetInt64("skill_card_update");
                     config.MaxBuff = reader.GetInt32("max_buff");
+                    config.Ip = reader.GetString("ip");
+                    config.Port = reader.GetString("port");
                     return config;
                 }
                 else return null;

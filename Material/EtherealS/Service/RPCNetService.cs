@@ -24,7 +24,7 @@ namespace Material.EtherealS.Service
         public void Register(object instance,RPCNetServiceConfig config)
         {
             this.config = config;
-            this.Instance = instance;
+            this.instance = instance;
             if (config.TokenEnable) paramStart = 1;
             else paramStart = 0;
 
