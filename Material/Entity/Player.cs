@@ -30,6 +30,7 @@ namespace Material.Entity
         public string Title { get => title; set => title = value; }
 
         #endregion
+
         #region --方法--
         public void SetAttribute(User user)
         {

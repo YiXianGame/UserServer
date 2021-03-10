@@ -24,6 +24,7 @@ namespace Material.EtherealS.Model
         #region --属性--
 
         public Tuple<string, string> ServerKey { get => serverKey; set => serverKey = value; }
+        [JsonIgnore]
         public Socket Socket { get => socket; set => socket = value; }
         #endregion
 

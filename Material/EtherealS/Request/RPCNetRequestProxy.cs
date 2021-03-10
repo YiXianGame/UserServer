@@ -68,13 +68,13 @@ namespace Material.EtherealS.Request
 
                 }
                 ServerRequestModel request = new ServerRequestModel("2.0", servicename, methodid.ToString(), obj);
-                if (args[0] != null && (args[0] as BaseUserToken).Socket != null)
+                if (args[0] != null && (args[0] as BaseUserToken).Socket != null && (args[0] as BaseUserToken).Socket.Connected)
                 {
                     (args[0] as BaseUserToken).Send(request);
                     return null;
                 }
                 else return null;// throw new RPCException($"方法体:{methodid} 执行时，缺少首参数BaseUserToken，请检查是否传参错误！");
-            }
+            }   
             else return targetMethod.Invoke(this, args);
         }
     }
