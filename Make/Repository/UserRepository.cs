@@ -25,7 +25,7 @@ namespace Make.Repository
         {
             // null 账户不存在 -1密码错误
             User user;
-            if (id == 0) user = await mySQL.userDao.Query_UserByUsername(username);
+            if (id <= 0) user = await mySQL.userDao.Query_UserByUsername(username);
             else
             {
                 user = await redis.userDao.Query_User(id, true);
