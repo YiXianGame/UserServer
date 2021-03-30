@@ -27,11 +27,11 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "INSERT INTO card_repository(owner_id,item_id,solution) VALUES(@owner_id,@item_id,@solution)";
+                string sqlcommand = "INSERT INTO card_repository(owner_id,item_id,category) VALUES(@owner_id,@item_id,@category)";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@owner_id", item.OwnerId));
                 parameters.Add(new MySqlParameter("@item_id", item.ItemId));
-                parameters.Add(new MySqlParameter("@solution", item.Category));
+                parameters.Add(new MySqlParameter("@category", item.Category));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
                 if (result == 1)    
                 {
@@ -70,11 +70,11 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "UPDATE card_repository SET solution=@solution WHERE owner_id=@owner_id,item_id=@item_id";
+                string sqlcommand = "UPDATE card_repository SET category=@category WHERE owner_id=@owner_id,item_id=@item_id";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@owner_id", item.OwnerId));
                 parameters.Add(new MySqlParameter("@item_id", item.ItemId));
-                parameters.Add(new MySqlParameter("@solution", item.Category));
+                parameters.Add(new MySqlParameter("@category", item.Category));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
                 if (result == 1)
                 {
@@ -92,7 +92,7 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "SELECT solution FROM card_repository WHERE owner_id=@owner_id,item_id=@item_id";
+                string sqlcommand = "SELECT category FROM card_repository WHERE owner_id=@owner_id,item_id=@item_id";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@owner_id", owner_id));
                 parameters.Add(new MySqlParameter("@item_id", item_id));
@@ -102,7 +102,7 @@ namespace Material.MySQL.Dao
                     CardItem item = new CardItem();
                     item.OwnerId = owner_id;
                     item.ItemId = item_id;
-                    item.Category = (CardItem.CardRepositoryCategory)Enum.Parse(typeof(CardItem.CardRepositoryCategory), reader.GetString("solution"));
+                    item.Category = (CardItem.CardRepositoryCategory)Enum.Parse(typeof(CardItem.CardRepositoryCategory), reader.GetString("category"));
                     return item;
                 }
                 else return null;
@@ -118,7 +118,7 @@ namespace Material.MySQL.Dao
             GetConnection(out MySqlConnection connection);
             try
             {
-                string sqlcommand = "SELECT item_id,solution FROM card_repository WHERE owner_id=@owner_id";
+                string sqlcommand = "SELECT item_id,category FROM card_repository WHERE owner_id=@owner_id";
                 List<MySqlParameter> parameters = new List<MySqlParameter>();
                 parameters.Add(new MySqlParameter("@owner_id", owner_id));
                 MySqlDataReader reader = await MySqlHelper.ExecuteReaderAsync(connection, sqlcommand, parameters.ToArray());
@@ -128,7 +128,7 @@ namespace Material.MySQL.Dao
                     CardItem item = new CardItem();
                     item.OwnerId = owner_id;
                     item.ItemId = reader.GetInt64("item_id");
-                    item.Category = (CardItem.CardRepositoryCategory)Enum.Parse(typeof(CardItem.CardRepositoryCategory), reader.GetString("solution"));
+                    item.Category = (CardItem.CardRepositoryCategory)Enum.Parse(typeof(CardItem.CardRepositoryCategory), reader.GetString("category"));
                     list.Add(item);
                 }
                 return list;

@@ -183,9 +183,32 @@ namespace Material.MySQL.Dao
         }
         public async Task<bool> Update_State(long id, User.UserState state, long timestamp)
         {
-            int result = await MySqlHelper.ExecuteNonQueryAsync(GetConnection(out MySqlConnection connection), $"UPDATE user SET state='{state.ToString()}',attribute_update = '{timestamp}' WHERE id='{id}'");
-            if (result == 1) return true;
-            else return false;
+            GetConnection(out MySqlConnection connection);
+            try
+            {
+                int result = await MySqlHelper.ExecuteNonQueryAsync(connection, $"UPDATE user SET state='{state.ToString()}',attribute_update = '{timestamp}' WHERE id='{id}'");
+                if (result == 1) return true;
+                else return false;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        public async Task<bool> Update_CardRepositoryUpdate(long id, long timestamp)
+        {
+            GetConnection(out MySqlConnection connection);
+            try
+            {
+                int result = await MySqlHelper.ExecuteNonQueryAsync(connection, $"UPDATE user SET card_repository_update='{timestamp}' WHERE id='{id}'");
+                if (result == 1) return true;
+                else return false;
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
     }
 }

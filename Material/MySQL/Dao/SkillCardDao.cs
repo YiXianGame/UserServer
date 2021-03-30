@@ -44,7 +44,7 @@ namespace Material.MySQL.Dao
                 parameters.Add(new MySqlParameter("@attribute_update", skillCard.AttributeUpdate));
                 parameters.Add(new MySqlParameter("@auxiliary_buff", JsonConvert.SerializeObject(skillCard.AuxiliaryBuff)));
                 parameters.Add(new MySqlParameter("@enemy_buff", JsonConvert.SerializeObject(skillCard.EnemyBuff)));
-                parameters.Add(new MySqlParameter("@category", JsonConvert.SerializeObject(skillCard.Category)));
+                parameters.Add(new MySqlParameter("@category", skillCard.Category.ToString()));
                 await MySqlHelper.ExecuteNonQueryAsync(connection,sqlcommand,parameters.ToArray());
                 return await QueryLastInsertId(connection);
             }
@@ -78,7 +78,7 @@ namespace Material.MySQL.Dao
                 parameters.Add(new MySqlParameter("@attribute_update", skillCard.AttributeUpdate));
                 parameters.Add(new MySqlParameter("@auxiliary_buff", skillCard.AuxiliaryBuff));
                 parameters.Add(new MySqlParameter("@enemy_buff", skillCard.EnemyBuff));
-                parameters.Add(new MySqlParameter("@category", skillCard.Category));
+                parameters.Add(new MySqlParameter("@category", skillCard.Category.ToString()));
                 int result = await MySqlHelper.ExecuteNonQueryAsync(connection, sqlcommand, parameters.ToArray());
                 if (result == 1) return true;
                 else return false;
@@ -127,7 +127,7 @@ namespace Material.MySQL.Dao
                     skillCard.AttributeUpdate = reader.GetInt64("attribute_update");
                     skillCard.AuxiliaryBuff = JsonConvert.DeserializeObject<List<Buff>>(reader.GetString("auxiliary_buff"));
                     skillCard.EnemyBuff = JsonConvert.DeserializeObject<List<Buff>>(reader.GetString("enemy_buff"));
-                    skillCard.Category = JsonConvert.DeserializeObject<List<SkillCard.SkillCardCategory>>(reader.GetString("category"));
+                    skillCard.Category = (SkillCard.SkillCardCategory)Enum.Parse(typeof(SkillCard.SkillCardCategory),reader.GetString("category"));
                     return skillCard;
                 }
                 else return null;
@@ -181,7 +181,7 @@ namespace Material.MySQL.Dao
                     skillCard.AttributeUpdate = reader.GetInt64("attribute_update");
                     skillCard.AuxiliaryBuff = JsonConvert.DeserializeObject<List<Buff>>(reader.GetString("auxiliary_buff"));
                     skillCard.EnemyBuff = JsonConvert.DeserializeObject<List<Buff>>(reader.GetString("enemy_buff"));
-                    skillCard.Category = JsonConvert.DeserializeObject<List<SkillCard.SkillCardCategory>>(reader.GetString("category"));
+                    skillCard.Category = (SkillCard.SkillCardCategory)Enum.Parse(typeof(SkillCard.SkillCardCategory), reader.GetString("category"));
                     skillCards.Add(skillCard);
                 }
                 return skillCards;
@@ -217,7 +217,7 @@ namespace Material.MySQL.Dao
                     skillCard.AttributeUpdate = reader.GetInt64("attribute_update");
                     skillCard.AuxiliaryBuff = JsonConvert.DeserializeObject<List<Buff>>(reader.GetString("auxiliary_buff"));
                     skillCard.EnemyBuff = JsonConvert.DeserializeObject<List<Buff>>(reader.GetString("enemy_buff"));
-                    skillCard.Category = JsonConvert.DeserializeObject<List<SkillCard.SkillCardCategory>>(reader.GetString("category"));
+                    skillCard.Category = (SkillCard.SkillCardCategory)Enum.Parse(typeof(SkillCard.SkillCardCategory), reader.GetString("category"));
                     return skillCard;
                 }
                 else return null;

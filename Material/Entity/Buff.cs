@@ -8,7 +8,7 @@ namespace Material.Entity
     {
         #region --Enum--
         [JsonConverter(typeof(StringEnumConverter))]
-        public enum BuffCategory { Freeze };
+        public enum BuffCategory { Freeze, Revive, Immune, Disarm, Silent, ArmorBreaking, ArmorPiercing, Defense, Counteraction, Invincible, SealingAcupoint, SealingBlood, FlowHp, FlowMp, PhysicsShield, MagicShield };
         #endregion
 
         #region --字段--

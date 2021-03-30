@@ -37,7 +37,7 @@ namespace Material.EtherealC.Request
 
         protected override object Invoke(MethodInfo targetMethod, object[] args)
         {
-            Annotation.RPCRequest rpcAttribute = targetMethod.GetCustomAttribute<Annotation.RPCRequest>();
+            Attribute.RPCRequest rpcAttribute = targetMethod.GetCustomAttribute<Attribute.RPCRequest>();
             if(rpcAttribute != null)
             {
                 try
@@ -50,11 +50,12 @@ namespace Material.EtherealC.Request
                     object[] obj = new object[param_count + paramStart];
                     if (rpcAttribute.Paramters == null)
                     {
+                        ParameterInfo[] parameters = targetMethod.GetParameters();
                         for (int i = 0, j = paramStart; i < param_count; i++, j++)
                         {
                             try
                             {
-                                methodid.Append("-" + config.Type.AbstractName[args[i].GetType()]);
+                                methodid.Append("-" + config.Type.AbstractName[parameters[i].ParameterType]);
                                 obj[j] = JsonConvert.SerializeObject(args[i]);
                             }
                             catch (Exception)
@@ -92,19 +93,25 @@ namespace Material.EtherealC.Request
                     else
                     {
                         (RPCNetFactory.GetClient(key).SocketArgs.UserToken as Token).Send(request);
-                        ClientResponseModel result = request.get();
-                        if (result.Error != null)
+                        int timeout = config.Timeout;
+                        if (rpcAttribute.Timeout != -1) timeout = rpcAttribute.Timeout;
+                        ClientResponseModel result = request.Get(timeout);
+                        if(result != null)
                         {
-                            if(result.Error.Code == 0)
+                            if (result.Error != null)
                             {
-                               throw new RPCException(RPCException.ErrorCode.Intercepted, $"ErrorCode:{result.Error.Code} Message:{result.Error.Message} Data:{result.Error.Data}");
+                                if (result.Error.Code == 0)
+                                {
+                                    throw new RPCException(RPCException.ErrorCode.Intercepted, $"ErrorCode:{result.Error.Code} Message:{result.Error.Message} Data:{result.Error.Data}");
+                                }
                             }
+                            else if (config.Type.TypeConvert.TryGetValue(result.ResultType, out RPCType.ConvertDelegage convert))
+                            {
+                                return convert((string)result.Result);
+                            }
+                            else throw new RPCException($"C#中的{result.ResultType}类型转换器尚未注册");
                         }
-                        else if (config.Type.TypeConvert.TryGetValue(result.ResultType, out RPCType.ConvertDelegage convert))
-                        {
-                            return convert((string)result.Result);
-                        }
-                        else throw new RPCException($"C#中的{result.ResultType}类型转换器尚未注册");
+                        return null;
                     }
                 }
                 catch (SocketException e)

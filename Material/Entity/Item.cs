@@ -1,11 +1,9 @@
-﻿using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Material.Entity
 {
+    [JsonObject(MemberSerialization = MemberSerialization.OptOut)]
     public class Item
     {
         #region --Enum--

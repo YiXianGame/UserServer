@@ -59,7 +59,7 @@ namespace Make.RPCServer.Service
         {
             if (user.Squad != null)
             {
-                if (user.Squad.Captain == user && user.Squad.RoomType == Room.RoomType.Round_Solo)
+                if (user.Squad.Captain == user && user.Squad.RoomType == Room.RoomType.RealTimeSolo)
                 {
                     if (Core.SoloMatchSystem.Enter(user.Squad))
                     {

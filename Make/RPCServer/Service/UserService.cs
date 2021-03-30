@@ -35,6 +35,15 @@ namespace Make.RPCServer.Service
                 else
                 {
                     user.Authority = 1;
+                    //Core.Repository.UserRepository.Update_CardRepositoryUpdate(user.Id, Material.Utils.TimeStamp.Now());
+                    //foreach (SkillCard skillCard in Core.SkillCards.Values)
+                    //{
+                    //    CardItem item = new CardItem();
+                    //    item.Category = Item.CardRepositoryCategory.SkillCard;
+                    //    item.ItemId = skillCard.Id;
+                    //    item.OwnerId = user.Id;
+                    //    Core.Repository.UserRepository.Insert_CardRepository(item);
+                    //}
                     return task.Result.Id;
                 }
             }
@@ -97,24 +106,36 @@ namespace Make.RPCServer.Service
             return task.Result;
         }
         [RPCService]
-        public List<CardItem> Sync_CardRepository(User user, long id, long date)
+        public void Sync_CardRepository(User user,long skillCardDate, long repositoryDate)
         {
-            Task<List<CardItem>> task = Core.Repository.UserRepository.Sync_CardRepository(id, date);
+            Task<List<CardItem>> task = Core.Repository.UserRepository.Sync_CardRepository(user.Id, repositoryDate);
+            List<SkillCard> skillCards = null;
             task.Wait();
-            if (task.Result != null)
+            if(skillCardDate != Core.Config.SkillCardUpdate)
             {
-                Task<long> update_task = Core.Repository.UserRepository.Query_CardRepositoryUpdateById(id);
-                update_task.Wait();
-                Core.UserRequest.SetCardRepositoryUpdate(user, update_task.Result);
+                skillCards = new List<SkillCard>();
+                if (task.Result != null)
+                {
+                    task = Core.Repository.UserRepository.Query_CardRepositoryById(user.Id);
+                    task.Wait();
+                }
+                foreach(CardItem item in task.Result)
+                {
+                    Core.SkillCards.TryGetValue(item.ItemId, out SkillCard skillCard);
+                    if (skillCard != null)
+                    {
+                        skillCards.Add(skillCard);
+                    }
+                }
             }
-            return task.Result;
+            Core.UserRequest.RefreshRepositorySkillCards(user, Core.Config.SkillCardUpdate, skillCards,task.Result);
         }
         [RPCService]
         public string CreateSquad(User user, string roomType)
         {
             if (Enum.TryParse(roomType, true, out Room.RoomType type))
             {
-                if (type == Room.RoomType.Round_Solo)
+                if (type == Room.RoomType.RealTimeSolo)
                 {
                     user.Squad = new MatchSquad(Material.Utils.SecretKey.Generate(20), type);
                     user.Squad.Captain = user;
@@ -125,7 +146,5 @@ namespace Make.RPCServer.Service
             }
             else return "-1";
         }
-
-        
     }
 }

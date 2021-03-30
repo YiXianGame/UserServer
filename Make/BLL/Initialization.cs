@@ -41,7 +41,7 @@ namespace Make.BLL
                 clientType.Add<User>("User");
                 clientType.Add<CardGroup>("CardGroup");
                 clientType.Add<SkillCard>("SkillCard");
-                clientType.Add<List<long>>("List<long>");
+                clientType.Add<List<long>>("List<Long>");
                 clientType.Add<List<SkillCard>>("List<SkillCard>");
                 clientType.Add<List<CardItem>>("List<CardItem>");
                 clientType.Add<List<CardGroup>>("List<CardGroup>");
@@ -136,7 +136,9 @@ namespace Make.BLL
                 Random random = new Random();
                 DateTime startTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local); // 当地时区
                 long timeStamp = (long)(DateTime.Now - startTime).TotalSeconds; // 相差秒数
-                for (int i = 0; i < 100; i++)
+                int buffCategory = 0;
+                int skillCardCategory = 0;
+                for (int i = 1; i <= 75; i++)
                 {
                     SkillCard skillCard = new SkillCard();
                     skillCard.Name = $"第{i}张卡牌";
@@ -146,39 +148,31 @@ namespace Make.BLL
                     skillCard.Description = "这是一段描述";
                     skillCard.EnemyHp = random.Next() % 100;
                     skillCard.EnemyMp = random.Next() % 100;
-                    skillCard.MaxAuxiliary = random.Next() % 5;
-                    skillCard.MaxEnemy = random.Next() % 5;
+                    skillCard.MaxAuxiliary = random.Next() % 5 + 1;
+                    skillCard.MaxEnemy = random.Next() % 5 + 1;
                     skillCard.Mp = random.Next() % 100;
                     skillCard.Probability = random.Next() % 100;
                     skillCard.RegisterDate = random.Next();
                     skillCard.AttributeUpdate = timeStamp;
-                    for (int j = 0; j < random.Next() % 5; j++)
-                    {
-                        Buff buff = new Buff();
-                        buff.Power = random.Next() % 100;
-                        buff.Category = Buff.BuffCategory.Freeze;
-                        buff.Duration = random.Next() % 100;
-                        skillCard.AuxiliaryBuff.Add(buff);
-                    }
-                    for (int j = 0; j < random.Next() % 5; j++)
-                    {
-                        Buff buff = new Buff();
-                        buff.Power = random.Next() % 100;
-                        buff.Category = Buff.BuffCategory.Freeze;
-                        buff.Duration = random.Next() % 100;
-                        skillCard.EnemyBuff.Add(buff);
-                    }
-                    if (random.Next() % 2 == 1) skillCard.Category.Add(SkillCard.SkillCardCategory.Attack);
-                    if (random.Next() % 2 == 1) skillCard.Category.Add(SkillCard.SkillCardCategory.Cure);
-                    if (random.Next() % 2 == 1) skillCard.Category.Add(SkillCard.SkillCardCategory.Eternal);
-                    if (random.Next() % 2 == 1) skillCard.Category.Add(SkillCard.SkillCardCategory.Magic);
-                    if (random.Next() % 2 == 1) skillCard.Category.Add(SkillCard.SkillCardCategory.Physics);
+                    Buff auxiliary_buff = new Buff();
+                    auxiliary_buff.Power = random.Next() % 100;
+                    auxiliary_buff.Category = (Buff.BuffCategory)buffCategory;
+                    auxiliary_buff.Duration = random.Next() % 10000;
+                    skillCard.AuxiliaryBuff.Add(auxiliary_buff);
+                    Buff enemies_buff = new Buff();
+                    enemies_buff.Power = random.Next() % 100;
+                    enemies_buff.Category = (Buff.BuffCategory)buffCategory;
+                    enemies_buff.Duration = random.Next() % 10000;
+                    skillCard.EnemyBuff.Add(enemies_buff);
+                    skillCard.Category = (SkillCard.SkillCardCategory)(skillCardCategory);
                     long result = await Core.Repository.SkillCardRepository.Insert(skillCard);
                     if (result == -1)
                     {
                         Console.WriteLine("Core Load Fail!");
                         break;
                     }
+                    if (i % 15 == 0) skillCardCategory++;
+                    buffCategory = (buffCategory + 1) % 15;
                 }
             }
             else

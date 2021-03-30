@@ -144,6 +144,10 @@ namespace Make.Repository
             }
             else return -1;
         }
+        public async Task<bool> Update_CardRepositoryUpdate(long id,long timestamp)
+        {
+            return await mySQL.userDao.Update_CardRepositoryUpdate(id,timestamp);
+        }
         public async Task<long> Update_State(long id, User.UserState state)
         {
             long timestamp = TimeStamp.Now();
@@ -200,6 +204,14 @@ namespace Make.Repository
                 return await mySQL.cardRepositoryDao.QueryByUserId(id);
             }
             else return null;
+        }
+        public async Task<List<CardItem>> Query_CardRepositoryById(long id)
+        {
+            return await mySQL.cardRepositoryDao.QueryByUserId(id);
+        }
+        public async Task<bool> Insert_CardRepository(CardItem item)
+        {
+            return await mySQL.cardRepositoryDao.Insert(item);
         }
         #endregion
     }

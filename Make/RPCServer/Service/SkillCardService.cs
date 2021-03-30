@@ -9,20 +9,6 @@ namespace Make.RPCServer.Service
     public class SkillCardService : IAuthoritable
     {
         public object Authority { get => 1; set { } }
-
-        [RPCService]
-        public List<SkillCard> Sync(User user, long timestamp)
-        {
-            if (Core.Config.SkillCardUpdate.Equals(timestamp))
-            {
-                return null;
-            }
-            else
-            {
-                Core.SkillCardRequest.SetSkillCardUpdate(user, Core.Config.SkillCardUpdate);
-                return new List<SkillCard>(Core.SkillCards.Values);
-            }
-        }
         [RPCService]
         public List<SkillCard> Query(User user, List<long> skillCardIds)
         {

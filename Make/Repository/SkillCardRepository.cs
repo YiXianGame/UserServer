@@ -9,66 +9,29 @@ namespace Make.Repository
     public class SkillCardRepository
     {
         #region --字段--
-        private Redis redis;
         private MySQL mySQL;
         #endregion
 
         #region --方法--
         public SkillCardRepository(Redis redis, MySQL mySQL)
         {
-            this.redis = redis;
             this.mySQL = mySQL;
         }
         public async Task<long> Insert(SkillCard skillCard)
         {
-            long result = await mySQL.skillCardDao.Insert(skillCard);
-            if (result != 0)
-            {
-                skillCard.Id = result;
-                redis.skillCardDao.Set(skillCard);
-                return result;
-            }
-            else return -1;
+            return await mySQL.skillCardDao.Insert(skillCard);
         }
         public async Task<bool> Update(SkillCard skillCard)
         {
-            bool result = await mySQL.skillCardDao.Update(skillCard);
-            if (result)
-            {
-                redis.skillCardDao.Set(skillCard);
-                return true;
-            }
-            else return false;
+            return await mySQL.skillCardDao.Update(skillCard);
         }
         public async Task<SkillCard> Query(long id)
         {
-            SkillCard skillCard = await redis.skillCardDao.Query(id);
-            if (skillCard == null)
-            {
-                skillCard = await mySQL.skillCardDao.Query(id);
-                if (skillCard != null)
-                {
-                    redis.skillCardDao.Set(skillCard);
-                    return skillCard;
-                }
-                else return null;
-            }
-            else return skillCard;
+            return await mySQL.skillCardDao.Query(id);
         }
         public SkillCard QuerySync(long id)
         {
-            SkillCard skillCard = redis.skillCardDao.QuerySync(id);
-            if (skillCard == null)
-            {
-                skillCard = mySQL.skillCardDao.QuerySync(id);
-                if (skillCard != null)
-                {
-                    redis.skillCardDao.Set(skillCard);
-                    return skillCard;
-                }
-                else return null;
-            }
-            else return skillCard;
+            return mySQL.skillCardDao.QuerySync(id);
         }
         public async Task<List<SkillCard>> Query_All()
         {
@@ -76,13 +39,7 @@ namespace Make.Repository
         }
         public async Task<bool> Delete(long id)
         {
-            bool result = await mySQL.skillCardDao.Delete(id);
-            if (result)
-            {
-                redis.skillCardDao.Delete(id);
-                return true;
-            }
-            else return false;
+            return await mySQL.skillCardDao.Delete(id);
         }
         #endregion
     }

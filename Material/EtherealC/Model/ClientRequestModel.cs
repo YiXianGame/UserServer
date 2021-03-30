@@ -6,22 +6,20 @@ namespace Material.EtherealC.Model
     public class ClientRequestModel
     {
         [JsonIgnore]
-        private AutoResetEvent sign = new AutoResetEvent(false);
-        [JsonIgnore]
         private ClientResponseModel result;
         private string jsonRpc;
         private string methodId;
         private object[] @params;
         private string id;
         private string service;
-
-        public AutoResetEvent Sign { get => sign; set => sign = value; }
+        private AutoResetEvent sign = new AutoResetEvent(false);
         public ClientResponseModel Result { get => result; set => result = value; } 
         public string JsonRpc { get => jsonRpc; set => jsonRpc = value; }
         public string MethodId { get => methodId; set => methodId = value; }
         public object[] Params { get => @params; set => @params = value; }
         public string Id { get => id; set => id = value; }
         public string Service { get => service; set => service = value; }
+        public AutoResetEvent Sign { get => sign; set => sign = value; }
 
         public ClientRequestModel(string jsonRpc,string service,string methodId, object[] @params)
         {
@@ -31,17 +29,17 @@ namespace Material.EtherealC.Model
             Service = service;
         }
 
-        public void set(ClientResponseModel result)
+        public void Set(ClientResponseModel result)
         {
             Result = result;
             Sign.Set();
         }
-        public ClientResponseModel get()
+        public ClientResponseModel Get(int timeout)
         {
             //暂停当前进程，等待返回.
             while (Result == null)
             {
-                Sign.WaitOne();
+                Sign.WaitOne(timeout);
             }
             return Result;
         }

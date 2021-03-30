@@ -31,14 +31,15 @@ namespace Material.EtherealS.Request
                 else param_count = 0;
                 if (param_count > 1)
                 {
+                    obj = new string[param_count - 1];
                     if (rpcAttribute.Paramters == null)
                     {
-                        obj = new string[param_count - 1];
+                        ParameterInfo[] parameters = targetMethod.GetParameters();
                         for (int i = 1; i < param_count; i++)
                         {
                             try
                             {
-                                methodid.Append("-" + config.Type.AbstractName[args[i].GetType()]);
+                                methodid.Append("-" + config.Type.AbstractName[parameters[i].ParameterType]);
                                 obj[i - 1] = JsonConvert.SerializeObject(args[i]);
                             }
                             catch (Exception)
@@ -52,12 +53,11 @@ namespace Material.EtherealS.Request
                         string[] types_name = rpcAttribute.Paramters;
                         if(param_count == types_name.Length)
                         {
-                            obj = new string[param_count - 1];
                             for (int i = 1; i < param_count; i++)
                             {
                                 if (config.Type.AbstractType.ContainsKey(types_name[i]))
                                 {
-                                    methodid.Append("-" + config.Type.AbstractName[args[i].GetType()]);
+                                    methodid.Append("-" + types_name[i]);
                                     obj[i - 1] = JsonConvert.SerializeObject(args[i]);
                                 }
                                 else throw new RPCException($"C#对应的{types_name[i]}-{args[i].GetType()}类型参数尚未注册");

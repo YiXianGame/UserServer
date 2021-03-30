@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Material.EtherealC.Annotation
+namespace Material.EtherealC.Attribute
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class RPCService : Attribute
+    public class RPCService : System.Attribute
     {
         private string[] paramters = null;
 

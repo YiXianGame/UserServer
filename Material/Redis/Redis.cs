@@ -8,7 +8,6 @@ namespace Material.Redis
     {
         private ConnectionMultiplexer redis;//连接到redis
         public IUserDao userDao;
-        public ISkillCardDao skillCardDao;
         public ICardRepositoryDao cardRepositoryDao;
         public IFriendDao friendDao;
         public IDatabase db;
@@ -17,8 +16,6 @@ namespace Material.Redis
             redis = ConnectionMultiplexer.Connect(config);
             //0-用户库
             userDao = new UserDao(redis.GetDatabase(0));
-            //1-卡库
-            skillCardDao = new SkillCardDao(redis.GetDatabase(1));
             //2-仓库
             cardRepositoryDao = new CardRepositoryDao(redis.GetDatabase(2));
             //2-好友

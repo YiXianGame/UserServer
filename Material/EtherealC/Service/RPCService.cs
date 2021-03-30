@@ -25,7 +25,7 @@ namespace Material.EtherealC.Service
             StringBuilder methodid = new StringBuilder();
             foreach (MethodInfo method in typeof(T).GetMethods())
             {
-                Annotation.RPCService rpcAttribute = method.GetCustomAttribute<Annotation.RPCService>();
+                Attribute.RPCService rpcAttribute = method.GetCustomAttribute<Attribute.RPCService>();
                 if (rpcAttribute == null)
                 {
                     if (!method.IsAbstract)

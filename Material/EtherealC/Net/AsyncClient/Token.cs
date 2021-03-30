@@ -99,7 +99,7 @@ namespace Material.EtherealC.Net.AsyncClient
 #endif
                             if (int.TryParse(response.Id, out int id) && tasks.TryGetValue(id, out ClientRequestModel request))
                             {
-                                request.set(response);
+                                request.Set(response);
                             }
                         }
                         continue;

@@ -37,9 +37,13 @@ namespace Material.Entity
         private List<CardGroup> cardGroups;//技能卡组
         private long registerDate;//注册日期
         private long attribute_update;//个人信息更新日期
+        [JsonIgnore]
         private long cardRepository_update;//卡牌更新日期
+        [JsonIgnore]
         private long headImage_update;//头像更新日期
+        [JsonIgnore]
         private long friend_update;//好友更新日期
+        [JsonIgnore]
         private long cardGroups_update;//技能卡组更新日期
         #endregion
 
