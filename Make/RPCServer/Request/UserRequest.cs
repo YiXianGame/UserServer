@@ -9,7 +9,7 @@ namespace Make.RPCServer.Request
         [RPCRequest]
         public void SetFriendUpdate(User user, long timestamp);
         [RPCRequest]
-        public void RefreshRepositorySkillCards(User user,long timestamp, List<SkillCard> skillCards,List<CardItem> cardItems);、
+        public void RefreshRepositorySkillCards(User user,long timestamp, List<SkillCard> skillCards,List<CardItem> cardItems);
         [RPCRequest]
         public bool Hello(long id, string message);
 
