@@ -1,8 +1,8 @@
 ﻿using Make.Model;
 using Material.Entity;
 using System.Collections.Generic;
-using Material.EtherealS.Annotation;
-using Material.EtherealS.Extension.Authority;
+using EtherealS.Attribute;
+using EtherealS.Extension.Authority;
 
 namespace Make.RPCServer.Service
 {

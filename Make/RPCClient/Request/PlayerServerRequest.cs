@@ -1,7 +1,6 @@
 ﻿using Material.Entity;
-using Material.Entity.Match;
 using System.Collections.Generic;
-using Material.EtherealC.Attribute;
+using EtherealC.Attribute;
 
 namespace Make.RPCClient.Request
 {

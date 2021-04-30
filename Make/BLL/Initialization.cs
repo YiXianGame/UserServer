@@ -3,18 +3,10 @@ using Make.RPCServer.Request;
 using Make.RPCServer.Service;
 using Material.Entity;
 using Material.Entity.Config;
-using Material.EtherealC.Request;
-using Material.EtherealS.Annotation;
-using Material.EtherealS.Extension.Authority;
-using Material.EtherealS.Model;
-using Material.EtherealS.Net;
-using Material.EtherealS.Request;
-using Material.EtherealS.Service;
 using Material.MySQL;
 using Material.Redis;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace Make.BLL
 {
@@ -33,7 +25,7 @@ namespace Make.BLL
             #region --RPCClient--
             if (Core.Config.PlayerServerConfig != null)
             {
-                Material.EtherealC.Model.RPCType clientType = new Material.EtherealC.Model.RPCType();
+                EtherealC.Model.RPCTypeConfig clientType = new EtherealC.Model.RPCTypeConfig();
                 clientType.Add<int>("Int");
                 clientType.Add<string>("String");
                 clientType.Add<bool>("Bool");
@@ -48,16 +40,17 @@ namespace Make.BLL
                 clientType.Add<List<Friend>>("List<Friend>");
                 clientType.Add<List<User>>("List<User>");
                 clientType.Add<List<Team>>("List<Team>");
+                EtherealC.RPCNet.NetCore.Register(Core.Config.PlayerServerConfig.Ip, Core.Config.PlayerServerConfig.Port);
                 //注册Client远程服务
-                Core.PlayerServerRequest = RPCRequestFactory.Register<PlayerServerRequest>("PlayerServer", Core.Config.PlayerServerConfig.Ip, Core.Config.PlayerServerConfig.Port, new RPCRequestConfig(clientType));
+                Core.PlayerServerRequest = EtherealC.RPCRequest.RequestCore.Register<PlayerServerRequest>(Core.Config.PlayerServerConfig.Ip, Core.Config.PlayerServerConfig.Port, "PlayerServer", clientType);
                 //启动Client服务
-                Material.EtherealC.Net.RPCNetFactory.StartClient(Core.Config.PlayerServerConfig.Ip, Core.Config.PlayerServerConfig.Port, new Material.EtherealC.Net.RPCNetConfig(1024));
+                EtherealC.NativeClient.ClientCore.Register(Core.Config.PlayerServerConfig.Ip, Core.Config.PlayerServerConfig.Port).Start();
                 PlayerServerLogin();    
             }
             #endregion
 
             #region --RPCServer--
-            RPCType serverType = new RPCType();
+            EtherealS.Model.RPCTypeConfig serverType = new EtherealS.Model.RPCTypeConfig();
             serverType.Add<int>("Int");
             serverType.Add<string>("String");
             serverType.Add<bool>("Bool");
@@ -72,24 +65,22 @@ namespace Make.BLL
             serverType.Add<List<Friend>>("List<Friend>");
             serverType.Add<List<User>>("List<User>");
             serverType.Add<List<Team>>("List<Team>");
-            RPCNetServiceConfig serverServiceConfig = new RPCNetServiceConfig(serverType);
-            RPCNetRequestConfig serverRequestConfig = new RPCNetRequestConfig(serverType);
-            serverServiceConfig.Authoritable = true;
+            EtherealS.RPCService.ServiceConfig serverServiceConfig = new EtherealS.RPCService.ServiceConfig(serverType);
+            EtherealS.RPCRequest.RequestConfig serverRequestConfig = new EtherealS.RPCRequest.RequestConfig(serverType);
             //适配Server远程客户端服务
-            RPCServiceFactory.Register<UserService>("UserServer",Core.Config.Ip,Core.Config.Port, serverServiceConfig);
-            RPCServiceFactory.Register<SkillCardService>("SkillCardServer", Core.Config.Ip, Core.Config.Port, serverServiceConfig);
-            RPCServiceFactory.Register<ReadyService>("ReadyServer", Core.Config.Ip, Core.Config.Port, serverServiceConfig);
-            RPCServiceFactory.Register<EquipService>("EquipServer", Core.Config.Ip, Core.Config.Port, serverServiceConfig);
-
+            serverServiceConfig.InterceptorEvent += EtherealS.Extension.Authority.AuthorityCheck.ServiceCheck;
+            EtherealS.RPCService.ServiceCore.Register<UserService>(Core.Config.Ip,Core.Config.Port, "UserServer", serverServiceConfig);
+            EtherealS.RPCService.ServiceCore.Register<SkillCardService>( Core.Config.Ip, Core.Config.Port, "SkillCardServer", serverServiceConfig);
+            EtherealS.RPCService.ServiceCore.Register<ReadyService>(Core.Config.Ip, Core.Config.Port, "ReadyServer", serverServiceConfig);
+            EtherealS.RPCService.ServiceCore.Register<EquipService>(Core.Config.Ip, Core.Config.Port, "EquipServer", serverServiceConfig);
             //注册Server远程服务
-            Core.UserRequest = RPCNetRequestFactory.Register<UserRequest>("UserClient", Core.Config.Ip, Core.Config.Port, serverRequestConfig);
-            Core.SkillCardRequest = RPCNetRequestFactory.Register<SkillCardRequest>("SkillCardClient", Core.Config.Ip, Core.Config.Port, serverRequestConfig);
-            Core.ReadyRequest = RPCNetRequestFactory.Register<ReadyRequest>("ReadyClient", Core.Config.Ip, Core.Config.Port, serverRequestConfig);
-            Core.EquipRequest = RPCNetRequestFactory.Register<EquipRequest>("EquipClient", Core.Config.Ip, Core.Config.Port, serverRequestConfig);
-            //启动Server服务
-            RPCNetConfig serverNetConfig = new RPCNetConfig(() => new User());
-            RPCNetFactory.StartServer(Core.Config.Ip, Core.Config.Port, serverNetConfig);
-            serverNetConfig.InterceptorEvent += AuthorityCheck.ServiceCheck;
+            Core.UserRequest = EtherealS.RPCRequest.RequestCore.Register<UserRequest>( Core.Config.Ip, Core.Config.Port, "UserClient", serverRequestConfig);
+            Core.SkillCardRequest = EtherealS.RPCRequest.RequestCore.Register<SkillCardRequest>(Core.Config.Ip, Core.Config.Port, "SkillCardClient", serverRequestConfig);
+            Core.ReadyRequest = EtherealS.RPCRequest.RequestCore.Register<ReadyRequest>( Core.Config.Ip, Core.Config.Port, "ReadyClient", serverRequestConfig);
+            Core.EquipRequest = EtherealS.RPCRequest.RequestCore.Register<EquipRequest>( Core.Config.Ip, Core.Config.Port, "EquipClient", serverRequestConfig);
+            EtherealS.RPCNet.NetCore.Register(Core.Config.Ip, Core.Config.Port);
+            EtherealS.NativeServer.ServerConfig serverNetConfig = new EtherealS.NativeServer.ServerConfig(() => new User());
+            EtherealS.NativeServer.ServerCore.Register(Core.Config.Ip, Core.Config.Port,serverNetConfig).Start(); 
             #endregion
 
             Core.SoloMatchSystem.StartPolling(0, 5000);

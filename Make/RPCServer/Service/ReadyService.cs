@@ -2,8 +2,8 @@
 using Material.Entity.Match;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Material.EtherealS.Annotation;
-using Material.EtherealS.Extension.Authority;
+using EtherealS.Attribute;
+using EtherealS.Extension.Authority;
 
 namespace Make.RPCServer.Service
 {

@@ -1,11 +1,10 @@
-﻿using Material.Entity.Match;
+﻿using EtherealS.Extension.Authority;
+using EtherealS.Model;
+using Material.Entity.Match;
 using Material.Model.MatchSystem.Interface;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
-using Material.EtherealS.Extension.Authority;
-using Material.EtherealS.Model;
-
 namespace Material.Entity
 {
     [JsonObject(MemberSerialization.OptOut)]

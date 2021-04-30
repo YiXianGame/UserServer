@@ -1,5 +1,5 @@
-﻿using Material.Entity;
-using Material.EtherealS.Annotation;
+﻿using EtherealS.Attribute;
+using Material.Entity;
 
 namespace Make.RPCServer.Request
 {

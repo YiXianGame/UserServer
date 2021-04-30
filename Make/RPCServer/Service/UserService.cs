@@ -1,10 +1,10 @@
-﻿using Material.Entity;
+﻿using EtherealS.Attribute;
+using EtherealS.Extension.Authority;
+using Material.Entity;
 using Material.Entity.Match;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Material.EtherealS.Annotation;
-using Material.EtherealS.Extension.Authority;
 
 namespace Make.RPCServer.Service
 {
@@ -28,7 +28,7 @@ namespace Make.RPCServer.Service
             else if (task.Result.Id != -1)
             {
                 user.SetAttribute(task.Result);
-                if (!user.AddIntoTokens())
+                if (!user.Register())
                 {
                     return -2;//用户已登录
                 }
