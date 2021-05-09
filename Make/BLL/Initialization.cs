@@ -67,6 +67,10 @@ namespace Make.BLL
             serverType.Add<List<Team>>("List<Team>");
             EtherealS.RPCService.ServiceConfig serverServiceConfig = new EtherealS.RPCService.ServiceConfig(serverType);
             EtherealS.RPCRequest.RequestConfig serverRequestConfig = new EtherealS.RPCRequest.RequestConfig(serverType);
+            serverServiceConfig.ExceptionEvent += OnExceptionEvent;
+            serverServiceConfig.LogEvent += LogEvent;
+            serverRequestConfig.ExceptionEvent += OnExceptionEvent;
+            serverRequestConfig.LogEvent += LogEvent;
             //适配Server远程客户端服务
             serverServiceConfig.InterceptorEvent += EtherealS.Extension.Authority.AuthorityCheck.ServiceCheck;
             EtherealS.RPCService.ServiceCore.Register<UserService>(Core.Config.Ip,Core.Config.Port, "UserServer", serverServiceConfig);
@@ -80,6 +84,8 @@ namespace Make.BLL
             Core.EquipRequest = EtherealS.RPCRequest.RequestCore.Register<EquipRequest>( Core.Config.Ip, Core.Config.Port, "EquipClient", serverRequestConfig);
             EtherealS.RPCNet.NetCore.Register(Core.Config.Ip, Core.Config.Port);
             EtherealS.NativeServer.ServerConfig serverNetConfig = new EtherealS.NativeServer.ServerConfig(() => new User());
+            serverNetConfig.ExceptionEvent += OnExceptionEvent;
+            serverNetConfig.LogEvent += LogEvent;
             EtherealS.NativeServer.ServerCore.Register(Core.Config.Ip, Core.Config.Port,serverNetConfig).Start(); 
             #endregion
 
@@ -87,6 +93,26 @@ namespace Make.BLL
             SkillCardInit();
             AdventuresInit();
             Console.WriteLine("Initialization Success!");
+        }
+        private void LogEvent(EtherealS.Model.RPCLog log)
+        {
+            Console.WriteLine(log.Message);
+        }
+        private void OnExceptionEvent(Exception exception)
+        {
+            try
+            {
+                throw exception;
+            }
+            catch (EtherealS.Model.RPCException e)
+            {
+                Console.WriteLine($"错误类型:{e.Error}-{e.Message}");
+                Console.WriteLine(e.StackTrace);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
         }
         private async void CoreInit(UserServerConfig.UserServerCategory category, PlayerServerConfig.PlayerServerCategory playerServerCategory)
         {

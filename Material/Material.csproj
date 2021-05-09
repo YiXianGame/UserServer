@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EtherealC" Version="1.0.4" />
-    <PackageReference Include="EtherealS" Version="1.0.9" />
+    <PackageReference Include="EtherealC" Version="1.0.5" />
+    <PackageReference Include="EtherealS" Version="1.2.4" />
     <PackageReference Include="MySql.Data" Version="8.0.23" />
     <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
   </ItemGroup>
